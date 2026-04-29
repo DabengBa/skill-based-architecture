@@ -1,5 +1,5 @@
 ---
-name: {{NAME}}
+name: "{{NAME}}"
 version: "1.0"
 description: >
   <!-- FILL: Rewrite as a trigger condition, not a passive summary. -->
