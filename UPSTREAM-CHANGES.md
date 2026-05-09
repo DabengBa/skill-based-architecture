@@ -36,6 +36,33 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-09 - Backward-compatible refresh guards
+
+- Upstream commit: pending in this working tree
+- Changed areas: `templates/skill/scripts/sync-routing.sh`,
+  `templates/skill/workflows/update-upstream.md`, `UPSTREAM-CHANGES.md`
+- Why it matters: closes two refresh gaps that affect downstream projects
+  scaffolded before the recent template trims:
+  1. `sync-routing.sh` was changed to stop generating `.codex/instructions.md`
+     when the recent commits made `.codex/` optional. That left existing
+     downstream copies with stale routing blocks that would never auto-update.
+     The script now keeps `.codex/instructions.md` in its target list **only
+     when the file already exists** — old downstream skills keep getting
+     synced; new scaffolds don't introduce the file.
+  2. `update-upstream.md` had no explicit step for "scan upstream for new
+     mechanism files that don't exist locally". When upstream introduced
+     `conformance.yaml`, `check-version-conformance.sh`, and
+     `_parse_conformance.py`, downstream agents could miss them entirely
+     unless they happened to compare directory listings. A new step 5 now
+     requires that scan before the per-file compare loop, with whole-file
+     copy permitted under the existing Hard Rule #4 for missing files.
+- Downstream refresh guidance: pull the updated `sync-routing.sh` and
+  `update-upstream.md` as mechanism-owned files. Re-run
+  `update-upstream.md` step 5 against your skill — it will surface any
+  upstream mechanism files you don't yet have (most projects will need
+  to copy `conformance.yaml`, `check-version-conformance.sh`, and
+  `_parse_conformance.py` if they haven't yet).
+
 ## 2026-05-09 - Bloat reduction across templates, references, examples, READMEs
 
 - Upstream commit: pending in this working tree

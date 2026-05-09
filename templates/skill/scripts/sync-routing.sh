@@ -254,7 +254,14 @@ targets = [
     (skill_file, always_start, always_end, always_skill_block),
     (skill_file, summary_start, summary_end, summary_block),
 ]
-for rel in ["AGENTS.md", "CLAUDE.md", "CODEX.md", "GEMINI.md"]:
+shell_targets = ["AGENTS.md", "CLAUDE.md", "CODEX.md", "GEMINI.md"]
+# .codex/instructions.md is an optional compatibility mirror. New scaffolds
+# don't include it (AGENTS.md is the canonical Codex CLI entry), but
+# downstream projects scaffolded before its removal still have the file
+# and rely on this script to keep its routing block in sync.
+if (repo_root / ".codex" / "instructions.md").exists():
+    shell_targets.append(".codex/instructions.md")
+for rel in shell_targets:
     path = repo_root / rel
     targets.append((path, always_start, always_end, always_shell_block))
     targets.append((path, bootstrap_start, bootstrap_end, bootstrap_block))
