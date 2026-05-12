@@ -56,7 +56,16 @@ Run these passes **in order** — they form a "categorize before splitting" pipe
    - Topic-tag duplicates: `grep -oP '\*\*\[([^\]]+)\]' <file> | sort | uniq -c | sort -rn` lists `**[topic]**` tag frequency; tags with high counts are merge candidates.
    - Near-duplicates (different wording, same root cause) — agent reads the candidate set and decides; this is where Tier 2 spends most of its tokens, and why it is rare.
 2. **Staleness scan** — are any entries about technology/patterns that have since been removed from the project? Delete stale entries or mark `<!-- DEPRECATED: reason, YYYY-MM -->`.
-3. **Categorize (before splitting)** — if a file still has > 10 entries after dedup, group them under H2 categories before considering a split. Promote frequent `**[topic]**` tags to `## CategoryName` headings; rename individual entries from `## **[topic]** title` to `### **[topic]** title` under the right category. This usually buys another 2–3× growth before a physical split is needed, and makes future dedup scans O(category) instead of O(file) — which lowers Tier-1 token cost too.
+3. **Categorize (before splitting)** — if a file still has > 10 entries after dedup, group them under H2 categories before considering a split. This usually buys another 2–3× growth before a physical split is needed, and makes future dedup scans O(category) instead of O(file) — which lowers Tier-1 token cost too. **Categorization differs by file type:**
+
+   - **Entries-style files** (`references/gotchas.md` / `references/*pitfall*.md`): promote frequent `**[topic]**` tags to `## CategoryName` headings; rename individual entries from `## **[topic]** title` to `### **[topic]** title` under the right category. The tag frequency grep `grep -oP '\*\*\[([^\]]+)\]' <file> | sort | uniq -c | sort -rn` tells you which tags deserve promotion.
+
+   - **Rules files** (`rules/*.md`): rules don't carry `**[topic]**` tags, so categorize by **the natural axis the rules already divide on**. Pick exactly one axis per file — mixing axes makes the file harder to navigate, not easier; genuinely needing two axes is a split signal (Step 6), not a categorization signal. Three common axes:
+     - **Module / surface boundary** — e.g. `web` vs `biz` vs `core` vs `dal` for a backend; `routes` vs `forms` vs `data-flow` for a frontend.
+     - **Responsibility / lifecycle phase** — e.g. routing → validation → response wrapping → exception handling for an HTTP layer.
+     - **Trigger scenario** — e.g. "when adding a new Controller" / "when changing an existing contract" / "when extending DAL".
+
+     Re-anchor scattered bullets under the chosen H2. If a single H2 grows past ~30 bullet-rules, extract that section into its own sub-rule file via Step 6 instead of letting one category dominate.
 4. **Structural scan** — after categorizing, re-anchor any remaining orphan entries under the correct H2 section.
 5. **Tag audit** — do all entries carry `**[topic]**` tags? If > 50% are untagged, tag them in this same pass while attention is on the file.
 6. **Split (last resort)** — only after dedup + categorize. Split when a single H2 category itself crosses the entry/line trigger, or when categories have genuinely different audiences (e.g. backend rules vs. frontend rules). Each resulting file should still be ≥ 30 lines after split (otherwise merge candidates).

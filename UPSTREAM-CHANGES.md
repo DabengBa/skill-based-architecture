@@ -36,6 +36,29 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-12 - rules/*.md categorization guidance in maintain-docs Step 3
+
+- Upstream commit: pending in this working tree
+- Changed areas: `templates/skill/workflows/maintain-docs.md`,
+  `UPSTREAM-CHANGES.md`
+- Why it matters: Tier 2 § Step 3 "Categorize (before splitting)"
+  previously described categorization only for entries-style files
+  (gotchas / pitfalls — promote `**[topic]**` tags to H2 categories).
+  For `rules/*.md`, which don't carry tags, the workflow gave no
+  concrete recipe — agents crossing the Tier 2 trigger had to invent
+  a grouping axis from scratch every time. Step 3 now distinguishes
+  the two file types and articulates three common axes for
+  `rules/*.md`: module / surface boundary, responsibility / lifecycle
+  phase, and trigger scenario, with a "pick exactly one axis per file"
+  constraint. Mixing axes is reframed as a split signal (Step 6), not
+  a categorization signal. Single H2 growing past ~30 bullet-rules is
+  the recommended sub-rule extraction threshold.
+- Downstream refresh guidance: pull the updated
+  `workflows/maintain-docs.md` as a mechanism-owned file. No migration
+  required for existing rule files; the new guidance only fires when
+  a `rules/*.md` crosses the Tier 2 bullet-rule trigger (> 25
+  bullet-level rules) or when the user explicitly asks for cleanup.
+
 ## 2026-05-11 - Tiered maintenance triggers (bash gate / AAR scan / full pass)
 
 - Upstream commit: pending in this working tree
