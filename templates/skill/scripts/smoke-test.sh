@@ -509,20 +509,12 @@ if [[ -f "$SKILL_MD" ]]; then
     fi
   fi
 
-  # 4h. Description scope + multi-skill overlap checks.
-  DESC_CHECK="$SKILL_DIR/scripts/check-description-routing.sh"
-  if [[ ! -f "$DESC_CHECK" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    DESC_CHECK="$SCRIPT_DIR/check-description-routing.sh"
-  fi
-  if [[ -f "$DESC_CHECK" ]]; then
-    if CHECK_OUTPUT=$(bash "$DESC_CHECK" "$NAME" 2>&1); then
-      pass "description routing discipline check passed"
-    else
-      fail "description routing discipline check failed"
-      printf '%s\n' "$CHECK_OUTPUT" | sed 's/^/       /' | head -40
-    fi
-  fi
+  # 4h. (removed 2026-05-19) Description scope + multi-skill overlap.
+  #     The dedicated script `check-description-routing.sh` was deleted —
+  #     it parsed 125 lines of YAML to surface things a human eyeballs in
+  #     30 seconds when re-reading `description`. Manual re-read is the
+  #     guidance now; if you genuinely cannot tell whether description is
+  #     too narrow/broad, that is content judgment, not a tooling gap.
 fi
 
 fi  # end section 4
@@ -715,7 +707,7 @@ fi  # end section 7
 # Catches "path drift": agent renames or deletes a file but only updates SOME
 # of the references to it. Section 5 covers the generated Common Tasks summary only;
 # this section scans every relative markdown link [text](path) across all skill
-# .md files and verifies each target exists. Companion to audit-references.sh
+# .md files and verifies each target exists. Companion to audit-orphans.sh
 # (which finds *orphan* files — files no one links to). Together they cover
 # both directions of drift: broken outbound links here, dangling inbound links
 # there.

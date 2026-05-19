@@ -12,14 +12,11 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 |---|---|---|
 | Routing source-of-truth (downstream) | Did SKILL.md / shells drift from `routing.yaml`? | `sync-routing.sh --check` |
 | Shell + activation source-of-truth (self-hosting) | Did this repo's root shells drift from generated content, or `skill.yaml` description drift from `SKILL.md`? | `check-self-shells.sh` |
-| Routing trigger coverage | Do `trigger_examples` actually route to the intended workflow? | `check-self-scenarios.sh` (upstream), `test-trigger.sh` (downstream) |
-| Description activation | Is `description` over-broad, too narrow, or trigger-phrase-less? | `check-description-routing.sh` |
+| Routing trigger coverage | Do `trigger_examples` actually route to the intended workflow? | `check-self-scenarios.sh` (upstream-only) |
 | Structural budgets | SKILL.md ≤ 100 lines, FILL markers, placeholder residue | `smoke-test.sh` |
 | Growth pressure | Are files growing past evaluation thresholds? | `check-growth-health.sh` *(report-only)* |
-| Route-path activation | Is every `routing.yaml` `required_reads` reachable? | `audit-route-paths.sh` *(report-only)* |
-| Reference orphans | References pointed at by no route or workflow | `audit-references.sh --orphans` |
+| Orphan rules / references | `rules/` or `references/` files with zero inbound links | `audit-orphans.sh` |
 | Cross-references | Broken inline markdown link targets | `check-cross-references.sh` |
-| External fact freshness | `<!-- external-fact: verified=YYYY-MM-DD -->` markers stale | `check-external-facts.sh` |
 | **Content presence (downstream)** | Did downstream forget to copy a mandatory upstream section/phrase? | `check-version-conformance.sh <skill> --conformance <upstream-clone>/templates/skill/conformance.yaml` |
 | **Content presence (upstream-canon)** | Does THIS repo still teach what its templates promise? | `check-version-conformance.sh . --conformance references/self-hosting-conformance.yaml` |
 | UPSTREAM-CHANGES coverage | Downstream-facing edit landed without an update note? | `check-upstream-changes.sh` *(upstream pre-commit)* |
@@ -37,13 +34,9 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | `skill-asset` | `scripts/` | Both — AAR consolidation helper (ships to downstream) |
 | `smoke-test.sh` | `templates/skill/scripts/` | Downstream — Phase-aware structural gate |
 | `sync-routing.sh` | `templates/skill/scripts/` | Downstream — `routing.yaml` is the source of truth |
-| `check-description-routing.sh` | `templates/skill/scripts/` | Downstream + upstream (works on `.`) |
 | `check-growth-health.sh` | `templates/skill/scripts/` | Downstream + upstream |
-| `check-external-facts.sh` | `templates/skill/scripts/` | Downstream + upstream |
-| `audit-references.sh` | `templates/skill/scripts/` | Downstream + upstream |
-| `audit-route-paths.sh` | `templates/skill/scripts/` | Downstream + upstream (with `--manifest`) |
+| `audit-orphans.sh` | `templates/skill/scripts/` | Downstream + upstream — finds zero-inbound rules/references files |
 | `check-cross-references.sh` | `templates/skill/scripts/` | Downstream |
-| `test-trigger.sh` | `templates/skill/scripts/` | Downstream (Cursor-flavored) |
 | `check-version-conformance.sh` | `templates/skill/scripts/` | Both — runs against any skill root + manifest |
 | `_parse_conformance.py` | `templates/skill/scripts/` | Helper for `check-version-conformance.sh` (no standalone use) |
 
@@ -56,12 +49,14 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | Upstream maintainer added a `must_contain` to `templates/skill/conformance.yaml` | Mirror the same anchor into `references/self-hosting-conformance.yaml` if a self-hosting file teaches the same protocol |
 | Downstream just scaffolded | `bash skills/<name>/scripts/smoke-test.sh <name>` |
 | Downstream `update-upstream` | `smoke-test.sh` + `check-version-conformance.sh <skill> --conformance $tmp/upstream/templates/skill/conformance.yaml` (use upstream's manifest, NOT local — the local file is a snapshot from initial scaffold) |
-| Downstream doc edit | `audit-references.sh --orphans`, `check-cross-references.sh`, `check-external-facts.sh` |
-| Suspected description hit-rate problem | `check-description-routing.sh`, then `test-trigger.sh` |
+| Downstream doc edit | `audit-orphans.sh`, `check-cross-references.sh` |
+| Suspected description hit-rate problem | Read SKILL.md description aloud; does it use the user's actual phrases? `routing.yaml` `trigger_examples` is the place to add more — no script substitute for human re-read. |
 
-### Anti-pattern: bypass the matrix and add a 12th orphan check
+### Anti-pattern: bypass the matrix and add a new orphan check
 
-Every check above has a one-sentence "what gap it covers". Before adding a new check script, write the gap in that form and confirm none of the existing eleven already cover it. If yes, extend the existing one. If genuinely new, add it AND a row in this matrix AND wire it into `check-all.sh` in the same commit — the conformance check itself is the cautionary tale: it shipped a release ahead of being wired in, so for one cycle it was "stored, not activated" (Pitfall #4 in [SKILL.md](../SKILL.md)).
+Every check above has a one-sentence "what gap it covers". Before adding a new check script, write the gap in that form and confirm none of the existing ones already cover it. If yes, extend the existing one. If genuinely new, add it AND a row in this matrix AND wire it into `check-all.sh` in the same commit — the conformance check itself is the cautionary tale: it shipped a release ahead of being wired in, so for one cycle it was "stored, not activated" (Pitfall #4 in [SKILL.md](../SKILL.md)).
+
+The reverse anti-pattern is just as expensive: shipping a script that *expects a protocol no one will follow* (e.g. requiring authors to hand-mark each external fact with a `<!-- verified=YYYY-MM-DD -->` comment so a script can check freshness). If the precondition is a discipline you cannot reasonably enforce, the script will run empty forever — that is "stored, not activated" in script form. Five such scripts (`check-external-facts.sh`, `test-trigger.sh`, `check-description-routing.sh`, `audit-references.sh`, `audit-route-paths.sh`) were removed in May 2026; see UPSTREAM-CHANGES for context before reintroducing anything similar.
 
 ---
 

@@ -97,7 +97,6 @@ tasks:
       - SKILL.md
       - references/layout.md
       - references/multi-skill-routing.md
-      - templates/skill/scripts/check-description-routing.sh
     workflow: references/layout.md#description-as-trigger-condition
     trigger_examples:
       - description 命中率太低

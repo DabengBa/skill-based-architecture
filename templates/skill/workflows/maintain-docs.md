@@ -92,17 +92,9 @@ Run these passes **in order** — they form a "categorize before splitting" pipe
 
 If you find yourself running Tier 2 more than once a quarter on the same file, the file is the wrong shape — split it (step 6 above) so each subfile stays under its own threshold.
 
-## Step 1c: External Fact Freshness
-
-External vendor/tool/runtime facts age differently from project rules. A rule like "tool X scans path Y" can go stale even when this repo never changes.
-
-1. Facts about external tools, official behavior, hosted services, model names, APIs, CLIs, or framework semantics must carry a nearby marker:
-   `<!-- external-fact: verified=YYYY-MM-DD source=https://official.example/docs -->`
-2. Run `bash scripts/check-external-facts.sh` from the skill root, or `bash skills/{{NAME}}/scripts/check-external-facts.sh .` from the repo root.
-3. If a marker is older than the freshness window, refresh from the primary source and update the date, or delete/scope the stale claim.
-4. Do not mark project-internal facts; freshness for those is handled by code inspection, tests, and cross-reference checks.
-
 A gotchas file that's too long to scan quickly defeats its purpose — the whole point is "brief, scannable list." The same applies to any file that agents read as part of task routing.
+
+> **Note (2026-05-19):** an earlier draft of this workflow added a "Step 1c: External Fact Freshness" requiring authors to hand-mark each vendor/tool/runtime fact with `<!-- external-fact: verified=YYYY-MM-DD source=... -->` and run `check-external-facts.sh`. That section was removed along with the script — no project ever enforced the marker, so the script ran empty. If you need to flag a fact as volatile, prefer the AAR's "Outdated/obsolete rule" question (`update-rules.md`) on the next task that touches the same file: human re-read at the right moment beats a marker no one writes.
 
 ## Step 2: Evaluate — Should You Split?
 

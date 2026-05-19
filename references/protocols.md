@@ -136,7 +136,7 @@ Phase 8 checks structural correctness, but doesn't verify the skill actually act
 
 A description that fails these checks may silently never fire — the skill exists but the Agent never picks it up.
 
-Run `scripts/check-description-routing.sh` after editing frontmatter. It catches obvious over-broad descriptions, workflow keyword stuffing, duplicate quoted trigger phrases across multiple skills, and multiple `primary: true` skills.
+Re-read the `description` block aloud after editing frontmatter. Listen for over-broad scope, workflow keyword stuffing, missing quoted phrases in the user's actual language, and (in multi-skill repos) duplicate trigger phrases shared with another skill. The earlier `check-description-routing.sh` script was removed in 2026-05 — it parsed 125 lines of YAML to surface things a human eyeballs in 30 seconds; the discipline is content judgment, not a tooling gap.
 
 ### Routing Coverage Check
 

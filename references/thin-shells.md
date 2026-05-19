@@ -141,7 +141,7 @@ The script branches on `$CLAUDE_HARNESS` / `$SESSION_HARNESS` and emits the JSON
 
 **Token policy:** inject navigation, not the knowledge base. Single-skill repos can inject the only `skills/*/SKILL.md`; multi-skill repos should inject `skills/router/SKILL.md` or set `SKILL_ROUTER_PATH`. Do not inject all skill files.
 
-Long workflows can also install [`templates/hooks/workflow-state`](../templates/hooks/workflow-state). It reads `.skill-workflow-state` and injects only the matching `[workflow-state:*]` block from the active workflow, so `/compact` recovery keeps the current phase without replaying the full dossier.
+Long workflows can also install [`templates/hooks/workflow-state`](../templates/hooks/workflow-state). It reads `.skill-workflow-state` and injects only the matching `[workflow-state:*]` block from the active workflow, so `/compact` recovery keeps the current phase without replaying the full plan directory.
 
 ## Context Hygiene Playbook
 

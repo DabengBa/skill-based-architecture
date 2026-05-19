@@ -106,7 +106,7 @@ Guidelines:
 - **Include activation conditions** — describe the context, not just the action
 - **Do not enumerate workflows** — `fix-bug`, `release`, `maintain-docs`, etc. belong in Common Tasks unless they identify a separate domain skill
 
-Run `scripts/check-description-routing.sh` after changing frontmatter; it catches obvious over-broad descriptions, workflow keyword stuffing, and duplicate trigger phrases across multiple skills.
+Re-read the `description` block aloud after changing frontmatter. Listen for over-broad scope, workflow keyword stuffing, and (in multi-skill repos) duplicate trigger phrases between skills. No script substitutes for this judgment.
 
 The template above uses a two-tier structure:
 

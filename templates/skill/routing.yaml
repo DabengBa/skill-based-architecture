@@ -36,7 +36,7 @@ tasks:
     labels:
       en: Add / refactor / optimize non-bug behavior
       zh: 新增 / 重构 / 优化非 bug 行为
-    route: read task-relevant `rules/*.md` + follow `workflows/change-managed.md`
+    route: read task-relevant `rules/*.md` + follow `workflows/change-managed.md`; for refactors that touch ≥5 independent usage points, use `workflows/refactor-fanout.md` instead
     required_reads:
       - rules/*.md
     workflow: workflows/change-managed.md
@@ -44,6 +44,19 @@ tasks:
       - 优化这个模块
       - 帮我加一个功能
       - refactor this flow
+  - id: refactor-fanout
+    labels:
+      en: Refactor across many usage points (rename / change signature / migrate)
+      zh: 跨多处的同型重构(改名 / 改签名 / 迁移)
+    route: follow `workflows/refactor-fanout.md`; fan-out the multi-site change phase to parallel subagents
+    required_reads:
+      - rules/coding-standards.md
+    workflow: workflows/refactor-fanout.md
+    trigger_examples:
+      - 把这个函数改名,所有地方都跟着改
+      - rename X across the codebase
+      - extract this interface, update all implementers
+      - 这个 API 签名改了,所有 caller 也改一下
   - id: plan-feature
     labels:
       en: Plan a complex feature or long-running change

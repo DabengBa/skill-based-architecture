@@ -18,13 +18,10 @@ templates/
 │   └── scripts/              → automated verification (lives inside the skill)
 │       ├── smoke-test.sh                (fully automated structural + routing checks)
 │       ├── sync-routing.sh              (generate/check routing summary + shell bootstraps from routing.yaml)
-│       ├── test-trigger.sh              (description trigger rate testing)
-│       ├── check-description-routing.sh (description scope + multi-skill overlap checks)
 │       ├── check-cross-references.sh    (workflows → rules/references staleness heuristic)
-│       ├── check-external-facts.sh      (source-date freshness check for volatile external facts)
 │       ├── check-growth-health.sh       (non-blocking growth pressure report)
-│       ├── audit-route-paths.sh         (route-to-reference activation path report)
-│       └── audit-references.sh          (orphan + low-inbound detection for rules/ and references/)
+│       ├── audit-orphans.sh             (rules/ + references/ files with zero inbound links)
+│       └── check-version-conformance.sh (downstream contract: required sections / files present)
 ├── shells/                   → becomes repo-root entry files
 │   ├── AGENTS.md / CLAUDE.md / CODEX.md / GEMINI.md
 │   ├── .cursor/rules/workflow.mdc
@@ -70,13 +67,10 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/workflows/update-rules.md`, `maintain-docs.md`, `subagent-driven.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `protocol-blocks/*` | ≤ 40 lines each | One idea per block |
 | `skill/SKILL.md.template` | dual budget: description ≤ 25 lines + body ≤ 90 lines | Same hard cap as downstream SKILL.md (smoke-test enforces both separately). description carries quoted trigger phrases; body navigates rules/workflows/references. Keep each shorter when possible. |
-| `skill/scripts/smoke-test.sh` | ≤ 850 lines (was 800; raised 2026-05-12 for ledger gate). **Next addition forces extraction** into a `check-<concern>.sh` companion script, following the established pattern of `check-description-routing.sh` / `sync-routing.sh`. | Structural test harness; keep scenario behavior out of this script |
-| `skill/scripts/test-trigger.sh` | ≤ 360 lines | Trigger-rate helper; split if it starts owning routing policy |
+| `skill/scripts/smoke-test.sh` | ≤ 850 lines (was 800; raised 2026-05-12 for ledger gate). **Next addition forces extraction** into a `check-<concern>.sh` companion script. | Structural test harness; keep scenario behavior out of this script |
 | `skill/scripts/sync-routing.sh` | ≤ 320 lines | Generator/checker for routing.yaml-derived blocks; keep dependency-free |
-| `skill/scripts/audit-route-paths.sh` | ≤ 280 lines | Report route-to-reference activation paths; keep it report-first unless a project opts into strict mode |
 | `skill/scripts/check-growth-health.sh` | ≤ 220 lines | Non-blocking pressure report for line counts, route counts, and script/workflow budgets |
-| `skill/scripts/check-description-routing.sh` | ≤ 160 lines | Conservative semantic guard for description scope and multi-skill trigger overlap |
-| `skill/scripts/check-external-facts.sh` | ≤ 120 lines | Small freshness gate; keep network-free and marker-based |
+| `skill/scripts/audit-orphans.sh` | ≤ 120 lines | Zero-inbound report for `rules/` + `references/`; heuristic, run before deleting flagged files |
 | `skill/references/gotchas.md` | ≤ 25 lines (seed) | MUST stay near-empty — content grows post-deployment |
 | `skill/references/behavior-failures.md` | ≤ 25 lines (seed) | MUST stay near-empty — agent-behavior violations logged via AAR |
 
@@ -125,6 +119,6 @@ Run these when templates change:
 3. **Loader-safety audit** — `find templates -name 'SKILL.md'` must return no rows; template sources use `SKILL.md.template` until Quick Start materializes them downstream.
 4. **FILL audit** — `grep -r 'FILL:' templates/` must return expected lines for judgment-filled templates (`rules/`, `references/gotchas.md`, `SKILL.md.template`, `routing.yaml`, project-specific workflow comments). Thin shells may rely on mechanical placeholders / generated markers instead of `FILL:`.
 5. **Routing manifest audit** — run `bash templates/skill/scripts/sync-routing.sh templates/skill --check`; then instantiate a sample, fill `routing.yaml`, run `bash skills/<name>/scripts/sync-routing.sh <name> --check`; generated Always Read lists, summaries, and bootstraps must match.
-6. **Route-path audit** — run `bash skills/<name>/scripts/audit-route-paths.sh <name>` to report which routes can activate each `rules/` and `references/` file. Start report-only; opt into `--strict` only after the project has stable route coverage.
+6. **Orphan audit** — run `(cd skills/<name> && bash scripts/audit-orphans.sh)` to surface `rules/` or `references/` files with zero inbound links. Add an activation pointer or delete the file; read it before deleting.
 7. **Homogeneity spot-check** — run Quick Start against two toy projects of very different types (Go CLI + Next.js site) and `diff -r` the output. Skeleton files should be near-identical; `rules/`, `gotchas.md`, `routing.yaml`, `SKILL.md` Always Read + Common Tasks must **not** be identical. If they are, the template overreached.
 8. **Upstream check suite** — run `bash scripts/check-all.sh` from this upstream repo. At minimum it includes the upstream change-note gate: if downstream-facing upstream files changed, the same diff must update `UPSTREAM-CHANGES.md`; if there is no downstream refresh impact, record that explicitly there.

@@ -14,7 +14,7 @@
 
 1. Restate the bug scope and affected behavior
 2. Read the minimum necessary files — do not read files unrelated to the symptom
-3. Identify the root cause — not the first plausible cause, the actual one
+3. Identify the root cause — not the first plausible cause, the actual one. **If 2+ plausible hypotheses survive a 30-second think**, see § Hypothesis Fan-out below before reading more code.
 4. Implement the smallest correct fix — no "while we're here" cleanups
 5. Run Fix Impact Analysis — confirm the change did not silently break callers, data flow, or compatibility
 6. Validate behavior (tests pass, manual reproduction no longer triggers the bug)
@@ -22,6 +22,30 @@
 8. If the recording threshold passes, update the appropriate `rules/`, `references/`, or `workflows/` file before ending the task
 9. Records must pass the generalization check — write as reusable knowledge, not project-specific narratives
 10. If the lesson is costly and task-relevant, also activate it in workflow/routing, not only store in `references/`
+
+## Hypothesis Fan-out (optional, for ambiguous bugs)
+
+When the first read leaves 2+ plausible root causes still alive, serial elimination is the wrong strategy — by the time hypothesis #4 hits, the main context is polluted with three rabbit holes.
+
+**Trigger** — fan out only when **all** of:
+
+- ≥ 2 hypotheses are concrete enough to be a single-sentence claim
+- Each one can be **independently verified** by reading a different region of the codebase / a different log slice / a different external check
+- Inspecting them all in one context would consume > 30% of remaining budget
+
+If any condition fails, just inline the most likely one. Fan-out has dispatch overhead.
+
+**How to fan out** — for each hypothesis, dispatch one subagent (per `workflows/subagent-driven.md` Phase 1 contract format):
+
+- **Goal**: confirm or refute the claim "*<single-sentence hypothesis>*"
+- **Inputs**: the specific files / logs / endpoints that would prove or disprove it (do not pass the bug description as a whole — pass only the slice that matters for this hypothesis)
+- **Outputs**: a short verdict — "confirmed (evidence: …)" / "refuted (evidence: …)" / "inconclusive (need: …)"
+- **Forbidden Zones**: any file edit; this is read-only investigation
+- **Acceptance Criteria**: the verdict cites at least one specific file:line or log line as evidence
+
+Dispatch in parallel. The main agent reads only the verdicts (not the supporting code traversal each subagent did) and chooses which hypothesis to act on at Step 4.
+
+**Degraded harness (Cursor / Codex / Gemini)**: skip the literal dispatch, but still write down the list of hypotheses + the verification region for each before reading code. The discipline of "decide what would refute each, before reading" survives even without subagents.
 
 ## Fix Impact Analysis
 

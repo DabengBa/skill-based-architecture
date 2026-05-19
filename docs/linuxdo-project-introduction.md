@@ -323,11 +323,10 @@ templates/
 ```bash
 bash skills/<name>/scripts/smoke-test.sh <name>
 bash skills/<name>/scripts/sync-routing.sh <name> --check
-bash skills/<name>/scripts/check-description-routing.sh <name>
-bash skills/<name>/scripts/test-trigger.sh <name>
+(cd skills/<name> && bash scripts/audit-orphans.sh)
 ```
 
-脚本不能替代理解，但能抓住大量“忘了改 / 改漏了 / 多处漂移”的问题。
+脚本不能替代理解，但能抓住大量“忘了改 / 改漏了 / 多处漂移”的问题。description 写得好不好这种事仍然要靠朗读判断 —— 早期版本写过 `check-description-routing.sh` / `test-trigger.sh` 做这件事，最后发现没人会真的 cron 跑 trigger 测试，已经移除。
 
 ---
 

@@ -156,13 +156,10 @@ check_scripts() {
     [[ -f "$f" ]] || continue
     base="$(basename "$f")"
     case "$base" in
-      smoke-test.sh) max=800 ;;
-      test-trigger.sh) max=360 ;;
+      smoke-test.sh) max=850 ;;
       sync-routing.sh) max=320 ;;
-      audit-route-paths.sh) max=280 ;;
       check-growth-health.sh) max=220 ;;
-      check-description-routing.sh) max=160 ;;
-      check-external-facts.sh) max=120 ;;
+      audit-orphans.sh) max=120 ;;
       *) max=220 ;;
     esac
     check_lines "$f" "$max" "script/$base"

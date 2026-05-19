@@ -107,16 +107,13 @@ bash "skills/$NAME/scripts/smoke-test.sh" "$NAME"
 # Routing manifest drift check (also run by smoke-test when routing.yaml exists)
 bash "skills/$NAME/scripts/sync-routing.sh" "$NAME" --check
 
-# Description scope + multi-skill overlap
-bash "skills/$NAME/scripts/check-description-routing.sh" "$NAME"
-
-# (Optional) Test skill trigger rate — checks if your description actually activates the skill
-bash "skills/$NAME/scripts/test-trigger.sh" "$NAME"
+# (Optional) Surface rules/ or references/ files with zero inbound links
+(cd "skills/$NAME" && bash scripts/audit-orphans.sh)
 ```
 
-`smoke-test.sh` covers everything: file existence, line count budgets, placeholder/FILL residue, description word count and trigger phrases, description scope / multi-skill overlap, routing-manifest drift, routing completeness (parses Common Tasks and verifies every referenced file exists), description consistency between SKILL.md and Cursor entry, and shell bootstrap consistency. Zero manual input needed.
+`smoke-test.sh` covers everything: file existence, line count budgets, placeholder/FILL residue, description word count and trigger phrases, routing-manifest drift, routing completeness (parses Common Tasks and verifies every referenced file exists), description consistency between SKILL.md and Cursor entry, and shell bootstrap consistency. Zero manual input needed.
 
-`test-trigger.sh` tests description activation using quoted trigger phrases plus `routing.yaml` trigger examples, then either runs them through `claude -p` (if CLI is available) or falls back to static analysis. Route examples are smoke samples, not a requirement to list every workflow in `description`. This is most useful for Cursor users since Cursor relies on description-based semantic matching.
+For description-quality judgment (too narrow / too broad / weak trigger phrases) — re-read the `description` block aloud and check it uses the user's actual phrasing. No script substitutes for that.
 
 For complex migrations (large projects, heavily scattered rules), follow [`workflows/full-migration.md`](workflows/full-migration.md) for the Phase 1–9 process.
 

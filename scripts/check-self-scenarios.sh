@@ -79,8 +79,7 @@ check_scenario \
   "references/layout.md#description-as-trigger-condition" \
   "SKILL.md" \
   "references/layout.md" \
-  "references/multi-skill-routing.md" \
-  "templates/skill/scripts/check-description-routing.sh"
+  "references/multi-skill-routing.md"
 
 check_scenario \
   "downstream upstream refresh" \

@@ -94,7 +94,7 @@ Agent 会从 [`templates/`](templates/) 复制预制 scaffold 到 `skills/<name>
 
 - **两层路由**:`SKILL.md` 维护一个生成的 **Always Read** 列表;**Common Tasks** 仅在需要时把 agent 路由到额外文件。下游用 `routing.yaml` 作可编辑的单一路由源。
 - **薄壳 + 路由 bootstrap**:每个入口文件嵌入指向 `routing.yaml` 的短 bootstrap。路由表不在每个 shell 里复制 —— 自然语言指令在长会话压缩中会丢失。
-- **description 即触发条件**:用用户实际语言的领域级激活短语,不是 workflow 关键字堆砌。`check-description-routing.sh` 校验。
+- **description 即触发条件**:用用户实际语言的领域级激活短语,不是 workflow 关键字堆砌。改完后**朗读一遍** —— 听起来不像真用户就重写,脚本替代不了这件事。
 - **Session Discipline + Task Closure**:同一 session 每个新任务重读 SKILL.md;非小任务以 30 秒 AAR + 记录阈值结束,不允许"测试通过=完成"。
 - **自维护**:行数信号触发评估而非自动操作;split/merge 流程 + 新鲜度检查保持文档精简。
 - **跨 harness**:Cursor、Claude Code、Codex、Windsurf、Gemini、OpenCode、AGENTS.md 类工具均兼容。

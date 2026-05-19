@@ -54,7 +54,7 @@ description: Use when the user asks to "add a UI page", "style a component", "fi
 description: Use when the user asks to "add a content page", "edit article", "publish draft", ...
 ```
 
-**Check:** run `scripts/check-description-routing.sh` or grep each skill's trigger phrases in every supported user language. If two skills share a phrase verbatim, rewrite one.
+**Check:** grep each skill's quoted trigger phrases in every supported user language: `grep -h '"' skills/*/SKILL.md | sort | uniq -d`. Any phrase appearing in two skills → rewrite one. (The earlier `check-description-routing.sh` did this and more; it was removed 2026-05 in favor of a one-line grep + human re-read.)
 
 ## Shared resources — where they live in a multi-skill repo
 

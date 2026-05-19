@@ -15,11 +15,11 @@ If something in here turns out to be load-bearing — i.e. an agent making a fut
 
 ## File format
 
-Plans take **either** of two shapes — pick by complexity, per `templates/skill/workflows/plan-feature.md`:
+Plans take **either** of two shapes — pick by whether one file can hold the work:
 
 ### Simple plan — one file `YYYY-MM-DD-slug.md`
 
-Use when the work is a focused refactor or small feature: one or two files touched, no separate research / evidence material, no separate checklist needed.
+Default. Use when the work is a focused refactor or small feature: one or two files touched, no separate research material that wants its own file.
 
 ```yaml
 ---
@@ -37,20 +37,16 @@ Body: free form. Common sections — context / problem / options considered / ch
 
 ### Complex plan — directory `YYYY-MM-DD-slug/`
 
-Use when the work needs separate PRD / research / evidence material (see `templates/skill/workflows/plan-feature.md § Complex Task Dossier`). Frontmatter lives in the directory's `prd.md`:
+Use when one file genuinely cannot hold the work (extensive research notes, long evidence quotes, multiple parallel investigations). Required structure:
 
 ```text
 docs/plans/YYYY-MM-DD-slug/
-├── prd.md          ← frontmatter goes here
-├── decisions.md    ← intra-plan ADR-lite, mutable during planning; load-bearing entries promoted into rules/ or references/ on close
-├── checklist.md
-├── research/
-├── evidence/
-├── implement.jsonl
-└── check.jsonl
+└── prd.md          ← frontmatter goes here; everything else is your call
 ```
 
-`decisions.md` inside a plan dossier is **intra-plan and mutable** during planning — it records local trade-offs as you make them. When the plan reaches `status: done`, any entry that **binds future work** gets lifted into the right live location (see next section). Local-only decisions stay in the dossier and freeze with it.
+That is the entire required structure. Add whatever else this specific task needs — a decisions log, research notes, evidence snippets, a checklist — using filenames that fit the work, **not** a canonical schema. If `prd.md` is the only file that ever exists in the directory, the plan is correct and complete.
+
+Resist pre-creating empty files. Add a sibling only when `prd.md` itself starts to bloat with content that wants to live separately. **Don't promote past behavior into a contract**: if past plans happened to use `decisions.md` or `research/`, that does not mean the next plan owes them.
 
 ## Lifecycle
 
@@ -69,7 +65,7 @@ Once a file moves out of `draft` / `executing`, treat it as read-only.
 
 ## When a plan closes — where load-bearing content goes
 
-Sort each surviving conclusion from `decisions.md` (or the simple plan's body) into one of three buckets. There is no fourth bucket called "decisions" — that was tried and removed; see [REFERENCE.md](../../REFERENCE.md) by-task entry for context.
+Sort each surviving conclusion (wherever in the plan directory it landed — `prd.md`, a sibling file, or a simple plan's body) into one of three buckets. There is no fourth bucket called "decisions" — that was tried and removed; see [REFERENCE.md](../../REFERENCE.md) by-task entry for context.
 
 | Conclusion shape | Lives in | Why this location |
 |---|---|---|

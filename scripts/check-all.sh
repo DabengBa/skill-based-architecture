@@ -16,13 +16,10 @@ Runs the self-hosting upstream maintenance checks used before commit/push:
   - template routing manifest check
   - self-hosting shells + activation check
   - whitespace diff check
-  - description routing check
   - growth health report
-  - template and self-hosting route-path activation reports
   - self-hosting scenario checks
-  - external-fact freshness check
   - self-hosting phase 7 smoke test
-  - orphan reference audit
+  - template + self-hosting orphan audit (rules/ + references/)
   - template content conformance (downstream contract)
   - self-hosting content conformance (upstream-canon)
 
@@ -76,14 +73,10 @@ run "upstream supersedes refs check" bash scripts/check-upstream-supersedes.sh
 
 run "template routing manifest check" bash templates/skill/scripts/sync-routing.sh templates/skill --check
 run "self-hosting shells + activation check" bash scripts/check-self-shells.sh
-run "description routing check" bash templates/skill/scripts/check-description-routing.sh .
 run "growth health report" bash templates/skill/scripts/check-growth-health.sh .
-run "template route-path activation report" bash templates/skill/scripts/audit-route-paths.sh templates/skill
-run "self-hosting route-path activation report" bash templates/skill/scripts/audit-route-paths.sh . --manifest references/self-hosting-routing.yaml
 run "self-hosting scenario checks" bash scripts/check-self-scenarios.sh
-run "external fact freshness check" bash templates/skill/scripts/check-external-facts.sh .
 run "self-hosting phase 7 smoke test" bash templates/skill/scripts/smoke-test.sh skill-based-architecture --phase 7
-run "reference orphan audit" bash templates/skill/scripts/audit-references.sh --orphans
+run "self-hosting orphan audit" bash templates/skill/scripts/audit-orphans.sh
 run "template content conformance" bash templates/skill/scripts/check-version-conformance.sh templates/skill
 run "self-hosting content conformance" bash templates/skill/scripts/check-version-conformance.sh . --conformance references/self-hosting-conformance.yaml
 

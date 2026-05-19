@@ -88,7 +88,7 @@ Agent behavior: Skill activates immediately on "Add a `/users/:id/orders` endpoi
 
 | Excuse | Reject |
 |---|---|
-| "The description reads naturally — the model will figure out activation" | Model bias is toward undertrigger; "naturally readable" ≠ "reliably activates". The quoted-trigger format is verified to raise activation rate in `test-trigger.sh` runs. |
+| "The description reads naturally — the model will figure out activation" | Model bias is toward undertrigger; "naturally readable" ≠ "reliably activates". Quoted trigger phrases in the user's actual language raise activation rate — re-read the description aloud and check whether you hear those phrases. |
 
 ---
 

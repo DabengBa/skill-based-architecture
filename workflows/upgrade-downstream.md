@@ -30,7 +30,7 @@ Upstream maintainers should run `bash scripts/check-upstream-changes.sh` before 
 4. Compare downstream vs upstream as the agent; do not ask the user to run or inspect diffs.
 5. Apply small patches that preserve local project knowledge.
 6. Ask the user only for semantic conflicts that cannot be resolved from code/docs evidence.
-7. Run `sync-routing.sh`, `smoke-test.sh`, `check-description-routing.sh`, and orphan checks.
+7. Run `sync-routing.sh`, `smoke-test.sh`, and `audit-orphans.sh`.
 8. Run `check-version-conformance.sh` against the upstream's manifest (not local) — see `update-upstream.md` step 9 for why.
 9. Report what upstream note entries were consulted, what upstream changes were adopted, what local customizations were preserved, and what was intentionally left untouched.
 

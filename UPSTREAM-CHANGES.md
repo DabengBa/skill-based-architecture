@@ -48,6 +48,157 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-19 - Surface subagent fan-out at the 3 highest-ROI downstream moments
+
+- Upstream commit: pending in this working tree
+- Changed areas: `templates/skill/workflows/fix-bug.md` (added § Hypothesis
+  Fan-out section + cross-ref from Step 3); `templates/skill/workflows/plan-feature.md`
+  (Step 3 + Step 7 now point at `subagent-driven.md` when scope justifies it);
+  `templates/skill/workflows/refactor-fanout.md` (new file — 3-phase
+  find-usage / fan-out / merge workflow for ≥5-site refactors);
+  `templates/skill/routing.yaml` (new `refactor-fanout` task route + cross-ref
+  from `change-managed` row); regenerated `templates/skill/SKILL.md.template`
+  + thin shells via `sync-routing.sh`.
+- Why it matters: downstream users' three highest-frequency tasks — fixing
+  bugs, planning features, doing N-point refactors — each have a clear
+  parallelism opportunity that the existing workflows did not surface:
+    1. **Bugs with 2+ live hypotheses** — serial elimination pollutes the
+       main context with rabbit holes. Fan-out gives each hypothesis its
+       own subagent and brings back only verdicts. Optional, triggers only
+       when ≥ 2 hypotheses + > 30% context budget at risk.
+    2. **Plans whose inspection reads > 20 files** — Step 3 (Inspect first)
+       was implicitly inline; now it explicitly suggests an `explore`
+       subagent and returning a structured summary instead. Optional.
+       Step 7 (Prepare execution context) now also flags that the
+       implementer is often itself a subagent, so the reading list is
+       planned as `Inputs` contracts rather than ad-hoc.
+    3. **N-point refactors (rename / signature change / interface
+       extract)** — new dedicated workflow because cut-points + parallel
+       batches + cross-batch consistency check are different mechanics from
+       generic `change-managed.md`. Routes only fire on ≥5-site refactors;
+       smaller refactors still use `change-managed.md`.
+  All three additions explicitly carry a "skip on degraded harness or when
+  scope is small" clause — the dispatch overhead must be paid back by real
+  context savings, otherwise it is reverse ROI. None of the three is added
+  to `conformance.yaml` as a required section: they are optimization
+  patterns, not safety mechanisms.
+- Downstream refresh guidance: pull the three workflow files
+  (`fix-bug.md` § Hypothesis Fan-out paragraph, `plan-feature.md` Step 3 +
+  Step 7 updates, `refactor-fanout.md` whole-file copy) and add the
+  `refactor-fanout` row to your local `routing.yaml` (in the order
+  upstream put it — after `change-managed`). Then run
+  `bash skills/<name>/scripts/sync-routing.sh <name>` to regenerate
+  SKILL.md and shells. If your project has never had a 5+-site refactor,
+  you can skip `refactor-fanout.md` and the routing row entirely — re-pull
+  when the situation actually appears. The fan-out / explore-subagent
+  recommendations are written as optional clauses, so downstream agents
+  on Cursor / Codex / Gemini (no native dispatch) can ignore them
+  without breaking the workflow shape.
+
+## 2026-05-19 - Strip complex-plan canonical schema; only `prd.md` required
+
+- Upstream commit: pending in this working tree
+- Changed areas: `templates/skill/workflows/plan-feature.md` (rewrote § Complex
+  Plan, § Complex Steps, workflow-state blocks, completion checklist),
+  `docs/plans/README.md` (rewrote complex-plan section), `templates/skill/conformance.yaml`
+  (removed `## Complex Task Dossier` / `decisions.md` / `implement.jsonl` /
+  `check.jsonl` from `must_contain`; added `## Complex Plan` + `prd.md` instead),
+  `references/thin-shells.md`, `TEMPLATES-GUIDE.md`,
+  `templates/skill/workflows/update-rules.md` (Plan-closure prompt phrasing).
+- Why it matters: the previous complex-plan ("dossier") schema mandated a
+  7-file structure — `prd.md`, `decisions.md`, `checklist.md`, `research/`,
+  `evidence/`, `implement.jsonl`, `check.jsonl` — for any plan that hit the
+  Complexity Gate. Audit found:
+    1. **0 plans ever used the dossier shape.** The one real plan in
+       `docs/plans/` (`2026-05-12-thin-shells-generator.md`) satisfied
+       multiple Complex triggers (architecture choice, external dependency,
+       multiple files) yet the author wrote it as a simple single file.
+       The protocol was rejected in its first contact with reality.
+    2. **No consumer for the JSONL files.** `implement.jsonl` and
+       `check.jsonl` chose JSONL over markdown, implying script consumption.
+       `grep -rln '\.jsonl' scripts/ templates/skill/scripts/` → 0 hits.
+       Same shape as the recently-removed `<!-- external-fact -->` marker:
+       protocol defined, no consumer, runs empty forever.
+    3. **Schema without template.** The simple plan had `_TEMPLATE.md`;
+       the dossier had only prose description in README + workflow. Authors
+       would have to hand-assemble 7 files from text instructions —
+       "stored, not activated" (SKILL.md Pitfall #4).
+    4. **100% cognitive tax on simple-plan authors.** Every reader of
+       `docs/plans/README.md` (~20% dossier content) and `plan-feature.md`
+       had to scan past the dossier rules to confirm "I don't need this".
+    5. **Conformance manifest locked the shape into a contract.** Downstream
+       skills running `check-version-conformance.sh` were required to
+       reproduce `## Complex Task Dossier` + JSONL filenames — propagating
+       the imagined-pain protocol as a hard contract.
+  The form (a directory with multiple files) is not the problem — a real
+  complex plan naturally wants more than one file. The problem was
+  pre-defining **which** files, with **canonical names**, under a **forced
+  trigger**, before any real complex plan existed to validate the schema.
+  Now: complex plan = directory + `prd.md` (only required file). Everything
+  else is the author's call; conventions earn the right to exist by
+  appearing in two or more real plans first.
+- Downstream refresh guidance: in your downstream copy of
+  `workflows/plan-feature.md`, replace § Complex Task Dossier (or whatever
+  your local equivalent is called) with the new minimum: directory +
+  `prd.md` required, no canonical names for siblings. Remove any local
+  copy of the JSONL row shape. Update completion checklist to drop hard
+  references to `decisions.md` / `implement.jsonl` / `check.jsonl` / `research/`
+  / `evidence/`. If your local `docs/plans/README.md` mirrors the upstream
+  shape, apply the same trim. If a project's actual past plans found a
+  sibling convention useful (e.g. a `decisions.md` log), that's fine —
+  but keep it as observed convention, not enforced contract; don't add it
+  to a local conformance manifest.
+
+## 2026-05-19 - Remove 5 imagined-pain template scripts; merge into `audit-orphans.sh`
+
+- Upstream commit: pending in this working tree
+- Changed areas: deleted `templates/skill/scripts/check-external-facts.sh`,
+  `templates/skill/scripts/test-trigger.sh`,
+  `templates/skill/scripts/check-description-routing.sh`,
+  `templates/skill/scripts/audit-references.sh`,
+  `templates/skill/scripts/audit-route-paths.sh`;
+  added `templates/skill/scripts/audit-orphans.sh` (84 lines, replaces
+  audit-references + audit-route-paths' high-value 80%);
+  updated `scripts/check-all.sh`, `scripts/check-self-scenarios.sh`,
+  `scripts/README.md`, `templates/skill/scripts/smoke-test.sh § 4h`,
+  `templates/skill/scripts/check-growth-health.sh` (script-size case
+  branches), `templates/skill/workflows/update-rules.md`,
+  `templates/skill/workflows/maintain-docs.md` (removed § 1c),
+  `templates/skill/workflows/update-upstream.md`,
+  `templates/README.md` (file listing + budget rows + Anti-Drift step 6),
+  `README.md`, `README.zh-CN.md`, `WORKFLOW.md`,
+  `references/self-hosting-routing.yaml`, `references/protocols.md`,
+  `references/layout.md`, `references/multi-skill-routing.md`,
+  `workflows/upgrade-downstream.md`, `examples/behavior-failures.md`,
+  `docs/linuxdo-project-introduction.md`.
+- Why it matters: a structural audit found these 5 scripts (~1166 lines)
+  enforced disciplines no project would actually follow:
+    - `check-external-facts.sh` required authors to hand-mark every
+      vendor/tool/runtime fact with `<!-- external-fact: verified=... -->`
+      comments. No project ever did; the script ran empty.
+    - `test-trigger.sh` (554 lines) used `claude -p` to measure description
+      activation rate. Almost no downstream cron-ran it.
+    - `check-description-routing.sh` (125 lines of YAML parsing) flagged
+      things a human eyeballs in 30 seconds re-reading description.
+    - `audit-references.sh` (214) and `audit-route-paths.sh` (191) both
+      validated "is this file linked?" at slightly different strictness;
+      one combined script covers the high-value orphan check.
+  The pattern: each script solved an *imagined* pain. The cost was real —
+  every downstream skill carried ~1.2k lines of bash + workflow text
+  pointing at protocols nobody enforced. **Stored, not activated** (SKILL.md
+  Pitfall #4) applies to scripts as much as to references. Net delete:
+  ~1082 lines after counting the 84-line replacement.
+- Downstream refresh guidance: delete the same 5 files from
+  `skills/<name>/scripts/`. Copy `audit-orphans.sh` from upstream. Run
+  `(cd skills/<name> && bash scripts/audit-orphans.sh)` once after the
+  refresh — if any orphan surfaces, decide per file whether to add an
+  activation pointer or delete the file. Remove references to the deleted
+  scripts from local copies of `workflows/update-rules.md`,
+  `workflows/maintain-docs.md`, `workflows/update-upstream.md`. If your
+  downstream wired any of the 5 into a CI step or a custom check-all
+  orchestrator, drop those lines. The discipline they enforced moves to
+  human re-read; the protocol-blocks rationalizations table stays.
+
 ## 2026-05-12 - Self-hosting thin-shell generator (`sync-self-shells.sh`)
 
 - Upstream commit: pending in this working tree

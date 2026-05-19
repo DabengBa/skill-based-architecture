@@ -46,15 +46,13 @@ Once the policy says this task enters the protocol, the task is NOT complete unt
 4. **Path integrity gate** — fires only when this task modified skill routing, entry shells, scripts, file paths, generated blocks, or `.md` content that may break links/structure. Run these from the project repo root before commit; fix failures in the same commit:
    - `bash "skills/<skill-name>/scripts/sync-routing.sh" "<skill-name>" --check` — generated Always Read, Common Tasks, and bootstraps match `routing.yaml`
    - `bash "skills/<skill-name>/scripts/smoke-test.sh" "<skill-name>" --phase 8` — markdown links, structure, routing, and budgets still pass
-   - `(cd "skills/<skill-name>" && bash scripts/audit-references.sh --orphans)` — no `rules/` or `references/` file has zero inbound links
-   - `(cd "skills/<skill-name>" && bash scripts/audit-route-paths.sh .)` — report which routes activate each `rules/` or `references/` file; use `--strict` only after the project opts in
+   - `(cd "skills/<skill-name>" && bash scripts/audit-orphans.sh)` — no `rules/` or `references/` file has zero inbound links
 5. **Cross-reference content sync** — if this task changed the *meaning* of a `rules/` or `references/` file (not just paths), grep `workflows/` for files that reproduce the changed invariant and update them in the same commit. Rule meaning drifts silently otherwise; a workflow that repeats a now-wrong invariant actively misleads.
 6. **Behavior validation fit** — if the edit adds or changes a high-risk route, non-idempotent workflow, executable script contract, or external skill handoff, decide whether a contract or scenario test is needed; structural smoke tests alone do not prove route behavior.
-7. **External fact freshness** — if the edit adds or changes a claim about an external tool, framework, hosted service, API, model, CLI, or official behavior, verify against the primary source, add/refresh `<!-- external-fact: verified=YYYY-MM-DD source=https://official.example/docs -->`, then run `bash "skills/<skill-name>/scripts/check-external-facts.sh" .`. Project-internal facts do not need this marker.
 
-Do not run gates on tasks the Trigger Policy did not admit into the protocol. Steps 3–7 fire conditionally (3 on AAR hits, 4 on skill routing/structure/link-affecting changes, 5 on rules/references *meaning* changes, 6 on high-risk behavior changes, 7 on external facts) and are mandatory when their trigger fires.
+Do not run gates on tasks the Trigger Policy did not admit into the protocol. Steps 3–6 fire conditionally (3 on AAR hits, 4 on skill routing/structure/link-affecting changes, 5 on rules/references *meaning* changes, 6 on high-risk behavior changes) and are mandatory when their trigger fires.
 
-**Plan-closure prompt — not a gate, but follow it:** if this task flipped a plan in `docs/plans/` to `status: done`, sort every conclusion in `decisions.md` (or the simple plan's body) into `rules/` (must / must not), `references/gotchas.md` or SKILL.md § Common Pitfalls (anti-pattern with reasoning), or "neither — pure provenance, stays archived only". Update the plan's `distilled_to:` frontmatter accordingly. No script verifies this — the cost of skipping it is silent: load-bearing content stranded in a frozen plan that nobody re-reads. See `templates/skill/workflows/plan-feature.md` step 8 for the full trichotomy.
+**Plan-closure prompt — not a gate, but follow it:** if this task flipped a plan in `docs/plans/` to `status: done`, sort every conclusion (wherever in the plan directory or simple plan body it landed) into `rules/` (must / must not), `references/gotchas.md` or SKILL.md § Common Pitfalls (anti-pattern with reasoning), or "neither — pure provenance, stays archived only". Update the plan's `distilled_to:` frontmatter accordingly. No script verifies this — the cost of skipping it is silent: load-bearing content stranded in a frozen plan that nobody re-reads. See `templates/skill/workflows/plan-feature.md` step 8 for the full trichotomy.
 
 ### Rationalizations to Reject
 
@@ -75,8 +73,7 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 | "The entry is so obviously useful someone will find it" | "Obvious" is survivor bias — you already know the lesson. Future agents arriving cold see only the route manifest and generated summary; unindexed references are invisible. Activation is navigation, not advertising |
 | "I only renamed one file, links are probably fine" | Markdown links have zero compile-time verification — "probably fine" is exactly when drift accumulates. The check takes ~2 seconds; running it is faster than convincing yourself you don't need to |
 | "I'll run smoke-test once at the end of the session" | Same failure mode as batched AAR: by the time you remember, you can no longer attribute breakage to a specific edit. Path integrity is per-commit, not per-session |
-| "audit-references is just for orphans, my edit can't create orphans" | Wrong premise — deleting any inbound link can orphan a previously-linked file. The script runs in seconds; assumptions about what "can't" happen are how silent rot starts |
-| "The official docs probably haven't changed" | Volatile external behavior is exactly where stale rules come from. If the rule depends on a tool/vendor/runtime, refresh the primary source and update the `external-fact` date |
+| "audit-orphans is just for orphans, my edit can't create orphans" | Wrong premise — deleting any inbound link can orphan a previously-linked file. The script runs in seconds; assumptions about what "can't" happen are how silent rot starts |
 
 ### Red Flags — STOP if you catch yourself thinking any of these
 
@@ -98,9 +95,8 @@ Checklist:
 - [ ] **New pitfall** — Did you hit a problem that wastes significant time if you don't know about it upfront?
 - [ ] **Missing rule** — Did the absence of a rule cause you to take a wrong turn?
 - [ ] **Outdated/obsolete rule** — Did you find an existing rule that is inaccurate or no longer applicable?
-- [ ] **External fact** — Did this task rely on a vendor/tool/runtime fact that could have changed since it was written?
 
-If any answer is "yes", apply the relevant gate before writing anything down: recording threshold for new lessons, direct update for outdated rules, external-fact freshness for volatile external claims. If all answers are "no", stop here. The review should stay lightweight, but it is still part of task closure.
+If any answer is "yes", apply the relevant gate before writing anything down: recording threshold for new lessons, direct update for outdated rules. If all answers are "no", stop here. The review should stay lightweight, but it is still part of task closure.
 
 ### Recording Threshold
 
@@ -185,7 +181,7 @@ This gate applies to **every** record, not just high-cost ones. Unactivated `ref
 
 **Tier exception (Progressive Rigor):** At Folder-light tier the activation path can target a `SKILL.md` routing row or a bullet in `rules/*.md` — `workflows/` need not exist. At Single-file tier with no `rules/` either, skip recording: the lesson has not earned the upgrade pressure. The gate never forces tier escalation; it forces honesty about whether the current tier has a reachable path.
 
-**Write the "why" out loud:** in the commit body (or PR description), one sentence on why the chosen activation point is the right one ("this pitfall triggers during the auth-setup workflow, so the pointer goes in workflows/auth-setup.md § Step 3"). Not machine-verifiable — the point is that ceremonial pointers feel wrong when you have to defend them in prose. Backstop: [`scripts/audit-references.sh`](../scripts/audit-references.sh) catches orphans the gate missed.
+**Write the "why" out loud:** in the commit body (or PR description), one sentence on why the chosen activation point is the right one ("this pitfall triggers during the auth-setup workflow, so the pointer goes in workflows/auth-setup.md § Step 3"). Not machine-verifiable — the point is that ceremonial pointers feel wrong when you have to defend them in prose. Backstop: [`scripts/audit-orphans.sh`](../scripts/audit-orphans.sh) catches orphans the gate missed.
 
 ### When NOT to Record
 
@@ -245,7 +241,6 @@ When an error occurs during a task and is corrected:
 4. **Outdated rule** → update the rule content directly (an outdated rule is more harmful than a missing one — no threshold needed)
 5. **Obsolete rule** → follow the Rule Deprecation process below
 6. **Rule not followed** → check if the rule is prominent enough; consider moving it to Always Read or bolding key constraints
-7. **External fact changed** → update the rule/reference and refresh its `external-fact` marker in the same commit
 
 ## Rule Deprecation
 
@@ -268,11 +263,10 @@ Deprecation steps:
 Proactive scan — do not wait for "I noticed this feels stale":
 
 ```bash
-(cd "skills/<skill-name>" && bash scripts/audit-references.sh)              # full inbound-link report
-(cd "skills/<skill-name>" && bash scripts/audit-references.sh --orphans)    # only zero-inbound files, exits 1 if any
+(cd "skills/<skill-name>" && bash scripts/audit-orphans.sh)
 ```
 
-An orphan (zero inbound links from workflows, rules, SKILL.md, or shells) is either a forgotten activation pointer or a candidate for deletion. Single-referrer files are weak links — read the referring file to confirm it's a real activation path, not a leftover mention.
+An orphan (zero inbound links from workflows, rules, SKILL.md, or shells) is either a forgotten activation pointer or a candidate for deletion. Read the file before deleting; the orphan report is a heuristic, not a verdict.
 
 Run this at every major refactor or when `smoke-test.sh` flags gotchas/pitfall line bloat (default cap 400 lines; tune via `GOTCHAS_MAX_LINES` env var if the project has a principled reason). For routine tasks, the `§ Activation Check` gate should prevent orphans in the first place; this audit is the backstop for when the gate was skipped.
 

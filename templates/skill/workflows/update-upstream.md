@@ -36,8 +36,7 @@ Use when the user says the upstream skill-based-architecture project changed and
    bash "skills/$NAME/scripts/sync-routing.sh" "$NAME"
    bash "skills/$NAME/scripts/sync-routing.sh" "$NAME" --check
    bash "skills/$NAME/scripts/smoke-test.sh" "$NAME"
-   bash "skills/$NAME/scripts/check-description-routing.sh" "$NAME"
-   (cd "skills/$NAME" && bash scripts/audit-references.sh --orphans)
+   (cd "skills/$NAME" && bash scripts/audit-orphans.sh)
    ```
 10. **Conformance check — use upstream's manifest, not local** — the local `skills/$NAME/conformance.yaml` is a snapshot from the initial scaffold. If upstream added new mandatory sections (e.g. a new Gate, Task Closure phrase, or workflow), the local manifest doesn't know about them and would falsely report green. Always validate against the freshly cloned upstream contract:
     ```bash

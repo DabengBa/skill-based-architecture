@@ -78,7 +78,7 @@ Real workflow templates live under [`templates/skill/workflows/`](templates/skil
 | [`update-rules.md`](templates/skill/workflows/update-rules.md) | The shared exit gate — Task Closure Protocol, AAR, Recording Threshold, Activation Check, Generalization Rule, Rationalizations Table, Rule Deprecation, Post-Update Health Check. Every other workflow's closure step references this file. |
 | [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with mandatory pre-step (Session Discipline re-read), Fix Impact Analysis (4 questions), and Task Closure Protocol gate. |
 | [`maintain-docs.md`](templates/skill/workflows/maintain-docs.md) | File-health maintenance — size scan, evaluate-split / evaluate-merge / when-not-to gates, reference integrity check. |
-| [`plan-feature.md`](templates/skill/workflows/plan-feature.md) | Feature planning with Question Gate (A/B/C), Complexity Gate, dossier folder, workflow-state machinery. |
+| [`plan-feature.md`](templates/skill/workflows/plan-feature.md) | Feature planning with Question Gate (A/B/C), Complexity Gate, optional plan folder (only `prd.md` required), workflow-state machinery. |
 | [`profile-project.md`](templates/skill/workflows/profile-project.md) | Three-axis project profiling (structure / execution / topology) before scaffolding. |
 | [`update-upstream.md`](templates/skill/workflows/update-upstream.md) | Agent-led upstream refresh — clone, classify, compare, port, validate (including conformance against upstream's manifest). |
 | [`change-managed.md`](templates/skill/workflows/change-managed.md) | Non-bug changes with multiple derived/synced targets — defines scope, finds source-of-truth, maps fan-out, runs drift checks. |
