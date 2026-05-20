@@ -74,6 +74,7 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 | "I only renamed one file, links are probably fine" | Markdown links have zero compile-time verification — "probably fine" is exactly when drift accumulates. The check takes ~2 seconds; running it is faster than convincing yourself you don't need to |
 | "I'll run smoke-test once at the end of the session" | Same failure mode as batched AAR: by the time you remember, you can no longer attribute breakage to a specific edit. Path integrity is per-commit, not per-session |
 | "audit-orphans is just for orphans, my edit can't create orphans" | Wrong premise — deleting any inbound link can orphan a previously-linked file. The script runs in seconds; assumptions about what "can't" happen are how silent rot starts |
+| "Let me add this safeguard / script / file structure just in case" | 反问:这个保险解决的"未来 / 想象用户"是真踩过的坑还是脑补?要给一个具体场景(file + line / commit / session)证明这事真发生过吗?给不出 → 不上。反模式名:**imagined-pain engineering**(想象痛点工程)— 为未发生的失败加保险、为想象用户预建脚手架、为不存在的协议加 marker / 监控、给假设的"agent 偏差"立规矩。最显眼的症状:agent 自己提议方案后没拷问就开始实施。这条 Rationalization 适用于任何"加东西"的提议,不仅是 update-rules 任务自身 |
 
 ### Red Flags — STOP if you catch yourself thinking any of these
 

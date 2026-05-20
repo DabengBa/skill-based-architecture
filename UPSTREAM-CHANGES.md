@@ -48,6 +48,65 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-05-20 - Surface mode in subagent-driven (Mode 1) — sub-step auxiliary delegation
+
+- Upstream commit: pending in this working tree
+- Changed areas: restructured `templates/skill/workflows/subagent-driven.md`
+  into two modes — new `## Mode 1: Surface (Sub-step Auxiliary Delegation)`
+  (signal admission test + 5-signal reverse-question list + decision flow
+  + job-vs-auxiliary distinction + display-isolation fallback for Codex
+  and other degraded harnesses); renamed original `## When to Use` to
+  `## Mode 2: Four Phases (When to Invoke This Mode)`; shared sections
+  (Harness Compatibility / Rationalizations / Red Flags / Degraded Mode)
+  retained and re-labelled. Updated cross-refs in
+  `templates/skill/workflows/fix-bug.md` Step 6 (test/build → Surface
+  signals #1/#2), `templates/skill/workflows/plan-feature.md` Step 3
+  (wide grep → Surface signal #3) and Step 7 (multi-hour
+  multi-subtask → Mode 2 Four Phases), and
+  `templates/skill/workflows/change-managed.md` Step 3 (≥ 5-file
+  batch homogeneous edits → Surface signal #4 or `refactor-fanout.md`
+  if planned from start). Companion plan at
+  `docs/plans/2026-05-20-subagent-surface-hints.md`.
+- Why it matters: three earlier chaos screenshots showed main-agent
+  doing test debugging / wide explore / batch edits inline when the
+  work was clearly auxiliary (mechanical + time-consuming +
+  only-need-result). Previous tuning attempts (fix-bug Hypothesis
+  Fan-out, plan-feature Step 3/7 subagent hints, refactor-fanout
+  workflow) didn't catch these moments because they framed dispatch
+  as "task-size triggered" — and the agent's task-size judgment is
+  systematically biased toward inline ("I'll just do one more file").
+  Reverse-question framing ("是不是多余") inverts the bias: the agent
+  must defend "not redundant" instead of "should dispatch", and
+  defending "not redundant" on mechanical sub-steps is hard. The
+  admission test (reverse-question passes + scenario specific)
+  filters out task-size signals that previously slipped through.
+  Mode 1 is default — main-agent inline stays as fallback; Mode 2
+  Four Phases is the existing pattern for planned multi-subtask work.
+  Codex / Cursor / Gemini get display-isolation fallback (Yes = paste
+  conclusion only; No = paste full output), which gives visible
+  benefit on degraded harnesses even though context isolation is
+  impossible there.
+- Downstream refresh guidance: this is an **incremental insertion**,
+  not a file replacement. For each downstream `subagent-driven.md`:
+  (1) insert the new `## Mode 1: Surface` block before the existing
+  `## When to Use`; (2) rename `## When to Use` → `## Mode 2: Four
+  Phases (When to Invoke This Mode)`; (3) add a "two modes" overview
+  at the file top; (4) leave all other sections (Phase 1-4
+  descriptions / Rationalizations / Red Flags / Degraded Mode /
+  project-specific examples) untouched, including project-local
+  edits. If the downstream `subagent-driven.md` has already added
+  its own sub-step delegation mechanism, diff against the new Mode 1
+  and take the union — do not overwrite. Then patch the 3 workflow
+  cross-refs in `fix-bug.md` / `plan-feature.md` /
+  `change-managed.md` to point at Mode 1: Surface; mirror the same
+  cross-ref pattern in project-specific workflows that share the
+  inspect-then-edit / explore-then-action shape (chaos's
+  `implement-feature.md`, chaos_web's
+  `add-page-or-module.md` / `add-amis-page.md` /
+  `add-hybrid-renderer.md` / `fix-schema-error.md`). No routing.yaml
+  changes required; no conformance.yaml changes required (Mode 1 is
+  a tuning, not a contract).
+
 ## 2026-05-19 - Surface subagent fan-out at the 3 highest-ROI downstream moments
 
 - Upstream commit: pending in this working tree

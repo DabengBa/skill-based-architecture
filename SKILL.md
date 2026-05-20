@@ -74,6 +74,7 @@ Root entries (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursor/rules/
 7. **No SessionStart hook on long sessions** — `/clear` or `/compact` silently drops SKILL.md from context; agent loses all routing and protocol awareness without the user noticing → install SessionStart hook if your harness supports it (see [references/thin-shells.md § SessionStart Hook](references/thin-shells.md#sessionstart-hook-optional))
 8. **Route skipping in multi-task sessions** — Agent reads SKILL.md for the first task, then skips re-reading for subsequent tasks in the same session ("I already know the rules"). New tasks may match different routes; context may have been compressed. Result: agent works from partial/stale memory, misses critical rules, debugs in wrong direction for hours → SKILL.md template now includes Session Discipline section; all shells include re-read trigger
 9. **Long-task final drift** — Agent follows the route early, then invents at the end after many tool calls or corrections → run `templates/protocol-blocks/reboot-check.md` before final validation/commit if original constraints are no longer fresh
+10. **Imagined-pain engineering** — Agent 提议加任何机制(规则/脚本/文件结构/模板章节)前没反问"这解决的是真痛点还是脑补":为未发生的失败加保险、为想象用户预建脚手架、为不存在的协议加 marker / 监控、给假设的"agent 偏差"立规矩。✓ Check:能给一个具体场景(file+line / commit / session)证明这事真发生过吗?给不出 → 不上。Historic: 5 ghost scripts (砍 2026-05-19), dossier schema (砍 2026-05-19), reflection-first mode shift (弃 2026-05-20), observations 日志 (拒上 2026-05-20)
 
 ## Content Classification
 
@@ -88,8 +89,7 @@ Root entries (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursor/rules/
 
 ## Multi-Skill & Composition
 
-- **Multi-skill repos** — [references/multi-skill-routing.md](references/multi-skill-routing.md) (operating + fission mechanics + coexistence rules).
-- **Invoking other skills** from your workflows (embedded / serial chain / subagent delegation) — [references/skill-composition.md](references/skill-composition.md) + starter [templates/skill/workflows/invoke-skill.md.example](templates/skill/workflows/invoke-skill.md.example).
+**Multi-skill repos** — see [references/multi-skill-routing.md](references/multi-skill-routing.md) (operating + fission + coexistence). For **invoking other skills** from your workflows (embedded / serial / subagent delegation), see [references/skill-composition.md](references/skill-composition.md) + starter [templates/skill/workflows/invoke-skill.md.example](templates/skill/workflows/invoke-skill.md.example).
 
 ## Resources
 
