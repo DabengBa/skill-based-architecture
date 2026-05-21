@@ -103,11 +103,21 @@ Several workflows in this meta-skill lean on sub-agent delegation and parallel a
 
 **Codex is the exception.** Its runtime imposes a tool-level rule on `spawn_agent`: it may only be invoked when the user **explicitly** asks for sub-agent, delegation, or parallel agent work. That tool-level rule outranks anything in this repo's `AGENTS.md` or skill files, so the fan-out patterns will **not** fire automatically — even though the workflow documents tell the agent to use them.
 
-If you're in Codex and want the delegation to actually happen, say so in the trigger sentence:
+If you're in Codex and want sub-agent work to actually happen — fan-out or anything else — you have to authorize it explicitly. Two equivalent patterns:
 
-> "Use skill-based-architecture to refactor the project rules; **spawn sub-agents in parallel** for the fan-out steps the workflow describes."
+**Per-task** — name the specific work you want delegated:
 
-Equivalent phrasings: "delegate via parallel sub-agents", "use sub-agents for this", "并行 sub-agent 处理 fan-out 部分".
+> "Use a sub-agent to refactor the rule files."
+> "Spawn sub-agents to review each workflow file in parallel."
+> "请使用 sub-agent 来扫一遍 templates 目录。"
+
+**Session-wide** — grant blanket permission once at the start:
+
+> "In this session you may use sub-agents whenever the workflow calls for it."
+> "本次会话我允许你使用 sub-agent。"
+> "Feel free to delegate to sub-agents in this session."
+
+Either form satisfies the tool-level rule. Without one of them, Codex will silently skip the delegation step — even when the workflow documents tell the agent to use sub-agents.
 
 ## Key features
 

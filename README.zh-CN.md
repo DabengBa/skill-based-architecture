@@ -103,11 +103,21 @@ Agent 会从 [`templates/`](templates/) 复制预制 scaffold 到 `skills/<name>
 
 **Codex 是例外。** 它的运行环境给 `spawn_agent` 工具加了一条工具级规则:**只有当用户明确要求 sub-agent、delegation 或并行 agent 工作时**,才允许调用 `spawn_agent`。这条工具级规则**优先级高于**仓库里的 `AGENTS.md` / skill 规则 —— 即使 workflow 文档里写了"用 sub-agent",扇出模式也**不会**自动触发。
 
-在 Codex 里如果想让扇出/委派真的发生,触发那句话里要明说:
+在 Codex 里如果想让 sub-agent 真的被调起来 —— 不论是扇出还是别的场景 —— 都要**显式授权**。两种等价写法:
 
-> "用 skill-based-architecture 重构项目规则,workflow 里需要扇出的步骤**并行起 sub-agent 委派**。"
+**按任务点名** —— 指明具体哪件事交给 sub-agent:
 
-等价说法:"并行 sub-agent 处理 fan-out 部分"、"用 delegated sub-agents"、"spawn sub-agents in parallel"。
+> "请使用 sub-agent 来重构这几个规则文件。"
+> "用 sub-agent 并行 review 每个 workflow 文件。"
+> "Use a sub-agent to scan the templates directory."
+
+**整段会话放权** —— 在会话开头一次性放开:
+
+> "在这个会话我允许你使用 sub-agent。"
+> "本次会话需要扇出的步骤你可以随意起 sub-agent 委派。"
+> "In this session you may use sub-agents whenever the workflow calls for it."
+
+任一种说法都能让工具级规则放行。**少了这一句**,即使 workflow 文档里写了"用 sub-agent",Codex 也会静默跳过委派步骤。
 
 ## 关键特性
 
