@@ -3,12 +3,13 @@ name: skill-based-architecture
 description: >
   This skill should be used when the user asks to "organize the project rules",
   "clean up scattered documentation", "refactor project rules",
+  "document agent orchestration", "record spawn_agents_on_csv workflow",
   "consolidate scattered rules", "create skill-based architecture",
   "restructure skill documentation", or "migrate rules to skills directory".
   Activate when a SKILL.md exceeds ~150 lines, rules are duplicated across
   multiple entry files (AGENTS.md, .cursor/rules/, CLAUDE.md, etc.),
-  documentation feels hard to navigate or maintain, or the user requests
-  rule consolidation or documentation cleanup.
+  documentation feels hard to navigate or maintain, or project-specific
+  harness/orchestration docs need consolidation.
 ---
 
 # Skill-Based Architecture
@@ -58,7 +59,7 @@ Root entries (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursor/rules/
 10. **Task Closure Protocol** — AAR is part of task completion, not an optional extra; every non-trivial task must run a 30-second scan before declaring done (see [TEMPLATES-GUIDE.md § Task Closure Protocol](TEMPLATES-GUIDE.md#task-closure-protocol))
 11. **Generalization rule** — records must be reusable knowledge that makes sense outside the current project context, not project-specific narratives; apply the generalization check before writing (see [TEMPLATES-GUIDE.md § Generalization Rule](TEMPLATES-GUIDE.md#generalization-rule))
 12. **Self-maintenance** — line counts signal evaluation, not automatic action; split only when topics are separable, merge only when fragments belong together
-13. **Activation over storage** — a costly, task-relevant pitfall is not considered "captured" if it only lives deep in `references/`; it must also surface in the task path that should prevent the mistake next time (workflow checklist, task routing, or a concise rule summary)
+13. **Activation over storage** — a costly, task-relevant pitfall or orchestration contract is not considered "captured" if it only lives deep in `references/`; it must also surface in the task path that should prevent the mistake next time (workflow checklist, task routing, or a concise rule summary)
 14. **Token efficiency** — Always-read files stay minimal (2–3 core rules); domain files are read only when task-routed via Common Tasks
 15. **Protocol reinforcement via Rationalizations Table** — the Task Closure Protocol is vulnerable to "just this once" erosion under pressure; maintain a Rationalizations to Reject table capturing verbatim excuses from pressure-test failures and their rebuttals (see [TEMPLATES-GUIDE.md § Rationalizations to Reject](TEMPLATES-GUIDE.md#rationalizations-to-reject) and [WORKFLOW.md § Phase 9](WORKFLOW.md#phase-9-pressure-test-the-skill))
 
@@ -71,7 +72,7 @@ These are the most costly mistakes when using this architecture. Each has caused
 1. **Missing Cursor registration entry** — Formal skill at `skills/<name>/` but no `.cursor/skills/<name>/SKILL.md` → Cursor never discovers the skill; all rules/workflows silently ignored
 2. **Soft-pointer-only shell** — Thin shell says "go read SKILL.md" without an inline routing table → instruction lost after context summarization in long conversations
 3. **Vague description** — Description written as passive summary instead of trigger conditions with quoted phrases → skill exists but Agent never activates it (see [references/layout.md § Description as Trigger Condition](references/layout.md#description-as-trigger-condition))
-4. **Stored but not activated** — Costly pitfall recorded in `references/` but not surfaced in any workflow checklist or SKILL.md routing → future agents still miss it
+4. **Stored but not activated** — Costly pitfall or orchestration contract recorded in `references/` but not surfaced in any workflow checklist or SKILL.md routing → future agents still miss it
 5. **Task Closure Protocol skipped** — Agent considers itself "done" after main work, skips the 30-second AAR scan → lessons not captured; use Task Closure Protocol to make AAR a completion gate, not an optional add-on
 6. **Project-specific records** — Lessons written as project narratives ("in our product module, we found…") instead of reusable knowledge → useless outside current context; apply generalization rule before recording
 7. **No SessionStart hook on long sessions** — `/clear` or `/compact` silently drops SKILL.md from context; agent loses all routing and protocol awareness without the user noticing → install SessionStart hook if your harness supports it (see [references/thin-shells.md § SessionStart Hook](references/thin-shells.md#sessionstart-hook-optional))
@@ -95,6 +96,6 @@ For repos with multiple skills, coexistence rules, monorepo guidance, and when-t
 ## Resources
 
 - [WORKFLOW.md](WORKFLOW.md) — Migration procedure (Quick Start + 9 phases)
-- [REFERENCE.md](REFERENCE.md) + [references/](references/) — Templates, decision guides, anti-patterns, troubleshooting (split by topic: layout / thin-shells / protocols / conventions)
+- [REFERENCE.md](REFERENCE.md) + [references/](references/) — Templates, decision guides, anti-patterns, troubleshooting (split by topic: layout / thin-shells / protocols / conventions / orchestration)
 - [TEMPLATES-GUIDE.md](TEMPLATES-GUIDE.md) — Starter templates + meta-workflow templates
 - [EXAMPLES.md](EXAMPLES.md) + [examples/](examples/) — 16 before/after scenarios, split by topic (migration / project-types / self-evolution)

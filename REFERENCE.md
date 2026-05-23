@@ -10,6 +10,7 @@ Look up what you need, not everything:
 - **Writing or debugging thin shells (AGENTS.md, CLAUDE.md, etc.)?** → [`references/thin-shells.md`](references/thin-shells.md)
 - **Designing Task Closure Protocol, recording lessons, or activation verification?** → [`references/protocols.md`](references/protocols.md)
 - **Picking rule file sets, navigating anti-patterns, troubleshooting, file size budgets?** → [`references/conventions.md`](references/conventions.md)
+- **Documenting project-level `spawn_agents_on_csv` / wave orchestration?** → [`references/orchestration.md`](references/orchestration.md)
 
 See [`references/README.md`](references/README.md) for the full topic map.
 

@@ -61,7 +61,7 @@ Every project should have this workflow. It combines rule sync, active learning,
 | Change type | Files to update |
 |---|---|
 | New/renamed workflow or reference file | `SKILL.md` Common Tasks routing |
-| UI convention / host compatibility / overlay layering / z-index / styling behavior issue that future agents would guess wrong without docs | Update the relevant `rules/*.md` or `references/*.md`, and update `SKILL.md` summary if the pitfall should surface earlier |
+| UI convention / host compatibility / overlay layering / z-index / styling behavior issue, or an orchestration contract that future agents would mis-execute without docs | Update the relevant `rules/*.md` or `references/*.md`, and update `SKILL.md` summary if the pitfall should surface earlier |
 | (project-specific triggers) | (corresponding files) |
 
 Threshold: if this change would cause someone to guess wrong on a similar task without reading the docs, update. Otherwise skip.

@@ -159,7 +159,7 @@ Treat these as orthogonal concerns — do **not** extend this meta-skill's templ
 
 - **Tool-execution stability** (browser clicks that silently no-op, API calls that return half-complete responses, page DOM changing under the agent). Use a verification-focused skill (e.g. superpowers' `verification-before-completion`) or a dedicated tool-agent harness.
 - **Long-chain checkpoint / resume.** If a 9-phase migration fails at phase 5, this skill's answer is "re-read `WORKFLOW.md` and restart the phase", not "resume from phase 5 state". Projects that need real resumption should add a state file alongside the skill; scope is project-specific and **must not** be pre-built in `templates/` (see `templates/ANTI-TEMPLATES.md`).
-- **Multi-agent orchestration.** See superpowers' `subagent-driven-development` or equivalent. This skill only routes *within one agent's session*.
+- **Multi-agent orchestration.** This skill still only routes *within one agent's session*. Downstream projects that use `spawn_agents_on_csv` or similar should document explicit state, wave, schema, and resume contracts in project-level docs; see [orchestration.md](orchestration.md) for a reference pattern.
 
 Adding state / validation / recovery primitives to a downstream project is that project's own engineering work — it belongs in the project's `rules/` or `workflows/`, not in this meta-skill.
 
