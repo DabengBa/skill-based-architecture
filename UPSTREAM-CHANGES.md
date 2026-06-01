@@ -48,6 +48,49 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-06-01 - Subagent: make the Parallelism Premise non-blocking-by-mechanism
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/workflows/subagent-driven.md` — the 2026-05-28 Parallelism
+    Premise stated the *requirement* (main agent must keep working while a
+    subagent runs) but gave no *mechanism*, so the decision flow read as a single
+    **foreground** dispatch that blocks. Added the concrete non-blocking
+    mechanism in three cases: (1) **batch parallel** — N independent chunks
+    dispatched in one message run concurrently; (2) **background** —
+    `run_in_background` + continue immediately when there is real main-thread
+    work; (3) **neither** → inline (a lone foreground dispatch you wait on is
+    worse than inline). Updated: top-of-file invariant ("non-blocking is the
+    whole point, both modes"), the Parallelism Premise body + ✅/❌ examples, the
+    Mode 1 decision-flow diagram, the Mode 1 Properties bullet, and Mode 2
+    Phase 2 step 4 (name the "single message / `run_in_background`" mechanic).
+  - `references/self-hosting-routing.yaml` — `long-run` route `workflow:` fixed
+    from `templates/protocol-blocks/subagent-contract.md` (the Mode 2 fill-in
+    contract) → `templates/skill/workflows/subagent-driven.md` (the Mode 1/Mode 2
+    decision logic). A "big task" was being routed straight to the contract
+    template, skipping the mode + non-blocking decision. Contract stays reachable
+    as a sub-artifact subagent-driven.md links to.
+- Why it matters: a foreground dispatch the main agent then waits on has the same
+  wall-clock as inline plus coordination overhead — strictly worse than not
+  dispatching. The premise existed to prevent exactly this but, lacking a
+  mechanism, agents would still block. Naming the two concurrency primitives
+  (batch-in-one-message, `run_in_background`) makes "main agent keeps moving" an
+  executable instruction rather than an aspiration. Builds on (does not reverse)
+  the 2026-05-28 Parallelism Premise entry.
+- Downstream refresh guidance:
+  - `subagent-driven.md` is a template workflow you copy. Port the non-blocking
+    mechanism (the three-case Parallelism Premise, the decision-flow branches,
+    the Properties bullet, Mode 2 Phase 2 step 4) into your local copy, preserving
+    your project-specific FILL blocks (Phase 3 verification commands, Forbidden
+    Zone defaults) and any local Mode 1 signal rows.
+  - Map the harness primitives to yours: "batch in one message" + `run_in_background`
+    are Claude Code's. Codex `spawn_agent` users adapt to their concurrency model;
+    on harnesses with no background/parallel dispatch, the honest fallback is
+    inline (Case 3), not a blocking foreground dispatch.
+  - If your routing manifest sends a "large/multi-subtask" route at the contract
+    block, repoint it at `workflows/subagent-driven.md` so the mode + non-blocking
+    decision happens first.
+
 ## 2026-05-29 - Extract Task Closure Protocol into its own canonical workflow
 
 - Upstream commit: pending in this working tree

@@ -7,6 +7,8 @@
 >
 > Mode 1 covers day-to-day tuning; Mode 2 covers planned multi-subtask runs. Pick by task shape, not by ceremony preference.
 
+**Non-blocking is the whole point (both modes).** Splitting a complex task into modules and handing the mechanical ones to subagents is only a win if the main agent keeps working **concurrently** while they run — via **batched parallel dispatch** (several dispatches in one message) or **background dispatch** (`run_in_background`, continue immediately). A single *foreground* dispatch you then sit and wait for is **strictly worse than staying inline**: identical wall-clock, plus coordination overhead. If you cannot dispatch without blocking, do the work inline. Mechanism: § Parallelism Premise.
+
 ## Harness Compatibility (shared by both modes)
 
 | Harness | Mode 1 + Mode 2 |
@@ -29,17 +31,19 @@
 
 ### Parallelism Premise (precondition for the Iron Law)
 
-The Iron Law implicitly assumes the main agent has **parallel work to do** during the subagent's execution. Without parallelism, dispatch is indirection theater: same wall-clock as inline, extra coordination overhead, zero efficiency gain.
+A subagent only earns its keep if the main agent is **not blocked** while it runs. Without that, dispatch is indirection theater: same wall-clock as inline, plus coordination overhead, zero gain.
 
-Before every `spawn_agent`, ask the **third question**: *"What is the main agent doing **while** the subagent runs?"*
+Before every dispatch, answer the **third question** — *"what is the main agent doing **while** the subagent runs?"* — then make the dispatch actually non-blocking. Three cases:
 
-- Concrete answer (other files to read / decision to plan / user clarification pending) → dispatch
-- "Waiting" / "deciding what to do with the result" / vague → inline, or queue parallel work first
+1. **Batch parallel** — N independent mechanical modules → emit all N dispatches **in one message** (multiple `Task` calls at once). They run concurrently; results return together. Primary pattern when a complex task splits into several same-shaped chunks.
+2. **Background** — one mechanical module **and** real main-thread work to do → dispatch with `run_in_background` (Claude Code) and **continue immediately**; the harness notifies you on completion. Use when the main agent has a core / decision module to work meanwhile.
+3. **Neither** (one chunk, nothing else to do until its result) → **inline.** A lone *foreground* dispatch you then wait on blocks the main agent and is strictly worse than inline — this is the anti-pattern the whole premise exists to kill.
 
-✅ Dispatch test-runner → main agent inspects failing module + reads related files → subagent returns → merge result. Wall-clock saved.
-❌ Dispatch test-runner → main agent idles → reads result → continues. Wall-clock identical to inline; indirection added.
+✅ Split task → test-runner **in background** → main agent works the core fix module → notified on completion → merge. Wall-clock overlapped.
+✅ 3 independent modules → **one message, 3 dispatches** → run in parallel → review each on return. Wall-clock collapsed.
+❌ test-runner in the **foreground** → main agent idles waiting → reads result → continues. Identical wall-clock to inline, pure coordination overhead. A blocked main agent is worse than no subagent at all.
 
-**Context-isolation exception**: when inline reads would drown the main context with raw file content (e.g. surveying 15+ files to answer one question), dispatch is defensible without parallelism — but acknowledge the value is context-budgeting, not parallelism. Iron Law's three traits (mechanical + time-consuming + only-need-result) still must hold.
+**Context-isolation exception**: when inline reads would drown the main context with raw file content (e.g. surveying 15+ files to answer one question), a foreground dispatch is defensible *without* parallel work — but the value is **context-budgeting, not wall-clock** (small result, large process). Iron Law's three traits (mechanical + time-consuming + only-need-result) still must hold.
 
 ### Default habit
 
@@ -99,16 +103,20 @@ about to do next sub-step: ask self "Is watching the whole process redundant?"
     ├── no, main-agent's job  → inline
     └── yes, auxiliary (mechanical + time-consuming + only-need-result)
             ↓
-        directly dispatch one subagent (spawn_agent)
-            → subagent returns result → main agent continues inline
+        third question: "what does the main agent do WHILE it runs?"
+            ├── N independent chunks → batch dispatch (all in ONE message) ─┐
+            ├── 1 chunk + other work → background dispatch, continue now ───┤
+            │        → main agent works other modules meanwhile             │
+            │        → integrate each result as it returns ─────────────────┘
+            └── nothing to do until the result, no context-isolation gain → inline
 ```
 
 **Properties**:
 
 - Signal recognition is **agent judgment**, not mechanical measurement
 - Yes dispatches a **single sub-step**, not the remaining whole task
-- After subagent returns, main agent goes back to inline as default
-- Same task may trigger multiple dispatch events (one for testing, one for wide grep, etc.); each is independent
+- Dispatch is **non-blocking**: background (`run_in_background`) or batched in one message — the main agent keeps working meanwhile and never sits idle waiting on a foreground worker. If it would have to sit idle, the dispatch wasn't worth it → inline
+- Same task may trigger multiple dispatch events (one for testing, one for wide grep, etc.); each is independent and can overlap
 - **No user Y/N round-trip** — global authorization (CC's native dispatch + Codex `developer_instructions`) makes this direct
 
 ### Negative list (never delegate, no matter how time-consuming)
@@ -183,7 +191,7 @@ For each contract:
 1. Spawn a fresh worker (Claude Code: `Task` tool with the appropriate `subagent_type`; degraded mode: execute inline but reset your mental context — re-read only the contract)
 2. Pass the contract verbatim as the task prompt. Do **not** paste the main conversation history.
 3. Include the **Iron Law header** ("NO TASK IS COMPLETE WITHOUT A TASK CLOSURE PROTOCOL SCAN" — main work + 30-second AAR + record-if-needed) so the worker knows Task Closure Protocol applies to them too.
-4. Dispatch workers **in parallel** when their contracts have no ordering dependency. Sequential dispatch is a defect unless justified.
+4. Dispatch workers **in parallel** when their contracts have no ordering dependency — emit the independent dispatches **in a single message** (multiple `Task` calls at once) so they run concurrently, or give each `run_in_background` and keep working. Dispatching one worker in the foreground and blocking on it before sending the next is a defect unless a data dependency forces the order.
 
 **Dispatch discipline:**
 
