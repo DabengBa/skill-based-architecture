@@ -6,7 +6,7 @@ Use this for non-bug changes where partial edits can create drift: new features,
 
 ## Mandatory Pre-Step (cannot skip)
 
-**Re-run `SKILL.md` § Session Discipline before starting.** Re-match the request against Common Tasks, re-read all required files for that route, and stop for clarification if the request is vague about scope or success criteria.
+**Re-run `SKILL.md` § Session Discipline before starting.** Re-match the request against Common Tasks; re-read the route's files only if the route changed or context was compacted (see § Session Discipline); stop for clarification if the request is vague about scope or success criteria.
 
 ## Read First
 

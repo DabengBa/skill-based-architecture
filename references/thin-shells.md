@@ -69,7 +69,7 @@ For every new task:
 
 ## Auto-Triggers
 
-- **New task in same session** → re-read `skills/<name>/SKILL.md`, re-match routing, re-read all required files. "I already read it" is not valid — context compresses, routes differ.
+- **New task in same session** → always re-match routing; re-read `skills/<name>/SKILL.md` and the route's files only if the route changed or context was compacted. "I already read it" is not valid when context may have compressed.
 - Before declaring any non-trivial task complete → run Task Closure Protocol (see `workflows/task-closure.md`)
 - Skip only for: formatting-only, comment-only, dependency-version-only, or behavior-preserving refactors
 - When user asks to "record/save/remember" something → project-level knowledge goes to `skills/<name>/` docs; personal preferences go to agent memory

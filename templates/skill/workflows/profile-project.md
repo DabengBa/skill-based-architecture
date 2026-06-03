@@ -56,7 +56,7 @@ Each non-obvious claim must carry one evidence label. Only `Confirmed from code/
 ## Completion Checklist
 
 - [ ] User language captured as real phrases, not translated guesses
-- [ ] Description draft is coarse activation, not a workflow keyword list
+- [ ] Description draft is coarse activation — not a workflow keyword list, and not a step-summary the agent would run instead of opening the workflow
 - [ ] Common Tasks draft covers recurring work without exceeding 8-10 rows
 - [ ] Always Read proposal is 2-3 files
 - [ ] Structure tier defaults to the lightest tier with evidence-backed upgrade pressure

@@ -40,6 +40,6 @@ For every new task:
 
 </task-routing>
 
-**New task in same session** → re-read `skills/{{NAME}}/SKILL.md`, re-match Common Tasks route, re-read all required files. "I already read it" is not valid — context compresses, routes differ.
+**New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{{NAME}}/SKILL.md` injection is the signal) — unchanged background stays in context. Can't tell if context compacted? Re-read.
 
 Conflicts between loaded project instructions → formal docs in `skills/{{NAME}}/` win. This does not override harness-native skill name precedence.

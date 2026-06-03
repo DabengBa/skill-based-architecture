@@ -19,7 +19,7 @@ For every new task:
 
 ## Auto-Triggers
 
-- **New task in same session** → re-read `SKILL.md`, re-match the route above, re-read all required files. "I already read it" is not valid — context compresses, routes differ.
+- **New task in same session** → always re-match the route above; the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `SKILL.md` injection is the signal) — unchanged background stays in context, don't re-read it every task. Can't tell if context compacted? Re-read.
 - Closure checks fire by **blast-radius bucket** (path-based classification of files changed):
   - **A** (entry shells / SKILL.md / routing yaml / scripts / `*.tpl`) → full AAR + smoke-test + path-integrity gates
   - **B** (template rules/workflows non-example, references linked from SKILL.md, `workflows/full-migration.md`) → lightweight AAR only

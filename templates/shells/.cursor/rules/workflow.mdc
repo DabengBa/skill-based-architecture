@@ -29,7 +29,7 @@ For every new task:
 5. If no route matches, use the `other` route.
 <!-- ROUTING_BOOTSTRAP_END -->
 
-**New task in same session** → re-read `skills/{{NAME}}/SKILL.md`, re-match Common Tasks route, re-read all required files. "I already read it" is not valid — context compresses, routes differ.
+**New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{{NAME}}/SKILL.md` injection is the signal) — unchanged background stays in context. Can't tell if context compacted? Re-read.
 
 Before declaring any non-trivial task complete → run Task Closure Protocol (see `skills/{{NAME}}/workflows/update-rules.md`).
 

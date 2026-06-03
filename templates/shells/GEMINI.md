@@ -44,7 +44,7 @@ For every new task:
 
 ## Auto-Triggers
 
-- **New task in same session** → re-read `skills/{{NAME}}/SKILL.md`, re-match Common Tasks route, re-read all required files for that route. "I already read it" is not valid — context compresses, routes differ.
+- **New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{{NAME}}/SKILL.md` injection is the signal) — unchanged background stays in context, don't re-read it every task. Can't tell if context compacted? Re-read.
 - Before declaring any non-trivial task complete → run Task Closure Protocol (see `skills/{{NAME}}/workflows/task-closure.md`)
 - Skip only for: formatting-only, comment-only, dependency-version-only, or behavior-preserving refactors
 - When user asks to "record/save/remember" something → project-level knowledge goes to `skills/{{NAME}}/` docs; personal preferences go to agent memory

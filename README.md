@@ -139,7 +139,7 @@ Either form satisfies the tool-level rule. Without one of them, Codex will silen
 - **Two-layer routing.** `SKILL.md` keeps a short generated **Always Read** list; **Common Tasks** routes the agent to extra files only when needed. `routing.yaml` is the editable source of truth in downstream projects.
 - **Thin shells with routing bootstrap.** Every entry file embeds a short bootstrap that points to `routing.yaml`. The route table is not duplicated across shells; natural-language-only instructions get lost during context summarization.
 - **Description as trigger condition.** Domain-level activation phrases in the user's actual language(s), not workflow keyword stuffing. Re-read aloud after edits — no script substitutes for hearing whether it sounds like a real user.
-- **Session Discipline + Task Closure.** Re-read SKILL.md on every new task in the same session; finish non-trivial tasks with a 30-second AAR scan + recording threshold, never "tests passed = done".
+- **Session Discipline + Task Closure.** Re-match the route on every new task; re-read files only when the route changed or context was compacted; finish non-trivial tasks with a 30-second AAR scan + recording threshold, never "tests passed = done".
 - **Self-maintenance.** Line-count signals trigger evaluation, not automatic action; split/merge procedures and freshness checks keep docs lean.
 - **Cross-harness.** Compatible with Cursor, Claude Code, Codex, Windsurf, Gemini, OpenCode, and AGENTS.md-based tools.
 

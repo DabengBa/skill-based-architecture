@@ -39,6 +39,15 @@ Before recording a potential new piece of knowledge, ask:
 
 **At least 2 of 3 must be "yes / high / no" → worth recording. Otherwise skip.**
 
+### Baseline Check (discipline rules only)
+
+Applies only to a rule whose whole job is to change behavior under pressure — a red flag, a rationalization-table row, an "always/never" constraint. Descriptive / reference content is exempt (no behavior to fail). This is **not** a per-edit gate; it almost always costs nothing:
+
+- **You watched it fail this session, or it's a known recurring pain** → the baseline is organic and free. Record the verbatim failure and write the rule.
+- **No observed failure, only a hunch** → this is the imagined-pain fork (SKILL.md Common Pitfalls #10). Either run a baseline to prove it fails (see `references/scenario-testing.md` § Baseline-First for Discipline Content), or drop the rule. Two minutes of proof, or no permanent rule.
+
+Never run a baseline for routine recording where the failure already happened in front of you.
+
 ### Search Before Record (mandatory)
 
 Before writing anything new, search existing docs for the same or similar lesson. This is Tier 1 of the maintenance trigger discipline (see `maintain-docs.md § Step 1b` for the full tier table). It is cheap because the agent already has the new entry's content and context in hand — a targeted scan of 3–5 candidate entries is far cheaper than reading the whole file.

@@ -48,6 +48,97 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-06-03 - Session Discipline: tiered re-read (downstream per-task speed)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/SKILL.md.template` § Session Discipline — replaced the
+    unconditional "re-read this SKILL.md + re-read all route files every task"
+    mandate with a tiered rule: **re-match the route every task** (cheap, catches a
+    different-route task), but **re-read the route's files only when the route
+    changed or context was compacted** (a fresh SKILL.md injection is the signal);
+    background (principles / gotchas / boundaries) is read once per session.
+    Fallback: unsure whether context compacted → re-read.
+  - All thin-shell templates (`templates/shells/CLAUDE.md`, `AGENTS.md`, `CODEX.md`,
+    `GEMINI.md`, `.cursor/rules/workflow.mdc`) — same tiered rewrite of the "New
+    task in same session" Auto-Trigger.
+  - `templates/skill/workflows/fix-bug.md`, `change-managed.md` — pre-step changed
+    from "re-read all required files" to "re-read the route's files only if the
+    route changed or context compacted (see § Session Discipline)".
+  - `references/self-hosting-shell-base.md` — same tiered rewrite; self-hosting root
+    shells regenerated via `scripts/sync-self-shells.sh`.
+  - `references/thin-shells.md`, `README.md`, `SKILL.md` Pitfall #8 — wording
+    aligned to the tiered rule.
+- Why it matters: the old rule made the agent re-read the full SKILL.md + every
+  route file on *every* task in a session — the single biggest recurring per-task
+  read tax for downstream users (hundreds of lines before any work, re-paid each
+  task). The tiered rule keeps Pitfall #8's safety (re-match always catches a
+  different route; compaction triggers a re-read; unsure → re-read) while removing
+  the wasted re-reads of unchanged background and route files. Repeat same-route
+  tasks drop from a full re-read to a cheap re-match.
+- Downstream refresh guidance: adopt the new Session Discipline block and shell
+  Auto-Trigger verbatim. Preserve the behavioral core: re-match every task; re-read
+  on route-change or compaction; when in doubt, re-read. Do not revert to
+  unconditional re-read — that is the tax this removes.
+
+## 2026-06-03 - Baseline-first for discipline content (lightweight, conditional)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `references/scenario-testing.md` — added section "Baseline-First for Discipline
+    Content": skills-as-TDD (RED = agent violates without the rule, GREEN =
+    complies with it) for authoring red flags / rationalization rows / always-never
+    constraints. Explicitly **not** a per-edit gate — scoped to discipline content
+    and tiered so organic failures (ones you already watched) cost nothing; a
+    subagent baseline runs only for an unobserved "just in case" rule, which is the
+    imagined-pain fork. Includes the run steps and the prove-or-drop rule.
+  - `templates/skill/workflows/update-rules.md` — added "Baseline Check (discipline
+    rules only)" after the Recording Threshold: organic failure → record free;
+    hunch with no observed failure → baseline-prove or drop. Routine recording
+    where the failure already happened is exempt.
+  - `SKILL.md` Principle #15 — the Rationalizations Table check now states a row's
+    failure is either organic or proven by a baseline before shipping; no failure +
+    unwilling to baseline = imagined-pain, drop. Edited in place.
+- Why it matters: makes Common Pitfalls #10 (imagined-pain) executable without
+  taxing iteration — most discipline rules reuse a failure you already saw (zero
+  cost); the only paid case is precisely the speculative rule #10 already tells you
+  to stop and justify. Deliberately rejects superpowers' universal "no skill
+  without a failing test first" Iron Law as the wrong tier for a fast-iterating
+  solo meta-skill.
+- Downstream refresh guidance: port the `scenario-testing.md` section and the
+  `update-rules.md` subsection; both are project-agnostic. Keep it conditional — do
+  not promote it to a mandatory gate. Tune pressure types to your domain.
+
+## 2026-06-03 - Description: forbid step-summaries (body-suppression trap)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `references/layout.md` § Description as Trigger Condition — added subsection
+    "Trap: a step-summary in the description suppresses reading the body". A
+    description that summarizes *how* a workflow runs (not just *which* workflows
+    exist) becomes "enough to act on", so the agent executes the lossy summary and
+    never opens the body. Distinct from keyword-stuffing: keyword-stuffing leaks
+    *which workflows exist* (competes with routing); a step-summary leaks *how a
+    workflow runs* (suppresses the body). Includes the superpowers eval evidence
+    (one review vs two), a bad/good example, and a generalized check applying at
+    every summary→detail link (description AND Common Tasks rows / `routing.yaml`
+    labels), tied to Pitfall #8.
+  - `SKILL.md` Principle #7 — restated to name both failure modes (enumerate
+    keywords / summarize steps) and carry a two-part check. Edited in place, no
+    line added (body budget unchanged).
+  - `templates/skill/workflows/profile-project.md` Completion Checklist — the
+    description check now also rejects a step-summary, so the trap is gated on the
+    description-drafting path, not only stored in `references/`.
+- Why it matters: a procedural description silently suppresses the whole skill
+  body — the agent runs a degraded version and never reads the steps. Prior docs
+  only guarded against vague / keyword-stuffed descriptions and missed this
+  opposite (too-procedural) failure mode.
+- Downstream refresh guidance: port the `layout.md` subsection and the
+  `profile-project.md` checklist clause; both are project-agnostic. Preserve your
+  own description trigger phrases — only the *principle* changed, not your
+  project's triggers. If you regenerate `SKILL.md` from `routing.yaml`, re-run
+  sync after adopting the #7 wording.
+
 ## 2026-06-01 - Subagent: make the Parallelism Premise non-blocking-by-mechanism
 
 - Upstream commit: pending in this working tree

@@ -4,7 +4,7 @@
 
 ## Mandatory Pre-Step (cannot skip)
 
-**Re-run `SKILL.md` § Session Discipline before starting.** Re-match this bug against Common Tasks, re-read all required files for that route. No exceptions — see SKILL.md for why.
+**Re-run `SKILL.md` § Session Discipline before starting.** Re-match this bug against Common Tasks; re-read the route's files only if the route changed or context was compacted (see § Session Discipline).
 
 ## Read First
 

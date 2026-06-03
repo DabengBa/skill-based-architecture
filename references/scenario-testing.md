@@ -66,3 +66,46 @@ Add a scenario test when one of these is true:
 Do not ship a heavy scenario harness in the default template. Start with this
 reference and add project-owned tests only when the project has real behavior to
 protect.
+
+## Baseline-First for Discipline Content
+
+The layers above verify *routing and behavior* — they prove a finished skill does
+the right thing. This is a different activity: how you *author* discipline-enforcing
+content (a red flag, a rationalization-table row, an "always/never" rule) so it
+actually changes behavior instead of sitting inert.
+
+**Core idea (skills-as-TDD):** the rule is "production code"; the "test" is a
+pressure scenario on a fresh agent. RED = the agent violates the rule *without* it
+present; GREEN = it complies *with* it present. If you never watched the agent fail
+without the rule, you don't know the rule teaches the right thing — same logic as
+code TDD.
+
+**This is not a mandatory gate on every edit.** It is scoped and tiered so it
+never taxes normal iteration:
+
+| Situation | What to do | Cost |
+|---|---|---|
+| Editing reference / descriptive content | Nothing — no behavior to fail | 0 |
+| Discipline rule, and you already watched the agent fail this session / known recurring pain | Baseline is organic — record the verbatim failure, write the rule | 0 (no subagent) |
+| Discipline rule for a failure you have **not** observed ("just in case") | Run a baseline to prove it, **or** drop the rule | ~2 min, or 0 |
+
+The last row is the only place you spend a subagent run — and it is exactly the
+imagined-pain fork (SKILL.md Common Pitfalls #10). Baseline-first makes that
+pitfall *executable*: instead of arguing whether a hypothetical failure is real,
+prove it cheaply or don't ship. If you won't spend two minutes proving it, that
+answers whether it deserves permanent context weight.
+
+**Running a baseline (only for the unevidenced case):**
+
+1. Write one pressure scenario — the task plus the pressure that tempts the
+   violation (time, sunk cost, authority, exhaustion).
+2. Dispatch a subagent that does **not** have the candidate rule in context. Watch
+   what it does; record its rationalization **verbatim** — that exact wording
+   becomes the rationalization-table row.
+3. No failure → the rule is imagined-pain; stop, don't ship it.
+4. Failure confirmed → write the rule targeting that exact rationalization.
+   Optional GREEN (high-stakes rules only): re-run with the rule to confirm
+   compliance.
+
+Reuse organic failures whenever you have them — they are free baselines.
+Manufacture a baseline only when you have a hunch but no evidence.

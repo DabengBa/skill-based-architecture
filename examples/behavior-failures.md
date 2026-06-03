@@ -120,9 +120,9 @@ Then proceeds with the correct rules loaded, ships on first-pass review.
 
 **The mechanism that caught it:** Three-layer redundancy documented in [SKILL.md § Common Pitfalls #8](../SKILL.md):
 
-1. `SKILL.md § Core Principles` — declares re-read as a hard rule
-2. `workflows/*.md § Step 0` — every workflow starts with "re-read SKILL.md if session has ≥ 1 prior task"
-3. `CLAUDE.md / AGENTS.md` thin shells — include `**New task in same session** → re-read` auto-trigger
+1. `SKILL.md § Session Discipline` — declares the re-match-every-task / re-read-on-change-or-compaction rule
+2. `workflows/*.md § Step 0` — every workflow starts with "re-match the route; re-read its files if the route changed or context compacted"
+3. `CLAUDE.md / AGENTS.md` thin shells — include the **New task in same session** auto-trigger
 
 Each layer can be silenced by compression; the next layer catches it.
 

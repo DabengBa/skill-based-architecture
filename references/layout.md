@@ -106,6 +106,28 @@ Guidelines:
 - **Include activation conditions** — describe the context, not just the action
 - **Do not enumerate workflows** — `fix-bug`, `release`, `maintain-docs`, etc. belong in Common Tasks unless they identify a separate domain skill
 
+#### Trap: a step-summary in the description suppresses reading the body
+
+The guidelines above prevent a *vague* or *keyword-stuffed* description. The opposite failure is a description that is too **procedural**. The `description` is always-loaded (injected for matching); the body loads on demand. An agent stops reading once it has "enough to act" — so a description that summarizes *how* the skill works becomes enough to act on, and the body is never opened. The agent then runs a lossy version of the procedure.
+
+Evidence (superpowers eval): a description reading `...dispatches subagent per task with code review between tasks` made the agent run **one** review though the body specified **two** (spec-compliance then code-quality); cutting it back to `Use when executing implementation plans with independent tasks` made the agent read the body and run both.
+
+This is distinct from keyword-stuffing: keyword-stuffing leaks *which workflows exist* (competes with routing); a step-summary leaks *how a workflow runs* (suppresses the body). A description can avoid the first and still fail the second.
+
+**Bad** (step-summary — agent acts on it, skips the workflow):
+```yaml
+description: Use when migrating rules — consolidate scattered docs into one skill folder and generate thin shells
+```
+
+**Good** (trigger only — agent must open the workflow to learn the steps):
+```yaml
+description: >
+  This skill should be used when the user asks to "把规则迁移到 skills 目录",
+  "整理项目规则", or "migrate project rules to skills".
+```
+
+**Check — applies at every summary→detail link, not just the description:** does the description, *or any Common Tasks row / `routing.yaml` label*, carry any HOW an agent could execute without opening the body or workflow file? If yes, the agent will do exactly that and skip the detail — strip it to WHEN + which-file; the steps live only in the body/workflow. (Same shortcut as Pitfall #8 "I already know the rules", generalized: any layer that leaks enough HOW gets the layer below it skipped.)
+
 Re-read the `description` block aloud after changing frontmatter. Listen for over-broad scope, workflow keyword stuffing, and (in multi-skill repos) duplicate trigger phrases between skills. No script substitutes for this judgment.
 
 The template above uses a two-tier structure:
