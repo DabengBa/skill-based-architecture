@@ -48,6 +48,79 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-06-03 - footprint.sh: static per-task read-cost dashboard (Tier 1)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/scripts/footprint.sh` (NEW) — static "speed dashboard":
+    computes, in lines, the Always-Read floor, each route's per-task read cost
+    (Always Read + required_reads + workflow), and the read-everything baseline,
+    from `routing.yaml` + file sizes. Runs nothing, costs nothing per task. Diff the
+    numbers before/after a change to catch the per-task floor creeping up.
+- Why it matters: the skill measured structural health (line counts, links, orphans)
+  but had no signal for whether it actually saves read cost per task. This makes the
+  routing benefit visible (real chaos install: median task reads 429 lines vs 2243
+  read-everything = 81% less; floor = 262) and gives a regression watch target.
+  Honest scope: measures the routing/footprint dimension only — not skill-vs-no-skill
+  (a with/without demo, Tier 3) nor discipline quality (pressure tests). Lines are a
+  proxy — good for trend, not exact accounting.
+- Downstream refresh guidance: copy `scripts/footprint.sh` (update-upstream step 5
+  picks up new mechanism files). Run `bash skills/<name>/scripts/footprint.sh <name>`
+  anytime; watch the Always-Read floor across changes. Not wired into CI/closure by
+  design (zero per-task cost).
+
+## 2026-06-03 - Upstream sync pointer + upstream-status.sh (multi-project sync)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/scripts/upstream-status.sh` (NEW) — downstream reader: reads
+    `.upstream-sync` (recorded upstream sha), clones/fetches upstream, and lists the
+    `UPSTREAM-CHANGES.md` entries added since that sha. Exit 1 if behind, 0 if
+    current, 2 if no pointer. Diagnosis only — porting stays update-upstream.md.
+    Distinct from the upstream-side `check-upstream-changes.sh` guard.
+  - `templates/skill/.upstream-sync` (NEW) — project-owned pointer: `upstream:` URL
+    + `synced_sha:`. The version handle is the upstream git sha (no semver).
+  - `templates/skill/workflows/update-upstream.md` — step 3 now runs
+    `upstream-status.sh` to scope the refresh to "what's new since your sync point"
+    (precise work-list instead of eyeballing the changelog); new step 11 writes
+    `.upstream-sync` to the synced HEAD so the pointer stays current automatically;
+    `.upstream-sync` classified as project-owned.
+- Why it matters: "am I current with upstream / what do I need to pull?" was manual
+  prose-reading + hand-diffing two repos — painful across multiple installs. Now it
+  is one command that prints exactly the entries you are missing. The version handle
+  is the upstream git sha, recorded at sync time, so it cannot go stale like a
+  hand-bumped semver (which is why this is not a re-introduced version number).
+- Downstream refresh guidance: copy `scripts/upstream-status.sh` (step 5 picks up new
+  mechanism files automatically) and let update-upstream.md's final step create
+  `.upstream-sync`. First run with no pointer just shows recent entries. Optional v2:
+  add a framework-files `git diff` to the reporter.
+
+## 2026-06-03 - Shell behavior block becomes a single-source generated block
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/scripts/sync-routing.sh` — the shared shell behavior block
+    (Auto-Triggers + Red Flags: re-read rule, closure trigger, skip-list, record
+    rule, AAR red-flag) is now defined ONCE in the script and injected into every
+    shell between `<!-- BEHAVIOR_BLOCK_START/END -->` markers, the same mechanism as
+    ALWAYS_READ and ROUTING_BOOTSTRAP. Opt-in per shell: only shells that already
+    contain the markers are synced, so older scaffolds without them do not fail.
+  - `templates/shells/{CLAUDE,AGENTS,CODEX,GEMINI}.md` + `.cursor/rules/workflow.mdc`
+    — hand-authored Auto-Triggers/Red-Flags replaced with the markers; content now
+    generated and identical across shells. Normalized CODEX and the Cursor shell
+    (they were missing the closure + red-flags bullets, and the Cursor shell pointed
+    closure at `update-rules.md` instead of `task-closure.md`).
+  - `templates/skill/routing.yaml`, `references/thin-shells.md` — doc note that the
+    behavior block is generated (edit it in `sync-routing.sh`, not per shell).
+- Why it matters: a one-line change to a behavioral rule (e.g. the tiered re-read)
+  used to mean hand-editing ~6 shells + risking cross-harness drift (edit CLAUDE.md,
+  forget GEMINI.md → different behavior per harness). Now it is one edit in
+  `sync-routing.sh` + re-sync. Closes the project's own worst DRY violation.
+- Downstream refresh guidance: refresh `scripts/sync-routing.sh`, then add
+  `<!-- BEHAVIOR_BLOCK_START -->` / `<!-- BEHAVIOR_BLOCK_END -->` markers around your
+  shells' Auto-Triggers/Red-Flags region and run sync. Until the markers exist, the
+  script leaves your hand-authored block alone (no failure), so adoption is gradual.
+
 ## 2026-06-03 - Session Discipline: tiered re-read (downstream per-task speed)
 
 - Upstream commit: pending in this working tree

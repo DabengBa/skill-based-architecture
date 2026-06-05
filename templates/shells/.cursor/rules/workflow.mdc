@@ -29,8 +29,17 @@ For every new task:
 5. If no route matches, use the `other` route.
 <!-- ROUTING_BOOTSTRAP_END -->
 
-**New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{{NAME}}/SKILL.md` injection is the signal) — unchanged background stays in context. Can't tell if context compacted? Re-read.
+<!-- BEHAVIOR_BLOCK_START -->
+## Auto-Triggers
 
-Before declaring any non-trivial task complete → run Task Closure Protocol (see `skills/{{NAME}}/workflows/update-rules.md`).
+- **New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{{NAME}}/SKILL.md` injection is the signal) — unchanged background stays in context, don't re-read it every task. Can't tell if context compacted? Re-read.
+- Before declaring any non-trivial task complete → run Task Closure Protocol (see `skills/{{NAME}}/workflows/task-closure.md`)
+- Skip closure only for: formatting-only, comment-only, dependency-version-only, or behavior-preserving refactors
+- When user asks to "record/save/remember" something → project-level knowledge goes to `skills/{{NAME}}/` docs; personal preferences go to agent memory
+
+## Red Flags — STOP
+
+- "Just this once I'll skip the AAR" → stop. See `skills/{{NAME}}/workflows/task-closure.md` § Rationalizations to Reject.
+<!-- BEHAVIOR_BLOCK_END -->
 
 Conflicts between loaded project instructions → formal docs in `skills/{{NAME}}/` win. This does not override harness-native skill name precedence.

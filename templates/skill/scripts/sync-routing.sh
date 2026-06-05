@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# sync-routing.sh — Generate Always Read, Common Tasks, and shell bootstraps from routing.yaml.
+# sync-routing.sh — Generate Always Read, Common Tasks, shell bootstraps (from
+# routing.yaml), and the shared behavior block (auto-triggers + red flags) into shells.
 # Usage:
 #   bash scripts/sync-routing.sh [skill-name|skill-root] [--check]
 #   bash skills/<name>/scripts/sync-routing.sh <name> [--check]
@@ -43,6 +44,8 @@ bootstrap_start = "<!-- ROUTING_BOOTSTRAP_START -->"
 bootstrap_end = "<!-- ROUTING_BOOTSTRAP_END -->"
 always_start = "<!-- ALWAYS_READ_START -->"
 always_end = "<!-- ALWAYS_READ_END -->"
+behavior_start = "<!-- BEHAVIOR_BLOCK_START -->"
+behavior_end = "<!-- BEHAVIOR_BLOCK_END -->"
 
 if not manifest.exists():
     raise SystemExit(f"Missing routing manifest: {manifest}")
@@ -211,6 +214,19 @@ For every new task:
 4. Follow that route's `workflow`.
 5. If no route matches, use the `other` route."""
 
+# Single source for the behavioral triggers duplicated across every thin shell.
+# Edit here once, re-run sync-routing.sh → all shells update together.
+behavior_block = f"""## Auto-Triggers
+
+- **New task in same session** → always re-match the route (Common Tasks / `routing.yaml`); the new task may need a different route. Re-read the route's files only if the route changed or context was compacted (a fresh `skills/{name}/SKILL.md` injection is the signal) — unchanged background stays in context, don't re-read it every task. Can't tell if context compacted? Re-read.
+- Before declaring any non-trivial task complete → run Task Closure Protocol (see `skills/{name}/workflows/task-closure.md`)
+- Skip closure only for: formatting-only, comment-only, dependency-version-only, or behavior-preserving refactors
+- When user asks to "record/save/remember" something → project-level knowledge goes to `skills/{name}/` docs; personal preferences go to agent memory
+
+## Red Flags — STOP
+
+- "Just this once I'll skip the AAR" → stop. See `skills/{name}/workflows/task-closure.md` § Rationalizations to Reject."""
+
 def validate_paths():
     errors = []
     for item in always_read:
@@ -261,15 +277,24 @@ shell_targets = ["AGENTS.md", "CLAUDE.md", "CODEX.md", "GEMINI.md"]
 # and rely on this script to keep its routing block in sync.
 if (repo_root / ".codex" / "instructions.md").exists():
     shell_targets.append(".codex/instructions.md")
+def maybe_behavior(path):
+    # Behavior block is opt-in per shell: only sync where the markers already exist,
+    # so older scaffolds without them don't fail. Add the BEHAVIOR_BLOCK markers to a
+    # shell to bring its behavioral triggers under single-source generation.
+    if path.exists() and behavior_start in path.read_text():
+        targets.append((path, behavior_start, behavior_end, behavior_block))
+
 for rel in shell_targets:
     path = repo_root / rel
     targets.append((path, always_start, always_end, always_shell_block))
     targets.append((path, bootstrap_start, bootstrap_end, bootstrap_block))
+    maybe_behavior(path)
 rules_dir = repo_root / ".cursor" / "rules"
 if rules_dir.exists():
     for path in sorted(rules_dir.glob("*.mdc")):
         targets.append((path, always_start, always_end, always_shell_block))
         targets.append((path, bootstrap_start, bootstrap_end, bootstrap_block))
+        maybe_behavior(path)
 cursor_entry = repo_root / ".cursor" / "skills" / name / ("SKILL.md.template" if template_mode else "SKILL.md")
 targets.append((cursor_entry, bootstrap_start, bootstrap_end, bootstrap_block))
 

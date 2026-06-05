@@ -3,7 +3,9 @@
 # Source of truth for Always Read, Common Tasks, and shell bootstraps.
 # Edit this file first, then run `bash scripts/sync-routing.sh`.
 # Downstream from repo root: `bash skills/<name>/scripts/sync-routing.sh <name>`.
-# Do not hand-edit generated Always Read lists, route summaries, or bootstrap blocks.
+# Do not hand-edit generated Always Read lists, route summaries, bootstrap blocks,
+# or shell behavior blocks (auto-triggers + red flags). Edit the behavior block in
+# scripts/sync-routing.sh, then re-run sync.
 
 # FILL: Keep this to 2-3 files that apply to every task. Domain-specific rules
 # belong in task required_reads below, not here.

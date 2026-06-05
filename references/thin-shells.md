@@ -34,7 +34,7 @@ For every new task:
 
 ## Common Thin Shell Body
 
-All thin shells share the same core content. In the scaffold, task data lives in `skills/<name>/routing.yaml`; edit the manifest and run `scripts/sync-routing.sh` instead of hand-editing shell copies.
+All thin shells share the same core content, and two parts of it are **generated**, not hand-edited per shell: route data lives in `skills/<name>/routing.yaml`, and the shared **behavior block** (Auto-Triggers + Red Flags) lives once in `scripts/sync-routing.sh`. Edit those single sources and run `scripts/sync-routing.sh` to regenerate every shell. The behavior block sits between `<!-- BEHAVIOR_BLOCK_START -->` / `<!-- BEHAVIOR_BLOCK_END -->` markers; a shell opts into generation by having those markers (older shells without them are left untouched). Changing a behavioral rule is then one edit + re-sync, not N hand-edits across shells — and there is no cross-harness drift.
 
 ```md
 Formal docs live under `skills/`. Read `skills/*/SKILL.md` — default to `primary: true` skill; only switch when task clearly matches another skill's description.

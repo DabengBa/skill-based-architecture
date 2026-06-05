@@ -21,10 +21,10 @@ Use when the user says the upstream skill-based-architecture project changed and
    tmp="$(mktemp -d)"
    git clone https://github.com/WoJiSama/skill-based-architecture.git "$tmp/upstream"
    ```
-3. **Read upstream update notes** — if `$tmp/upstream/UPSTREAM-CHANGES.md` exists, read the newest relevant entries to learn likely changed areas and intended downstream handling. Use this as a map, not as proof that a file should change, and do not copy it into the downstream repo. **Skip any entry whose first bullet is `- Status: superseded by …` or `- Status: deprecated …`** — superseded entries describe guidance that has since been reversed (follow the newer entry the line points to instead); deprecated entries describe mechanisms that were removed entirely.
+3. **Read upstream update notes, scoped to your sync point** — run `bash "skills/$NAME/scripts/upstream-status.sh" "$NAME" --upstream "$tmp/upstream"`. It lists exactly the `UPSTREAM-CHANGES.md` entries added since this project's recorded `.upstream-sync` (no pointer yet → it shows the newest entries). **That list is your work-list for this refresh** — read those entries in `$tmp/upstream/UPSTREAM-CHANGES.md` to learn likely changed areas and intended downstream handling. Use them as a map, not as proof that a file should change, and do not copy the changelog into the downstream repo. **Skip any entry whose first bullet is `- Status: superseded by …` or `- Status: deprecated …`** — superseded entries describe guidance that has since been reversed (follow the newer entry the line points to instead); deprecated entries describe mechanisms that were removed entirely.
 4. **Classify files before editing**
    - Upstream-only: `$tmp/upstream/UPSTREAM-CHANGES.md`. Read during refresh; never port into downstream.
-   - Project-owned: `rules/project-rules.md`, `rules/coding-standards.md`, `references/gotchas.md`, project-specific workflows, `SKILL.md` prose, `routing.yaml` task examples. Preserve; merge manually if needed.
+   - Project-owned: `rules/project-rules.md`, `rules/coding-standards.md`, `references/gotchas.md`, project-specific workflows, `SKILL.md` prose, `routing.yaml` task examples, and `.upstream-sync` (this project's recorded sync point — maintained locally, never ported from upstream). Preserve; merge manually if needed.
    - Mechanism-owned: `scripts/*.sh`, `scripts/_parse_conformance.py`, `conformance.yaml`, universal hooks, protocol-blocks, reusable workflow scaffolding. Compare and port useful upstream changes. The local `conformance.yaml` is a **snapshot from initial scaffold** — overwrite it from upstream after a successful refresh; otherwise it silently re-validates against the old contract.
    - Generated: Always Read, Common Tasks, thin-shell bootstraps. Regenerate only.
 5. **Scan for new mechanism files** — list files under `$tmp/upstream/templates/skill/scripts/`, `$tmp/upstream/templates/skill/workflows/`, `$tmp/upstream/templates/protocol-blocks/`, and `$tmp/upstream/templates/hooks/` that have no counterpart in your skill. Examples this pass already shipped: `conformance.yaml`, `check-version-conformance.sh`, `_parse_conformance.py`. For each missing mechanism file, copy whole-file as new (Hard Rule #4 permits this for missing files). After copy, treat the new file as mechanism-owned for future refreshes — it joins the comparison set in step 6.
@@ -46,7 +46,14 @@ Use when the user says the upstream skill-based-architecture project changed and
     If this fails: the upstream upgrade is incomplete. Re-apply the missing template sections (e.g. port the Gate/section text from the upstream workflow file into the downstream one), then re-run. After it passes, sync the local manifest with upstream's so the next refresh starts from a fresh snapshot:
     - **Default case** (local matches a historical upstream version — verify with `git -C "$tmp/upstream" log -p -- templates/skill/conformance.yaml`): replace from upstream as a mechanism-owned file, consistent with Hard Rule #4.
     - **If you added project-specific `must_contain` entries to local**: do not replace. Merge new upstream entries into local while keeping your additions, then re-run the conformance check against the merged manifest.
-11. **Final report** — list upstream note entries consulted, upstream changes adopted, local customizations preserved, files intentionally left untouched, validation results (including the conformance check against upstream's manifest), any new mechanism files copied, and any unresolved semantic conflicts.
+11. **Update the sync pointer** — after a successful refresh with passing validation, record the upstream HEAD you synced from, so the next `upstream-status.sh` is precise:
+    ```bash
+    printf 'upstream: %s\nsynced_sha: %s\nsynced_date: %s\n' \
+      "https://github.com/WoJiSama/skill-based-architecture" \
+      "$(git -C "$tmp/upstream" rev-parse HEAD)" "$(date +%F)" > "skills/$NAME/.upstream-sync"
+    ```
+    (Preserve any leading comment lines if the file already has them.) This is what keeps "am I current?" a one-command check instead of a manual diff.
+12. **Final report** — list upstream note entries consulted, upstream changes adopted, local customizations preserved, files intentionally left untouched, validation results (including the conformance check against upstream's manifest), any new mechanism files copied, and any unresolved semantic conflicts.
 
 ## Stop Conditions
 

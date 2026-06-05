@@ -1,0 +1,7 @@
+# Records which upstream skill-based-architecture sync point this project is on.
+# Project-owned state: maintained locally, never ported from upstream.
+# - workflows/update-upstream.md sets synced_sha (final step) after each refresh.
+# - scripts/upstream-status.sh reads it to report what's new upstream since then.
+upstream: https://github.com/WoJiSama/skill-based-architecture
+synced_sha: <set by update-upstream.md on first refresh>
+synced_date: <set on first refresh>
