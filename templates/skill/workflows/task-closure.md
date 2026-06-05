@@ -28,6 +28,7 @@ Once the policy says this task enters the protocol, the task is NOT complete unt
    - `bash "skills/<skill-name>/scripts/sync-routing.sh" "<skill-name>" --check` — generated Always Read, Common Tasks, and bootstraps match `routing.yaml`
    - `bash "skills/<skill-name>/scripts/smoke-test.sh" "<skill-name>" --phase 8` — markdown links, structure, routing, and budgets still pass
    - `(cd "skills/<skill-name>" && bash scripts/audit-orphans.sh)` — no `rules/` or `references/` file has zero inbound links
+   - `bash "skills/<skill-name>/scripts/route-health.sh" "<skill-name>"` — advisory routing-quality smells (no/weak triggers, overlap, language); does not block, but review when this task added a route or changed its triggers
 5. **Cross-reference content sync** — if this task changed the *meaning* of a `rules/` or `references/` file (not just paths), grep `workflows/` for files that reproduce the changed invariant and update them in the same commit. Rule meaning drifts silently otherwise; a workflow that repeats a now-wrong invariant actively misleads.
 6. **Behavior validation fit** — if the edit adds or changes a high-risk route, non-idempotent workflow, executable script contract, or external skill handoff, decide whether a contract or scenario test is needed; structural smoke tests alone do not prove route behavior.
 

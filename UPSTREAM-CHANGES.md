@@ -48,6 +48,31 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-06-05 - route-health.sh: static routing-quality lint (Tier 1)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/scripts/route-health.sh` (NEW) — static routing-QUALITY lint.
+    Complements (does not duplicate) sync-routing.sh: sync-routing validates STRUCTURE
+    (missing files, schema, missing `other`); route-health flags QUALITY SMELLS it
+    doesn't — routes that can't match well: no/weak `trigger_examples` (<2), trigger
+    overlap (discriminating-token intersection, df==2 so project/domain words are
+    ignored), and language mismatch (English-only triggers in a CJK-dominant skill, or
+    vice versa). Pure static read of routing.yaml; no usage data, no logging, no file
+    written; advisory (exit 0). Does NOT catch time-drift (needs a Tier 2 usage miner).
+  - Wired as advisory into activation points that already fire (not per task, no
+    timer): `task-closure.md` path-integrity gate (when routing changed),
+    `update-upstream.md` validate step, `profile-project.md` + `maintain-docs.md`
+    checklists.
+- Why it matters: footprint.sh measures routing COST; nothing measured routing
+  QUALITY (mis-route risk, dead/weak routes). Trigger hit-rate is the skill's core
+  thesis but had no check. This surfaces structural routing smells at exactly the
+  moments routing can change. Honest gap: edit-introduced smells only; silent
+  time-drift (routes that stopped matching real work without an edit) needs Tier 2.
+- Downstream refresh guidance: copy `scripts/route-health.sh` (update-upstream step 5
+  picks up new mechanism files) and add the four advisory call-sites. It writes
+  nothing and never blocks, so adoption is safe and incremental.
+
 ## 2026-06-03 - footprint.sh: static per-task read-cost dashboard (Tier 1)
 
 - Upstream commit: pending in this working tree

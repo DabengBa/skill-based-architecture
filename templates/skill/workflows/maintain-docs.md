@@ -148,6 +148,7 @@ Run after any split, merge, rename, or deletion of files under `skills/{{NAME}}/
 - [ ] Cross-references between rules/references files point to valid targets
 - [ ] Thin shells still point to the current `skills/{{NAME}}/SKILL.md` or documented multi-skill router, and generated bootstraps match `routing.yaml`
 - [ ] No orphaned files (file exists but no entry links to it)
+- [ ] `route-health.sh` shows no new routing-quality smells (no/weak triggers, overlap, language) — advisory
 - [ ] No duplicated content (each rule maintained in exactly one place)
 - [ ] If a file was deleted, no other file still references it
 

@@ -64,3 +64,4 @@ Each non-obvious claim must carry one evidence label. Only `Confirmed from code/
 - [ ] Domain topology explains trigger-language and rule-set pressure before recommending a split
 - [ ] Unknowns remain labeled
 - [ ] No brainstorm-only claim was promoted to a hard rule
+- [ ] Ran `route-health.sh`; any no/weak-trigger or overlap warnings on the drafted routes were addressed or noted
