@@ -11,6 +11,8 @@ status: draft                          # draft | executing | done | abandoned
 
 # Plan: {{Title}}
 
+> **Canonical structure lives in [`templates/skill/workflows/plan-feature.md` § Plan Skeleton](../../templates/skill/workflows/plan-feature.md).** This file mirrors it; if the two ever disagree, plan-feature.md wins. Do not redefine the section list here.
+>
 > Plans are frozen snapshots. Edit freely while `status: draft` or `executing`. Once `status: done` or `abandoned`, this file is read-only — lift any still-load-bearing content into `rules/` / `references/gotchas.md` / SKILL.md Pitfalls instead.
 
 ## Context
@@ -23,25 +25,40 @@ The thing we are trying to solve, stated concretely.
 
 ## Options Considered
 
+≥ 2 genuinely distinct approaches (different shape, not one + strawmen). Diverge before converging.
+
 - **Option A: ...** — Pros / cons.
 - **Option B: ...** — Pros / cons.
-- **Option C: ...** — Pros / cons.
 
 ## Chosen Approach
 
 Which option won, and the one or two sentences of "why" that will survive into the live structure on close.
 
-## Steps
+## Requirements & Acceptance Criteria
 
-Concrete actions, in order. Tick off as you go.
+Testable outcomes. What proves this plan was delivered.
 
-- [ ] Step 1
-- [ ] Step 2
-- [ ] Step 3
+## Out of Scope
+
+Explicit exclusions.
+
+## Task Breakdown
+
+Executable decomposition — **omit this section for a single-task plan**. One block per task; each declares its interface so it can be built and verified independently (and dispatched to a subagent with zero re-derivation).
+
+### Task 1 — <verb-noun>
+
+- **Files**: owns `...`; shares `...` (read-only); forbidden: everything else
+- **Consumes**: the interface(s) earlier tasks or existing code expose that this task depends on
+- **Produces**: the interface later tasks rely on — exact signatures / types / exports / routes
+- **Acceptance**: a literal check — `<test cmd>` exits 0 / `grep -c X` returns 0 / observable behavior
+- [ ] sub-steps only when the path is non-obvious
 
 ## Open Questions
 
-Things still unresolved at the time of drafting. Closed questions should be moved into the body above as decisions, not left here as resolved checkboxes.
+Unresolved *decisions* at the time of drafting (a "what happens when the dependency is down?" decision is an open question, not just a missing input value). Closed questions move into the body above as decisions, not left here as resolved checkboxes.
+
+<!-- Large task: split analysis into angle files (architecture.md / risks.md / ...). Each angle file opens with `> Conclusion: <one line>`; add a `## Synthesis` section above that links every angle and states the chosen path. See plan-feature.md § Large Plan. -->
 
 <!-- For abandoned plans, replace the body with a single section: -->
 <!-- ## Why Abandoned -->

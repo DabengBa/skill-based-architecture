@@ -108,6 +108,17 @@ tasks:
       - 这个任务比较大,分几路做
       - 多个独立子任务并行
       - run multiple subtasks
+  - id: receiving-review
+    labels:
+      en: Act on code review feedback
+      zh: 处理代码评审意见
+    route: follow `workflows/receiving-review.md`; verify each point against code before acting, push back with evidence when wrong
+    workflow: workflows/receiving-review.md
+    trigger_examples:
+      - 帮我看看这些评审意见
+      - reviewer 提了几个问题,处理一下
+      - address this PR review feedback
+      - 改一下 code review 提的点
   - id: other
     labels:
       en: Other / unlisted task

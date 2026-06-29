@@ -104,12 +104,13 @@ For UI / interaction / layering / host-compatibility issues:
 
 ### Activation Check (mandatory gate)
 
-**Rule: no new `references/` entry ships without a declared activation path.**
+**Rule: no new `references/` entry ships without a declared activation path — one that is both *reached* and *acted on*.**
 
-Before recording any new entry in `references/`, answer both:
+Before recording any new entry in `references/`, answer all three:
 
 1. **Where will the next agent hit this?** Name the specific trigger — a workflow checklist line, a `routing.yaml` route or `always_read` entry that generates `SKILL.md` / thin-shell content, or a concise rule summary. "In `references/` under the right topic" is not an answer; that is storage, not activation.
 2. **Is that trigger guaranteed to fire for the task this entry prevents?** If the task path never reads the referencing file, the entry is inert — reject recording.
+3. **When the agent reads it, does it change the next action?** A correct-but-inert entry — read, understood, then the agent proceeds exactly as it would have — is reached but not activated. Phrase the entry as the action it should trigger (the file to open, the check to run, the step to skip), not as a background fact. Reachable ≠ useful; the structural gates (`audit-orphans`, `route-reachability`, `smoke-test`) prove reach, never actionability — only this question does.
 
 If no activation path exists, do one of these and re-check:
 
@@ -129,6 +130,7 @@ This gate applies to **every** record, not just high-cost ones. Unactivated `ref
 - Things immediately obvious from reading the code (e.g. "this function takes two parameters")
 - Minor personal preferences (e.g. "I think this variable name is bad")
 - Content already clearly documented in official framework docs (don't copy official docs into rules)
+- **Content whose only purpose is to move an external metric / score (Goodhart).** An eval, benchmark, or usage score is a *signal to improve the skill* — run its lessons through these same gates (threshold, generalization, activation) — never a *target to optimize*. Test: would you write this if the metric didn't exist? No → drop it. (Sibling of SKILL.md Common Pitfalls #10, imagined-pain engineering: both are doing work for the wrong reason.)
 
 ### Recording Format
 

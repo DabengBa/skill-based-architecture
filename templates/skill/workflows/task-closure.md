@@ -22,6 +22,7 @@ Decide the task type first, then decide whether to enter Task Closure Protocol. 
 Once the policy says this task enters the protocol, the task is NOT complete until every triggered gate is handled:
 
 1. **Main work + original-constraint check** — before final validation, restate the original request, chosen route, and forbidden shortcuts; if the task was long/interrupted and you cannot, run `protocol-blocks/reboot-check.md`, then verify/tests pass
+   - **Fresh verification evidence (gate)** — claim a status only from a command you ran *in this same message* whose output and exit code you read. "Tests pass / build green / lint clean / done" asserted from a remembered or earlier run — or hedged with "should / probably / seems" — is not verified. No fresh evidence → run the command now, or do not make the claim. (Don't re-run validators a hook already ran this turn; the harness result is fresh evidence.)
 2. **30-second AAR scan** — run the checklist below; all "no" = stop here
 3. **Record if needed** — any "yes" → apply the **Recording Threshold** and follow the recording mechanics in [`update-rules.md`](update-rules.md) (§ Recording Threshold → Search Before Record → Where To Record → Activation Check → Generalization Rule). **Reconcile before writing** (run `bash scripts/skill-asset where <keywords>` to surface candidate destination sections; merge into the closest existing section, or create a new one only when no fit) → record at the chosen destination
 4. **Path integrity gate** — fires only when this task modified skill routing, entry shells, scripts, file paths, generated blocks, or `.md` content that may break links/structure. Run these from the project repo root before commit; fix failures in the same commit:
@@ -45,6 +46,7 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 | Rationalization | Reality |
 |---|---|
 | "This task changed behavior but is small — skip AAR" | Behavior change is the trigger; size is not. The AAR scan takes 30 seconds; skipping it is slower than doing it. Read-only tasks are already exempted by the Trigger Policy — do not stretch the "small" excuse into "no AAR ever" |
+| "I ran the tests earlier and they passed — I can call it green" | A status claim is only as fresh as the last run *in this message*. Code changed since; re-run and read the exit code. "Earlier it passed" is not "it passes now" — that gap is exactly where a regression ships silently |
 | "I'll run AAR at the end of the session" | You will forget. The scan must happen at task closure, not batched |
 | "Nothing new happened, just a routine fix" | If nothing new happened, the scan returns "no" on all four questions in 30 seconds. Do it anyway |
 | "The user is in a hurry" | The protocol exists *because* hurry produces the worst pitfalls. Pressure is a reason to run AAR, not skip it |
@@ -67,6 +69,7 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 - "Nobody will know I skipped" — the next pitfall will
 - "The AAR is for big changes" — scope does not determine value; novelty does
 - "This is overhead, not work" — Task Closure *is* the task; anything that ships without it is half-done
+- "It should pass / probably builds / seems to work" said as a completion claim — you have not run it this message. A hedge word in front of a status claim is the tell. Run it, read the exit code, then claim
 
 ## After-Action Review
 

@@ -33,7 +33,7 @@ distilled_to:            # required when done; list the live-structure files tha
 ---
 ```
 
-Body: free form. Common sections — context / problem / options considered / chosen approach / steps / open questions.
+Body follows the **canonical Plan Skeleton** — defined once in [`../../templates/skill/workflows/plan-feature.md` § Plan Skeleton](../../templates/skill/workflows/plan-feature.md), mirrored by [`_TEMPLATE.md`](_TEMPLATE.md): Context → Problem → Options Considered → Chosen Approach → Requirements & Acceptance Criteria → Out of Scope → Task Breakdown (omit if single-task) → Open Questions.
 
 ### Complex plan — directory `YYYY-MM-DD-slug/`
 
@@ -47,6 +47,8 @@ docs/plans/YYYY-MM-DD-slug/
 That is the entire required structure. Add whatever else this specific task needs — a decisions log, research notes, evidence snippets, a checklist — using filenames that fit the work, **not** a canonical schema. If `prd.md` is the only file that ever exists in the directory, the plan is correct and complete.
 
 Resist pre-creating empty files. Add a sibling only when `prd.md` itself starts to bloat with content that wants to live separately. **Don't promote past behavior into a contract**: if past plans happened to use `decisions.md` or `research/`, that does not mean the next plan owes them.
+
+`prd.md`'s *internal* sections follow the canonical Plan Skeleton (above); that shapes the document, not the directory. The "no canonical schema" rule is about **files** in the directory — the section list inside `prd.md` is canonical, the set of sibling files is not.
 
 ## Lifecycle
 

@@ -130,6 +130,19 @@ tasks:
       - distill plan conclusions
       - scan related rules and gotchas
 
+  - id: receiving-review
+    labels:
+      en: Act on code review feedback
+      zh: 处理代码评审意见
+    required_reads:
+      - SKILL.md
+      - templates/skill/workflows/receiving-review.md
+    workflow: templates/skill/workflows/receiving-review.md
+    trigger_examples:
+      - 处理评审意见
+      - reviewer 提的问题改一下
+      - address review feedback on this change
+
   - id: other
     labels:
       en: Other

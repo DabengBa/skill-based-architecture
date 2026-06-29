@@ -25,7 +25,11 @@ required_sections:
   # NOT asserted: the canonical schema (decisions.md / implement.jsonl /
   # check.jsonl / etc.) was removed 2026-05-19 after 0 plans ever used it. The
   # only required file inside a complex plan dir is prd.md; everything else is
-  # the author's call.
+  # the author's call. Likewise NOT asserted: the Plan Skeleton section
+  # vocabulary, "## Task Breakdown", and "## Brainstorm" (added 2026-06-27) —
+  # these are upstream guidance a project may adapt (the skeleton is a
+  # recommended menu, not a mandatory section list), so they stay out of
+  # must_contain by design.
   - file: workflows/plan-feature.md
     must_contain:
       - "## Complexity Gate"

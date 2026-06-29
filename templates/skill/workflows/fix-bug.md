@@ -6,6 +6,8 @@
 
 **Re-run `SKILL.md` § Session Discipline before starting.** Re-match this bug against Common Tasks; re-read the route's files only if the route changed or context was compacted (see § Session Discipline).
 
+**Root-cause-first gate:** no fix before the root cause is identified — the *actual* cause, not the first plausible one. A fix applied to a symptom you haven't traced is a guess; if it's wrong you've added a second bug on top of the first. (Backstop: § Three Strikes — if three fixes fail, the premise itself is wrong.)
+
 ## Read First
 
 1. Re-open `SKILL.md` → match this bug to a Common Tasks route
@@ -49,6 +51,16 @@ Dispatch in parallel. The main agent reads only the verdicts (not the supporting
 
 **Degraded harness (Cursor / Codex / Gemini)**: skip the literal dispatch, but still write down the list of hypotheses + the verification region for each before reading code. The discipline of "decide what would refute each, before reading" survives even without subagents.
 
+## Three Strikes — stop and question the architecture
+
+If **three distinct fixes** have failed to resolve the same bug, stop — do not attempt a fourth patch. Three misses is not bad luck; it means the model of the problem is wrong. One of these is almost always true:
+
+- **The root cause is not where you think.** You have been fixing a symptom; the real trigger is upstream. Re-trace from the actual call origin, not the error site.
+- **The architecture is forcing the bug.** The design makes this class of error reachable; the durable fix is structural, not another patch.
+- **A hidden assumption is false.** A "can't happen" invariant is happening — stale cache, race, wrong environment, shadowed config.
+
+Write down what each of the three attempts assumed and why it failed; the contradiction usually points straight at the wrong assumption. Re-question the premise before any further attempt — and if the durable fix is now a structural change rather than the small fix the task assumed, surface that to the user instead of forcing a fourth patch.
+
 ## Fix Impact Analysis
 
 Before final validation, inspect the actual diff and answer:
@@ -63,6 +75,7 @@ If any answer is unknown, inspect the relevant callers or data contracts before 
 ## Completion Checklist
 
 - [ ] Root cause identified (not just a plausible-looking fix)
+- [ ] If three fixes failed, the premise / architecture was re-questioned (not a fourth symptom patch)
 - [ ] Fix Impact Analysis completed against the actual diff
 - [ ] Direct callers and changed signatures/return shapes checked
 - [ ] Indirect data flow, shared state, events, callbacks, and async timing considered

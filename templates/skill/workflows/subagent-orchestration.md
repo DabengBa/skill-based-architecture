@@ -6,7 +6,7 @@
 
 Write the full task list **before** touching any subagent or file.
 
-For each item, produce a **Subagent Contract** with exactly five fields:
+For each item, produce a **Subagent Contract** with these five dispatch fields (the worker adds a Return Status on the way back — Phase 4 routes on it):
 
 1. **Goal** — one sentence, outcome-focused, not procedure-focused
 2. **Inputs** — exact file paths, data, or upstream artifacts the worker may read
@@ -15,6 +15,8 @@ For each item, produce a **Subagent Contract** with exactly five fields:
 5. **Acceptance Criteria** — the literal checks the main agent will run in Phase 3
 
 Reject any contract you can't verify mechanically. "Make it clean" is not an acceptance criterion. "`grep -c FILL skills/{{NAME}}/` returns 0" is.
+
+**If a plan already exists** ([`plan-feature.md` § Task Breakdown](plan-feature.md)): each task block already carries Files / Consumes / Produces / Acceptance — lift them into the five fields rather than re-deriving the decomposition from scratch. That is the "zero re-derivation" handoff the plan promised.
 
 **Stop condition for Phase 1:** the full plan must be written down (in a scratch file, the conversation, or a TodoWrite list) before dispatching the first worker. Verbal plans drift.
 
@@ -29,6 +31,7 @@ For each contract:
 
 **Dispatch discipline:**
 
+- Require a **Return Status**: the worker must end its report with exactly one of `DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED` (defined in [`../../protocol-blocks/subagent-contract.md`](../../protocol-blocks/subagent-contract.md) § Worker Return Status). Phase 4 routes on this word.
 - Never stream mid-task "clarifications" into the worker's context. If the contract was wrong, cancel and rewrite the contract.
 - Never let a worker spawn its own workers (no recursion). Flatten the plan instead.
 - Never ask a worker to review its own output.
@@ -60,8 +63,18 @@ If Stage B finds issues but Stage A passed → record the issues, then decide: r
 
 ### Phase 4 — Merge or Reject
 
-- **Merge**: only when both stages pass. Write one summary line per merged contract into the running task log.
-- **Reject**: cancel the worker's changes (`git restore`, revert the diff, or discard the worker's patch). Rewrite the contract. Re-dispatch. Do **not** fall into the "I'll just fix it myself in the main context" trap.
+**Route on the worker's Return Status first** (this decides *what happens next*); the **Merge / Reject mechanics** below are *how* you execute the DONE and re-dispatch branches.
+
+- `DONE` → run Stage A + B; merge if both pass.
+- `DONE_WITH_CONCERNS` → read the flagged concern, then Stage A + B; queue a follow-up contract if the concern is real.
+- `NEEDS_CONTEXT` → do not review; widen the contract's `Inputs` and re-dispatch.
+- `BLOCKED` → resolve the obstruction (surface to the user per the Interception Transparency Rule if you cannot), then re-dispatch.
+- *No status word at all* → treat as `NEEDS_CONTEXT` (per [`../../protocol-blocks/subagent-contract.md`](../../protocol-blocks/subagent-contract.md) rule 6): clarify and re-dispatch.
+
+**Mechanics:**
+
+- **Merge** (the DONE / DONE_WITH_CONCERNS branch, both stages passing): write one summary line per merged contract into the running task log.
+- **Reject** (the re-dispatch branch): cancel the worker's changes (`git restore`, revert the diff, or discard the worker's patch). Rewrite the contract. Re-dispatch. Do **not** fall into the "I'll just fix it myself in the main context" trap.
 
 ---
 

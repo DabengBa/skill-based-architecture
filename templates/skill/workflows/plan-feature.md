@@ -22,6 +22,16 @@ Before asking any question, pass all three gates:
 
 Ask one question at a time. Prefer 2-3 concrete options with trade-offs for preference questions.
 
+## Brainstorm — diverge before converging (Complex / Large)
+
+Before committing to an approach, generate **≥ 2 genuinely distinct options** — different *shape* of solution (different boundary, mechanism, or tradeoff), not one real plan plus strawmen. Surface them in the plan's **Options Considered** section with honest pros/cons, then pick.
+
+- **Explore before proposing** — inspect adjacent code/docs first (Question Gate A) so options are grounded, not imagined.
+- **Present design before writing the Task Breakdown (Large / high-ambiguity).** Show the chosen design and get buy-in *before* decomposing into tasks; do not jump from problem statement straight to code.
+- A single-option "plan" for Complex+ work is under-analysis: if you only see one option, you have not looked for the second.
+
+Trivial/Simple tasks skip this — one obvious approach needs no divergence.
+
 ## Simple Plan
 
 For Simple tasks, do not create `docs/plans/` and do not write `.skill-workflow-state`. Produce a short inline plan with scope, steps, and validation. If one confirmation is needed, ask it before writing the plan.
@@ -37,7 +47,48 @@ docs/plans/YYYY-MM-DD-<slug>/
 
 That is the entire required structure. Add whatever else this specific task needs — research notes, a decisions log (lifted into `rules/` / `references/gotchas.md` at closure, step 8), a research/ subfolder with quoted snippets + source paths/URLs — using natural filenames; none of these names are canonical. If the task only ever produces `prd.md`, that is correct and complete.
 
-Keep `prd.md` short: goal, scope, requirements, acceptance criteria, out of scope, and current open questions. Push supporting material out into sibling files when `prd.md` itself starts to bloat — not preemptively.
+`prd.md` follows the canonical **Plan Skeleton** below — keep each section tight. Push supporting material into sibling files only when a section bloats, never preemptively.
+
+## Plan Skeleton (canonical — one structure, no drift)
+
+This is the **single source of the section vocabulary** — `docs/plans/_TEMPLATE.md` and `docs/plans/README.md` point here so the names don't drift. It is a **menu to draw from, not a mandatory 8-section checklist**: a `prd.md` (or a simple plan's single file) uses the sections this plan actually warrants, in this order, named exactly as below. A lean plan running just Problem + Requirements & Acceptance Criteria + Task Breakdown is conformant; the value is the shared *names*, not a quota.
+
+| Section | Holds |
+|---|---|
+| Context | why now / what changed |
+| Problem | the thing to solve, stated concretely |
+| Options Considered | the ≥ 2 distinct approaches from Brainstorm, with pros/cons |
+| Chosen Approach | which won + the 1–2 sentence "why" that survives into the live structure on close |
+| Requirements & Acceptance Criteria | testable outcomes |
+| Out of Scope | explicit exclusions |
+| Task Breakdown | the executable decomposition (below) — **omit for a single-task plan** |
+| Open Questions | unresolved *decisions* (see [Decision Completeness](#decision-completeness--section-completeness)) |
+
+The one required file is still `prd.md`; siblings appear only when a section bloats enough to want its own file (never pre-created). Large tasks additionally split *analysis* into angle files (§ Large Plan).
+
+## Task Breakdown — executable, not a flat checklist
+
+A plan that ends in `- [ ] do X / do Y` is a wish list: the implementer — or a Mode 2 subagent — cannot tell what each task depends on, produces, or how "done" is proven. For any plan that decomposes into **≥ 2 interdependent tasks**, write each task with an interface:
+
+```markdown
+### Task N — <verb-noun>
+- **Files**: owns `a.ts`; shares `config.ts` (read-only); forbidden: everything else
+- **Consumes**: the interface(s) earlier tasks or existing code expose that this task depends on
+- **Produces**: the interface later tasks rely on — exact signatures / types / exports / routes
+- **Acceptance**: a literal check — `<test cmd>` exits 0 / `grep -c X` returns 0 / observable behavior
+- [ ] sub-steps only when the path is non-obvious
+```
+
+**Produces/Consumes, not bite-sized code blocks:** declaring each task's interface lets a reader open Task 7 and see Task 3's outputs without scrolling back, and lets tasks be built/verified independently. Borrow the *interface declaration* only — **not** the "every step is a 2–5-minute action with full code pasted in" format; that ceremony fights this skill's keep-plans-short stance.
+
+**Handoff is mechanical.** A Task Breakdown maps 1:1 onto a Mode 2 subagent contract ([`subagent-orchestration.md`](subagent-orchestration.md)) — so a plan written this way dispatches with zero re-derivation:
+
+| Task Breakdown | → Subagent Contract |
+|---|---|
+| Files (owns) + Produces | Outputs |
+| Files (shares) + Consumes | Inputs |
+| other tasks' files / forbidden | Forbidden Zones |
+| Acceptance | Acceptance Criteria |
 
 ## Large Plan — analyze from several angles (立体)
 
@@ -55,7 +106,13 @@ For a Large task, examine the problem from several **angles**, each its own file
 | `rollout.md` | sequencing, migration, rollback, verification strategy |
 | `decomposition.md` | build order + parallelizable cut-points (feeds Mode 2 subagent contracts) |
 
-Each angle is an **independent analysis** — ideal for parallel dispatch. When the lenses are independent, fan them out as analysis subagents ([`subagent-driven.md` § Mode 2](subagent-driven.md#mode-2-four-phases-when-to-invoke-this-mode)), one per lens, then **synthesize** their outputs in `prd.md`. That is the "立体" plan: one problem seen from several angles at once, not one linear pass. Before freezing, run **Decision Completeness** (below) and diff overlapping claims across the angle files — the same decision restated in two files drifts.
+Each angle is an **independent analysis** — ideal for parallel dispatch. When the lenses are independent, fan them out as analysis subagents ([`subagent-driven.md` § Mode 2](subagent-driven.md#mode-2-four-phases-when-to-invoke-this-mode)), one per lens, then **synthesize** their outputs in `prd.md`. That is the "立体" plan: one problem seen from several angles at once, not one linear pass.
+
+**Angle governance (keep the index and the angles from drifting):**
+
+- **Each angle file opens with `> Conclusion: <one line>`**, then the analysis — a reader (and the synthesis) gets the verdict without reading the whole file.
+- **`prd.md` carries a `## Synthesis` section** that links every angle file and states the chosen path; the index is a required section, not an afterthought. An angle with no line in Synthesis is invisible; a Synthesis claim with no backing angle is unfounded.
+- **Before freezing, diff overlapping claims across the angle files and against Synthesis** (the Decision Completeness multi-file pass below): the same decision restated in two places drifts, and a `see <angle>` cross-reference can come to cite the opposite of what it points at.
 
 ## Complex State File
 
@@ -76,7 +133,7 @@ Update `status` as the task moves. Delete the file when the plan is complete or 
 3. **Inspect first** — gather repo evidence before questioning: similar features, entry points, config, scripts, tests, and current docs. **Before launching a wide search**, ask the reverse-question "主 agent 读完所有命中是多余的吗?" — if yes (typical when ≥ 10 file hits expected), see [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation) signal #3 to optionally dispatch an explore subagent. Reading 1-5 files to build the planning context is main-agent's job, do it inline.
 4. **Question gate** — classify each possible question through Gate A/B/C; ask only the highest-value next question.
 5. **Define scope** — write requirements, acceptance criteria, and out-of-scope items in `prd.md`.
-6. **Record decisions** — when choosing between approaches, write the trade-off down. Where exactly is your call: inline in `prd.md` if it's a single line; in a sibling file (name it whatever fits) if it grows enough that `prd.md` would suffer. These notes are intra-plan and mutable — they freeze with the plan archive on close. Load-bearing entries get lifted into the live structure at step 8.
+6. **Diverge, then record decisions** — when an approach choice exists, first generate ≥ 2 genuinely distinct options (§ Brainstorm), not one plan + strawmen; for Large / ambiguous work, present the design and get buy-in before the Task Breakdown. Then write the trade-off down. Where exactly is your call: inline in `prd.md` if it's a single line; in a sibling file (name it whatever fits) if it grows enough that `prd.md` would suffer. These notes are intra-plan and mutable — they freeze with the plan archive on close. Load-bearing entries get lifted into the live structure at step 8.
 7. **Prepare execution context** — make sure `prd.md` (or files clearly linked from it) gives the implementer and the reviewer everything they need to read first. No required filename or format for this — write it however it stays readable. **If implementation is multi-hour with multiple independent subtasks**, the work qualifies for [`subagent-driven.md` § Mode 2: Four Phases](subagent-driven.md#mode-2-four-phases-when-to-invoke-this-mode) — `prd.md`'s reading list maps to each subagent contract's `Inputs` field, and you should plan the cut-points (which files each implementer owns, which are shared, which are forbidden) now while the scope is fresh.
 8. **On closure: lift load-bearing content into the live structure** — when `status` flips to `done`, sort every conclusion (wherever in the plan directory it landed) into one of three buckets:
 
@@ -110,7 +167,7 @@ External or cross-repo research is active. Summarize findings in dedicated files
 [/workflow-state:research]
 
 [workflow-state:converging]
-Requirements are being locked. Move answered questions into `prd.md`. Record approach trade-offs alongside — inline in `prd.md` if short, or a sibling file (pick a natural name) if it grows. Keep out-of-scope explicit.
+Requirements are being locked. Before locking the approach, confirm ≥ 2 distinct options were weighed (§ Brainstorm). Move answered questions into `prd.md`. Record approach trade-offs alongside — inline in `prd.md` if short, or a sibling file (pick a natural name) if it grows. Keep out-of-scope explicit.
 [/workflow-state:converging]
 
 [workflow-state:implementation-ready]
@@ -122,13 +179,16 @@ Planning is complete. Make sure `prd.md` lists or clearly links to everything th
 - [ ] Trivial/simple tasks were not forced into a plan folder
 - [ ] Simple plans stayed inline unless the user explicitly asked for a file
 - [ ] Every asked question passed Gate A/B/C
+- [ ] Complex+ task: ≥ 2 genuinely distinct options were weighed (not one + strawmen); for Large / ambiguous work the design was presented before the Task Breakdown
+- [ ] Plan sections are drawn from the Plan Skeleton vocabulary, named exactly as it names them (Context / Problem / Options Considered / Chosen Approach / Requirements & Acceptance Criteria / Out of Scope / Task Breakdown / Open Questions) — using the ones this plan warrants, not all eight by quota
 - [ ] `prd.md` contains testable acceptance criteria
 - [ ] Approach trade-offs are recorded somewhere in the plan dir when choices mattered (location is your call)
 - [ ] Research and evidence are not mixed into `prd.md` if they grew enough to need their own files
 - [ ] `prd.md` (or files linked from it) gives the implementer/reviewer their reading list
+- [ ] Multi-task plan: each task declares Files / Consumes / Produces / Acceptance (not a flat `- [ ]` checklist), and maps cleanly onto a subagent contract if the work is dispatched
 - [ ] `.skill-workflow-state` was removed or left with the correct active state
 - [ ] If the plan landed (`status: done`): step 8 was actually performed — every load-bearing conclusion was sorted into `rules/` / `references/gotchas.md` / SKILL.md Pitfalls / "no, pure provenance"; `distilled_to:` frontmatter reflects what was lifted
 - [ ] If the plan calls an external dependency: its unreachable/timeout behavior is decided, not only the config-missing case
 - [ ] Schema/contract changes point to a concrete migration artifact in the repo's existing convention, with unique-key column nullability/type pinned
-- [ ] Large task: plan depth and angle-count scaled with complexity — analyzed from the lenses it warranted (not a thin single-file plan); `prd.md` synthesizes the angle files
+- [ ] Large task: plan depth and angle-count scaled with complexity — analyzed from the lenses it warranted (not a thin single-file plan); each angle file opens with `> Conclusion:` and `prd.md` has a `## Synthesis` section linking every angle
 - [ ] Multi-file dossier: overlapping claims and every "see Dx" / cross-file reference were diffed for drift before freeze

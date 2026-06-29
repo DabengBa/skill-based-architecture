@@ -48,6 +48,32 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-06-27 - Activation gate gains an actionability dimension (eval-derived)
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/workflows/update-rules.md` § Activation Check — the gate asked two questions (will the entry be *reached*?). Added a third: **when the agent reads it, does it change the next action?** A "correct-but-inert" entry (read, understood, then the agent proceeds identically) is reached but not activated. The rule line now reads "reached *and acted on*."
+  - `SKILL.md` (self-hosting) — Principle 13 "Activation over storage" and Pitfall #4 sharpened the same way: reached-but-inert is a distinct failure from absent/unreachable, and no structural gate can see it — only judgment.
+  - `templates/skill/workflows/update-rules.md` § When NOT to Record — added a **Goodhart guard**: content whose only purpose is to move an external metric/score is not recordable; an eval is a signal to improve the skill (run through the normal gates), never a target to optimize. Test: would you write it if the metric didn't exist? (Sibling of the imagined-pain pitfall.)
+- Why it matters: an external evaluation (a downstream LLM-judge scoring per-session skill *utility*) exposed a real SBA blind spot — every SBA gate (smoke-test, audit-orphans, route-reachability, conformance) checks *structure* (present / reachable / on-route / within budget), so a skill can pass them all and still be functionally inert (triggered, read, but changes nothing the agent does). Structure ≠ utility. This folds the durable, project-agnostic half of that lesson back into SBA. Deliberately **not** scripted: actionability is a judgment call; a script that "checks usefulness" would be imagined-pain engineering.
+- Downstream refresh guidance: small insert into `update-rules.md` § Activation Check (add the third question + reword the rule line); cherry-pick, keep local FILL content. No script, routing, or conformance change. SKILL.md principle edits are self-hosting-only — downstream skills carry their own SKILL.md.
+
+## 2026-06-27 - Borrowed superpowers patterns + plan-structure overhaul
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/workflows/plan-feature.md` — three additions: (1) a **canonical Plan Skeleton** (Context → Problem → Options Considered → Chosen Approach → Requirements & Acceptance → Out of Scope → Task Breakdown → Open Questions), now the single source of truth for plan structure; (2) a **Task Breakdown** section — each task declares Files / Consumes / Produces / Acceptance (borrowed from superpowers `writing-plans`' interface declaration, *without* its bite-sized-code-block ceremony) and maps 1:1 onto a Mode 2 subagent contract; (3) a **Brainstorm — diverge before converging** section (≥ 2 distinct options; present design before the Task Breakdown for Large work); plus **立体 angle governance** (each angle file opens with `> Conclusion:`, `prd.md` carries a `## Synthesis` index). `docs/plans/_TEMPLATE.md` + `docs/plans/README.md` (self-hosting only) now point at this canonical skeleton instead of redefining it.
+  - `templates/skill/workflows/task-closure.md` — **Fresh verification evidence gate**: no "tests pass / done" claim without running the command in the same message and reading its exit code; a hedge word ("should/probably/seems") before a status claim is the tell. Added as a sub-point of protocol step 1 + a Rationalizations row + a Red Flag.
+  - `templates/skill/workflows/fix-bug.md` — **Three Strikes** section: after 3 failed fixes, stop and question the architecture/premise instead of a 4th symptom patch; + a checklist item.
+  - `templates/protocol-blocks/subagent-contract.md` + `templates/skill/workflows/subagent-orchestration.md` + `templates/skill/workflows/subagent-driven.md` — **Worker Return Status** vocabulary (`DONE` / `DONE_WITH_CONCERNS` / `NEEDS_CONTEXT` / `BLOCKED`, adapted from superpowers): the contract block carries the return word, orchestration Phase 4 routes on it, and the Mode-2 router + Phase 1 cross-link the plan's Task Breakdown → contract handoff (lift Files/Consumes/Produces/Acceptance with zero re-derivation).
+  - `templates/skill/workflows/receiving-review.md` — **NEW workflow**: acting on code-review feedback with anti-sycophancy (no "you're absolutely right"), verify-before-implement, YAGNI check, push-back-with-evidence. Routed in `templates/skill/routing.yaml`.
+- Why it matters: a comparative pass over the superpowers plugin (6.0.3) found SBA and superpowers had largely converged; the net borrow is a small surgical set of mechanisms SBA genuinely lacked. The plan-structure overhaul fixes three real defects — plans were requirements docs with flat step checklists (no executable task decomposition), the self-hosting `_TEMPLATE.md` and the `plan-feature.md` prose described two divergent skeletons, and 立体 angle files had no index/conclusion contract.
+- Downstream refresh guidance:
+  - `plan-feature.md` is the big one — diff and port the Plan Skeleton + Task Breakdown + Brainstorm sections; preserve any project-specific complexity-gate rows or validation steps. Conformance phrases (Complexity Gate / Question Gate / Gate A–C / Complex Plan / prd.md / workflow-state:planning) are unchanged.
+  - `task-closure.md` / `fix-bug.md` / `subagent-orchestration.md` — small inserts; cherry-pick into the local file, keep local FILL content.
+  - `receiving-review.md` is a **new optional workflow** — copy it in if the project does code review, add the `receiving-review` route to local `routing.yaml`, then re-run `sync-routing.sh`. It is intentionally NOT in `conformance.yaml` (not mandatory).
+  - After porting: `sync-routing.sh`, `smoke-test.sh`, `audit-orphans.sh`, `route-reachability.sh`.
+
 ## 2026-06-24 - Content axis re-based on skeleton/flesh (abstraction over rate-of-change)
 
 - Upstream commit: pending in this working tree
