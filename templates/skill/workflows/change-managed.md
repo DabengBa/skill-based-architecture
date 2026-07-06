@@ -17,7 +17,7 @@ Use this for non-bug changes where partial edits can create drift: new features,
 
 ## Steps
 
-1. **Define scope** — name the exact files/modules owned by this change and the observable outcome that proves it worked.
+1. **Define scope** — name the exact files/modules owned by this change and the observable outcome that proves it worked. **Permission check (opt-in):** if the project uses a permission model, decide up front whether this is an *Ask-first* operation (crosses a contract, hard to reverse, blast radius beyond the task) → propose and stop for the user before editing; or *Never* → refuse. This is a **pre-execution authority** check — distinct from the **post-edit** blast-radius buckets in [`task-closure.md`](task-closure.md) (which gauge closure rigor, not permission). See [`../references/permission-model.md`](../references/permission-model.md).
 2. **Find the source of truth** — identify whether the changed content is canonical or derived. If derived, edit the canonical source first and use the project's sync/generation command.
 3. **Map fan-out targets** — list every file that must stay in sync before editing. Include thin shells, generated configs, docs indexes, tests, and registration files when relevant. **Before starting batch edits**, ask the reverse-question "主 agent 逐个文件改这堆同型编辑是多余的吗?" — if yes (typical when ≥ 5 files need the same-shape edit), see [`subagent-driven.md` § Mode 1: Direct Auxiliary Delegation](subagent-driven.md#mode-1-direct-auxiliary-delegation) signal #4 to optionally dispatch a refactor subagent. If the fan-out shape was planned from the start (not surfaced mid-task), go to [`refactor-fanout.md`](refactor-fanout.md) instead.
 4. **Make the smallest coherent change** — avoid opportunistic cleanup outside the declared scope.
@@ -36,4 +36,4 @@ Use this for non-bug changes where partial edits can create drift: new features,
 - [ ] Targeted validation completed
 - [ ] Task Closure Protocol was run
 
-<!-- FILL: project-specific sync/drift commands, for example `bash scripts/sync-*.sh`, `bash scripts/check-*.sh`, codegen, formatters, or schema validators. -->
+<!-- FILL: project-specific sync/drift commands, for example `bash scripts/sync-*.sh`, `bash scripts/check-*.sh`, codegen, formatters, or schema validators. Also declare the cheapest-sufficient validation path (e.g. hot-reload dev server instead of a full production build) and the conditions that escalate to the expensive one (release evidence, cross-module contract change, build-chain edits). -->

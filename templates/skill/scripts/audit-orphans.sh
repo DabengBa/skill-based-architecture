@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# audit-orphans.sh — Surface content-tier files with zero inbound links.
+# audit-orphans.sh — Surface content-tier + workflow files with zero inbound links.
 #
-# Content tiers = rules/ references/ architecture/ gotchas/ conventions/.
+# Audited dirs = rules/ references/ architecture/ gotchas/ conventions/ workflows/.
 # An orphan is a file in one of those whose relative path does not appear
 # (outside fenced code blocks) in any workflow / tier file / routing.yaml /
 # top-level shell. Either the activation pointer was never added, or the
@@ -24,6 +24,12 @@ ROOT="$PWD"
 # Content tiers: audited for orphan status AND scanned as inbound-link sources.
 # Each is existence-guarded below, so a skill that uses only some tiers is fine.
 TIER_DIRS=(rules references architecture gotchas conventions)
+
+# Workflows are ALSO audited for orphan status: a workflow reachable from no
+# route (routing.yaml workflow:/required_reads), no other workflow, no rule,
+# SKILL.md, or shell is dead weight — routed OR cross-referenced = reachable.
+# (.example files are skipped by the *.md glob; README.md/index.md are skipped.)
+AUDIT_DIRS=("${TIER_DIRS[@]}" workflows)
 
 SCAN_DIRS=("$ROOT/workflows")
 for t in "${TIER_DIRS[@]}"; do SCAN_DIRS+=("$ROOT/$t"); done
@@ -48,27 +54,31 @@ mentions() {
   strip_fences "$2" | grep -qF "$1"
 }
 
+# $2 = the string to search for. Tiers pass the full rel path (precise); workflows
+# pass the bare basename, because sibling workflows cross-link same-dir style
+# ([x](task-closure.md)) AND routing/full-path refs (skill:workflows/task-closure.md)
+# both contain the basename — so basename catches both, full-path would miss the former.
 count_inbound() {
-  local rel="$1" abs="$ROOT/$1" count=0 dir f
+  local rel="$1" abs="$ROOT/$1" match="${2:-$1}" count=0 dir f
   for dir in "${SCAN_DIRS[@]}"; do
     [[ -d "$dir" ]] || continue
     for f in "$dir"/*.md; do
       [[ -f "$f" && "$f" != "$abs" ]] || continue
-      mentions "$rel" "$f" 2>/dev/null && count=$((count+1))
+      mentions "$match" "$f" 2>/dev/null && count=$((count+1))
     done
   done
   for f in "${SCAN_FILES[@]:-}"; do
     [[ -n "$f" && -f "$f" && "$f" != "$abs" ]] || continue
-    mentions "$rel" "$f" 2>/dev/null && count=$((count+1))
+    mentions "$match" "$f" 2>/dev/null && count=$((count+1))
   done
   echo "$count"
 }
 
 ORPHANS=0
 TOTAL=0
-echo "Orphan scan — content-tier files with zero inbound links"
+echo "Orphan scan — content-tier + workflow files with zero inbound links"
 echo "==================================================================="
-for dir_name in "${TIER_DIRS[@]}"; do
+for dir_name in "${AUDIT_DIRS[@]}"; do
   dir_abs="$ROOT/$dir_name"
   [[ -d "$dir_abs" ]] || continue
   for f in "$dir_abs"/*.md; do
@@ -76,7 +86,9 @@ for dir_name in "${TIER_DIRS[@]}"; do
     case "$(basename "$f")" in README.md|index.md) continue ;; esac
     TOTAL=$((TOTAL+1))
     rel="${f#$ROOT/}"
-    if [[ "$(count_inbound "$rel")" -eq 0 ]]; then
+    # workflows cross-link by bare same-dir filename; tiers use the full rel path
+    if [[ "$dir_name" == workflows ]]; then match="$(basename "$f")"; else match="$rel"; fi
+    if [[ "$(count_inbound "$rel" "$match")" -eq 0 ]]; then
       echo "ORPHAN  $rel"
       ORPHANS=$((ORPHANS+1))
     fi

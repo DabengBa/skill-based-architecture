@@ -25,9 +25,11 @@ Threshold: if this change would cause someone to guess wrong on a similar task w
 
 The cross-cutting **Task Closure Protocol** (Trigger Policy, the six closure steps, the 30-second AAR scan, Rationalizations to Reject, Red Flags) is the gate **every behavior-changing task** runs at its close. It is the canonical home for the closure gate and lives in [`task-closure.md`](task-closure.md) — invoked by `fix-bug.md`, `change-managed.md`, `refactor-fanout.md`, `edit-templates.md`, and any other workflow at their closure step.
 
-This file holds the **recording mechanics** that the gate's "record if needed" step ([`task-closure.md`](task-closure.md) § Task Closure Protocol, step 3) calls into. Closure decides *whether* to record; the sections below decide *how*.
+This file holds the **recording mechanics** that the gate's "record if needed" step ([`task-closure.md`](task-closure.md) § Task Closure Protocol, step 3) calls into. Closure decides *whether* to record; the sections below decide *how*. Do not restate the Trigger Policy, closure steps, Rationalizations, or Red Flags here — that content is allowed to exist only in `task-closure.md`; a second copy is how the two drift apart.
 
 ## Recording Lessons
+
+> **Cross-axis prompt (opt-in — permission-model projects):** a lesson on one governance axis often implies a rung on the other — a code gotcha ↔ an operation tier (🟡/🔴), an operation incident ↔ a design convention. When recording on one axis, check whether the paired axis needs a rung. See [`../references/permission-model.md`](../references/permission-model.md) § two axes.
 
 ### Recording Threshold
 
@@ -121,6 +123,8 @@ If no activation path exists, do one of these and re-check:
 This gate applies to **every** record, not just high-cost ones. Unactivated `references/` entries inflate disk and token budget without ever being consulted — indistinguishable from not recording at all. The writer's burden is proving the entry is reachable, not arguing it is valuable.
 
 **Tier exception (Progressive Rigor):** At Folder-light tier the activation path can target a `SKILL.md` routing row or a bullet in `rules/*.md` — `workflows/` need not exist. At Single-file tier with no `rules/` either, skip recording: the lesson has not earned the upgrade pressure. The gate never forces tier escalation; it forces honesty about whether the current tier has a reachable path.
+
+**Escalation rung — recorded, activated, yet it recurred:** when a landmine that is already recorded *and* on an activated path still bites again, prose has hit its ceiling — consider promoting it to a **machine gate inside the tool that triggers it** (a launcher/build/script check that refuses to proceed, with an explicit env-var escape hatch for legitimate overrides). Strictly for verified recurrence with real cost; the imagined-pain rule applies doubly to hard gates. This is the design-axis counterpart of the enforcement ladder in [`../references/permission-model.md`](../references/permission-model.md).
 
 **Write the "why" out loud:** in the commit body (or PR description), one sentence on why the chosen activation point is the right one ("this pitfall triggers during the auth-setup workflow, so the pointer goes in workflows/auth-setup.md § Step 3"). Not machine-verifiable — the point is that ceremonial pointers feel wrong when you have to defend them in prose. Backstop: [`scripts/audit-orphans.sh`](../scripts/audit-orphans.sh) catches orphans the gate missed.
 

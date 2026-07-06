@@ -90,6 +90,8 @@ A plan that ends in `- [ ] do X / do Y` is a wish list: the implementer — or a
 | other tasks' files / forbidden | Forbidden Zones |
 | Acceptance | Acceptance Criteria |
 
+**Spec-driven testing (opt-in).** If this project treats the plan's test cases as the spec (unit-testable work), author them here — they feed each task's `Acceptance`; frontend style goes to user sign-off. Full discipline + when-NOT-to: [`../references/tests-as-spec.md`](../references/tests-as-spec.md).
+
 ## Large Plan — analyze from several angles (立体)
 
 **Plan depth scales with task complexity.** The anti-bloat guidance above ("keep `prd.md` short", "one file is correct and complete") forbids *ceremony* — pre-created empty files, boilerplate sections, a test-plan stanza copied into every plan. It is **not** a licence to under-analyze a hard problem. The same "add siblings only when the task needs them" rule (Complex Steps #2) cuts the other way for a Large task: it genuinely needs them. A multi-subsystem, irreversible, or high-uncertainty task that produces a 100-line single-file plan is **under-planned** — the analysis is missing, not concise.
@@ -142,6 +144,8 @@ Update `status` as the task moves. Delete the file when the plan is complete or 
    - **Neither** — pure provenance ("what happened, why we did it then") with no future binding → leave it in the plan archive and omit `distilled_to:`. Note the judgment in the plan body so future readers can see you actively chose not to lift anything.
 
    Then set the plan's `distilled_to:` frontmatter to list the live-structure files that received content. If the conclusion fits two buckets (e.g. both a rule and a pitfall), it goes in both — different audiences, not duplicates. **There is no fourth bucket** called `references/decisions/`; that was tried and removed (silo problem — see [docs/plans/README.md](../../../docs/plans/README.md) "When a plan closes").
+
+   A project may additionally declare a **project-owned destination** for a conclusion class the buckets don't cover — e.g. product/domain facts (business use cases, domain model, state machines) lifted into the project's own live docs library — **provided that destination is read back on a task path** (e.g. step 1's pre-scan includes it). This is not a new generic bucket: a docs library no workflow reads back is exactly the silo the removed `references/decisions/` died of.
 
 9. **Final readback** — summarize requirements, acceptance criteria, chosen approach, out-of-scope items, and plan directory path.
 

@@ -13,6 +13,16 @@ Use when the user says the upstream skill-based-architecture project changed and
 5. **Upstream notes stay upstream** — read `$tmp/upstream/UPSTREAM-CHANGES.md` when present, but never create, copy, or update `UPSTREAM-CHANGES.md` in the downstream project.
 6. **Generated shells stay generated** — do not hand-edit generated routing blocks; update `routing.yaml`, then run `scripts/sync-routing.sh`.
 
+## Posture: tracking (default) vs fork
+
+This workflow assumes the **tracking posture** — the project follows upstream by `synced_sha`, vendor files sync mechanically, conformance is checked against upstream's manifest. A downstream may instead deliberately **fork**: treat upstream as an idea source, absorb selectively, stop tracking SHAs. Legitimate — but it carries three standing costs; accept them explicitly rather than drifting into them:
+
+1. **The local conformance contract freezes at the fork point** — nothing flags that upstream added a new mandatory section; local checks keep passing against a stale promise.
+2. **Vendor-class fixes stop arriving mechanically** — every absorb becomes hand work whose completeness depends on someone's diligence, with no am-I-behind reporter.
+3. **Fork points must be registered locally** (which files diverged, and why) — unregistered divergence turns every future absorb into rediscovered conflicts.
+
+A forked downstream should still scan upstream's `UPSTREAM-CHANGES.md` on a cadence — it is written to be read idea-by-idea, entry-by-entry.
+
 ## Procedure
 
 0. **Verify you are in the skill-maintenance checkout** — run `git worktree list`. With multiple checkouts of this repo, the live skill line is the one holding `skills/<name>/.upstream-sync` (step 3's `upstream-status.sh` also warns on a missing or diverging pointer). A checkout without the pointer — or with an older `synced_sha` than a sibling — is a stale copy: STOP and switch to the live checkout instead of porting into it.

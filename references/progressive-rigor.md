@@ -53,6 +53,18 @@ A project can be `Full + Rule-only + Single-skill`, or `Folder-light + Executabl
 
 For execution-mode pressure, see [executable-skill-architecture.md](executable-skill-architecture.md). For multi-skill topology, see [multi-skill-routing.md](multi-skill-routing.md).
 
+## Two-root split (advanced: shared skeleton across repos)
+
+Beyond Full, when one skill's skeleton is *shared* across multiple code checkouts (or a tool assembles it into each consumer's tool dir), relocate the 骨架/肉 split across a **repo boundary**: skeleton (`architecture` / `rules` / `workflows` + entry + routing) in a shared `skill_root`; flesh (`conventions` / `gotchas` / `references`) in the per-codebase `code_root`; routing joins them with `skill:` / `code:` path prefixes so one route composes both. This is a deployment **topology**, not more rigor — most single-repo skills stay single-root. Trigger + worked example: [skeleton-flesh-split.md §7](skeleton-flesh-split.md).
+
+## Tests as spec (advanced: opt-in execution-mode discipline)
+
+For projects whose work is unit-testable **and** that carry an under-testing baseline (e.g. recurring production incidents after light testing), an opt-in discipline makes the plan's test cases the spec: write cases at plan time (they double as the human-clarification question set — the human is the correctness oracle), realize them as unit tests, and treat a failing test as a code-or-understanding reconciliation (the trichotomy). Subjective/visual work goes to human sign-off, never forced unit tests. **Not a default**, and **not a blocking gate** — kept out of `conformance.yaml`; the agent's duty is faithful generation + transparently listing the cases/results, and the **user makes the final acceptance call**. Full discipline: [`../templates/skill/references/tests-as-spec.md`](../templates/skill/references/tests-as-spec.md).
+
+## Permission model (advanced: opt-in autonomy + layered enforcement)
+
+For projects where the agent runs side-effecting operations (schema / prod / secret / shared-contract), an opt-in discipline classifies operations by autonomy — 🟢 do-autonomously (the default, not a list) / 🟡 propose-and-stop-for-a-human / 🔴 refuse — and, more importantly, **enforces the 🔴 rules on a ladder proportional to their cost** (prose → remove-material → pre-commit → CI). A prohibition in prose alone doesn't stop an agent, so "written in a doc" ≠ enforced. Orthogonal to blast-radius buckets (path / closure-rigor) and the subagent Negative list (delegation) — cross-reference, don't merge. **Not a default**, **not a blocking gate** (🟡 is report-not-block shifted earlier; kept out of `conformance.yaml`); machine layers go only on 🔴 rules with a real baseline (imagined-pain guard). Full discipline: [`../templates/skill/references/permission-model.md`](../templates/skill/references/permission-model.md).
+
 ## Simple Route vs Advanced Route
 
 Most routes need only `id`, `labels`, `route`, `required_reads`, `workflow`, and `trigger_examples`. Keep them simple.

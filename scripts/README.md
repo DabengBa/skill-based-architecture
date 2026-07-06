@@ -15,7 +15,7 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | Routing trigger coverage | Do `trigger_examples` actually route to the intended workflow? | `check-self-scenarios.sh` (upstream-only) |
 | Structural budgets + content | SKILL.md dual budget (desc ≤ 25 + body ≤ 90), FILL/placeholder residue, broken links, SessionStart-hook presence, description keyword-stuffing, and content conformance (§9, when `conformance.yaml` exists) | `smoke-test.sh` |
 | Growth pressure | Are files growing past evaluation thresholds? | `check-growth-health.sh` *(report-only)* |
-| Orphan content-tier files | `rules/`/`references/`/`architecture/`/`gotchas/`/`conventions/` files with zero inbound links (link-reachable) | `audit-orphans.sh` |
+| Orphan content-tier + workflow files | `rules/`/`references/`/`architecture/`/`gotchas/`/`conventions/`/`workflows/` files with zero inbound links (link-reachable). Workflows match by basename (sibling same-dir links + routing `workflow:`/`required_reads` both count); a workflow on no route and referenced by no other workflow is dead weight | `audit-orphans.sh` |
 | Unactivated content files | active-tier files (`architecture/`/`conventions/`/`gotchas/`/`rules/`) on no task route — link-reachable but never read (stored-not-activated) | `route-reachability.sh` |
 | Cross-references | Broken inline markdown link targets | `check-cross-references.sh` |
 | **Content presence (downstream)** | Did downstream forget to copy a mandatory upstream section/phrase? | `check-version-conformance.sh <skill> --conformance <upstream-clone>/templates/skill/conformance.yaml` — also run by `smoke-test.sh` §9 against the skill's own `conformance.yaml` |
@@ -36,7 +36,7 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | `smoke-test.sh` | `templates/skill/scripts/` | Downstream — Phase-aware structural gate |
 | `sync-routing.sh` | `templates/skill/scripts/` | Downstream — `routing.yaml` is the source of truth |
 | `check-growth-health.sh` | `templates/skill/scripts/` | Downstream + upstream |
-| `audit-orphans.sh` | `templates/skill/scripts/` | Downstream + upstream — finds zero-inbound content-tier files |
+| `audit-orphans.sh` | `templates/skill/scripts/` | Downstream + upstream — finds zero-inbound content-tier + workflow files |
 | `route-reachability.sh` | `templates/skill/scripts/` | Downstream — finds active-tier files on no route (link-reachable but not activated) |
 | `check-cross-references.sh` | `templates/skill/scripts/` | Downstream |
 | `check-version-conformance.sh` | `templates/skill/scripts/` | Both — runs against any skill root + manifest |

@@ -23,6 +23,8 @@ always_read:
 # negative_signals, confidence, slots, target. Use them only when a wrong route
 # is costly (deploys, DB/schema changes, remote config writes, status changes,
 # external skill handoffs). Simple routes should omit them.
+# Advanced — two-root skills (skeleton shared across checkouts): prefix
+# required_reads/workflow with `skill:`/`code:` + add a path_resolution block.
 tasks:
   - id: fix-bug
     labels:

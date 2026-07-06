@@ -63,7 +63,8 @@ Some resources apply across all skills in the repo:
 | Resource | Layout in multi-skill repo |
 |---|---|
 | Root shells (`AGENTS.md`, `CLAUDE.md`, etc.) | ONE set at repo root. Each shell's Always Read preamble is generated from the primary skill's `routing.yaml`. Each shell points to the router / `routing.yaml` manifest rather than carrying copied rows. |
-| Protocol-blocks | `protocol-blocks/` at **repo root** (not inside any one skill). Each skill's workflows link to them with relative paths like `../../protocol-blocks/reboot-check.md`. |
+| Protocol-blocks | `protocol-blocks/` at **repo root** (not inside any one skill). Each skill's workflows link to them with relative paths like `../../protocol-blocks/reboot-check.md`. **Caveat for two-root / assembled layouts** ([skeleton-flesh-split.md §7](skeleton-flesh-split.md)): the repo root is a machine-check blind spot and an assembler that ships only skill dirs won't materialize it — repo-root links then dangle silently after assembly. There, materialize shared blocks into each skill via the assembler, or vendor a copy per skill **with a mechanical equality check across copies** (hand-mirrored copies without one silently drift). |
+| Shared workflow skeleton (sibling skills repeating the same gate text) | Same rule: one physical source linked from every skill, or per-skill vendored copies with an equality check. Extracting a shared core is real dedup only if a machine can prove the copies are equal. |
 | Hooks (`.claude/hooks/`) | ONE set at repo root. A hook that gates one skill's file uses env vars or path checks to scope its effect. |
 | References | Per-skill under each `skills/<name>/references/`. Only move to repo root if a reference legitimately applies to all skills (rare). |
 | `WORKFLOW.md` / migration scripts | Single copy at repo root. Migration is repo-level. |
@@ -90,6 +91,8 @@ When a user request could match multiple skills, the resolution order:
 4. **Ask the user** — two skills match equally; pick neither, ask "is this a frontend task or a backend task?"
 
 Never "try both" — reading two full SKILL.md's on every ambiguous task is token waste and confuses routing.
+
+**Exception — defect-class requests skip step 3.** Bug ownership is a *fact*, not a preference: for "there's a bug / it's broken" with no ownership cue, the primary fallback systematically mis-routes (every ambiguous defect lands on the primary skill), and step 4 often fails too — the user can't tell either. Instead, run a short **read-only intake** first: reproduce, collect one failing piece of evidence (response, log, rendered state), then route by what the evidence shows. Evidence spanning both skills → declare it cross-skill and drive both skills' workflows against the **same acceptance check**, not one skill's guess. Keep the intake trigger to a routing-level line — obviously-owned defects ("this button's style is wrong") still route directly; don't tax them with intake ceremony.
 
 ## Task Closure across skills
 

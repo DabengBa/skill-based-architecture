@@ -6,6 +6,8 @@ When a `rules/` (or `references/`) file tangles invariant design theory with cur
 
 > Rate of change is a correlated heuristic, but it mislabels **slow-drifting maps** (the module tree) as architecture — they are stable-ish yet they are flesh (a map of the code, not an invariant law). Abstraction is the real cut.
 
+> **Cohesion exception — don't shatter a decision subsystem.** The split distributes by abstraction, but a *tightly-coupled decision subsystem* — a classifier plus the data it classifies — stays cohesive in **one** artifact even when its rows differ in rate-of-change. The permission model's 🔴 rows (invariant) and 🟡 rows (mutable) live in **one** table, not split 🔴→`architecture/` and 🟡→`conventions/`; splitting a decision procedure by rate-of-change makes it un-runnable at a glance and scatters the "what are all my rules" view. Safe because the harm the split guards against — a slow invariant re-churned by fast facts — is a *prose-tangling* harm; a table of discrete rows doesn't tangle (changing one row never forces another). **Cohesion of a decision procedure beats rate-of-change distribution.** (Generic engine still skeleton, project rows still flesh — see §7 two-root; only the tiers *within* the data table stay merged.)
+
 ## 1. Classify by abstraction — five buckets
 
 The split is not binary. Going section by section, each lands in one of:
@@ -51,6 +53,7 @@ The fix is the hub pattern gotchas already use, applied to **every** fine-graine
 
 - Give each fine tier an `index.md` hub with a **"read when"** column (`transactions-locks.md → read when multi-step write / lock / async`).
 - **Route the hub, not every file.** A task's `required_reads` is the relevant hubs (`architecture/index.md`, `conventions/index.md`, `gotchas/index.md`) — small, and complete. The agent reads the hubs and pulls the specific files its change touches. Enumerating every file in every route instead either balloons `required_reads` or silently drops the conditional ones.
+- **Reading the hub is not reading the content.** After the hub, either pull the specific files whose "read when" matches the task, or **state explicitly that nothing matched and no second hop is needed** — silently treating hub-read as content-read is the failure mode this pattern creates.
 - List each file in its hub as an **inline-code skill-root-relative path** (e.g. `architecture/transactions-locks.md`) — that one string doubles as the `audit-orphans` inbound *and* the path the agent reads. Register a new file in its hub the moment you create it, or it is born unreachable. (A *relative* markdown link to just `transactions-locks.md` does **not** satisfy `audit-orphans` — it lacks the tier prefix.)
 
 ## 5. Re-derive routing — the split is also a routing redesign
@@ -66,6 +69,52 @@ A move that leaves routing untouched produces incoherent routes.
 - `route-reachability.sh` → **0 unreachable** (every active-tier file is route-reachable — on a route or in a routed index hub, §4; this is the check that catches the stored-not-activated waste).
 - `smoke-test.sh <name>` → tier checks pass (`constraint surface` across rules/architecture/conventions; gotchas tier recognized); `routing.yaml` ≤ 140 lines.
 - `route-health.sh <name>` → no routing-quality smells.
+
+## 7. Scaling the split across two repos (skill_root / code_root)
+
+The abstraction line above is also the natural **repo boundary**. When one skill's skeleton is *shared* — the same `architecture/` + `workflows/` + `rules/` serve many code checkouts, or a tool assembles the skill into each consumer's tool dir — split the skill across **two roots**, cut on the same 骨架/肉 line:
+
+| Root | Owns | Why there |
+|---|---|---|
+| **`skill_root`** (shared / upstream "元仓") | `SKILL.md`, `routing.yaml`, `architecture/`, `rules/`, `workflows/` — skeleton + entry + routing — plus the checkout-invariant slice of `gotchas/` / `references/` (see below) | invariant; one copy, assembled/vendored to each consumer |
+| **`code_root`** (per-codebase facts) | `conventions/`, `gotchas/`, `references/` — flesh | drifts with the code; lives in the code repo so it changes in the **same PR** as the code it describes |
+
+No new concept — the skeleton/flesh cut you already make *inside* a Full skill (§1) is just drawn at the repo boundary instead.
+
+**Which root? — the checkout-coupling test.** *Could this content legitimately differ between two simultaneously active checkouts (branches / release lines) of the code repo?* Yes → `code_root` (it must travel with the checkout it describes). No — identical for every checkout → `skill_root`. This test decides **repo placement only**; tier membership still follows §1's abstraction test. The two axes answer different questions and may disagree on the same item — that is legal, not a contradiction: the `start` fat-jar gotcha from §1 is *flesh by tier* (it names symbols; a refactor invalidates it) yet *skill_root by coupling* (the toolchain landmine holds on every checkout). So `gotchas/` and `references/` are **not** wholesale code_root: framework/toolchain-mechanism landmines that hold for every checkout live in the skill_root's own `gotchas/`, while symbol-and-state-coupled landmines stay in `code_root` — a mixed file goes where its majority lives, with a note flagging the minority entries for re-check when the implementation moves. Do **not** use the coupling test as a tier test — "same on every branch" does not make a code map architecture (§1's warning about slow-drifting maps applies unchanged).
+
+**Routing joins the two roots with a source prefix.** `routing.yaml` lives in `skill_root`, declares a `path_resolution` block, and prefixes every `required_reads` / `workflow` with `skill:` or `code:`, so one route composes both — architecture principle (`skill:`) + current code facts (`code:`) for the same task:
+
+```yaml
+path_resolution:
+  skill_root:        # shared skeleton, assembled into each consumer's tool dir
+    owns: [SKILL.md, routing.yaml, architecture/**, rules/**, workflows/**]
+  code_root:         # per-codebase flesh, lives in the code repo
+    root: apps/<app>/skills/<name>
+    owns: [conventions/**, gotchas/**, references/**]
+
+tasks:
+  - id: style-ui
+    labels: { en: Adjust UI / interaction, zh: 调整前端样式 }
+    required_reads:
+      - skill:architecture/index.md     # skeleton, from 元仓
+      - code:conventions/index.md       # flesh, from the code repo
+      - code:gotchas/index.md
+      - code:references/source-index.md
+    workflow: skill:workflows/change-managed.md
+    trigger_examples: [调整样式, UI 优化, antd 样式]
+```
+
+**When NOT to.** A single-repo skill needs neither prefixes nor `path_resolution` — keep the default single-root layout (one `skills/<name>/` dir, plain `workflows/X.md` paths). Two roots pay off only when the skeleton is genuinely shared across ≥ 2 code checkouts or centrally assembled; otherwise it is split-for-its-own-sake.
+
+**What changes under two roots:**
+
+- The `code_root` dir is **not** the entry — its `SKILL.md` is a thin stub that points at `skill_root` (entry / routing / skeleton live upstream).
+- `audit-orphans` / `route-reachability` run **per root**; same-dir cross-links keep working because each root still holds its own tier dirs.
+- The assembler that materializes `skill_root` into consumer dirs is **project-specific** — SBA specifies the *split + prefix contract*, not the tool.
+- When a tier glob (e.g. `gotchas/**`) appears under **both** roots' `owns` (legal per the coupling test above), resolution follows the **path prefix** on each reference (`skill:` / `code:`) — `owns` documents intent; the prefix is the contract the scripts resolve.
+- **Cross-repo writes need a guard.** Before a workflow writes into the *other* root (or any path outside the current skill dir), run a literal existence check on the target root (e.g. `test -d <code_root>/.git`) and **stop on failure** — never silently `mkdir` the target tree in whatever repo you happen to be in. (Real downstream failure: docs nearly created at the meta-repo root, where the assembler would never ship them.)
+- **The repo root between the two roots is a machine-check blind spot.** Content parked there — shared workflow fragments, protocol-blocks, orchestration docs — is scanned by *neither* root's `audit-orphans` / `route-reachability` / smoke-test, and an assembler that materializes only `skill_root` won't ship it, so repo-root references break silently after assembly (a real downstream shipped a dangling `protocol-blocks/` link exactly this way). Shared fragments must either be materialized by the assembler into each skill, or vendored into each skill **with a mechanical equality check across the copies** — two hand-mirrored copies without one is pseudo-dedup that will silently drift.
 
 ## Mechanical notes
 
