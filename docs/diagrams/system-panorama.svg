@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="906" viewBox="0 0 680 906" role="img">
+<title>Skill-Based Architecture 全局架构全景</title>
+<desc>七层结构：触发活化、入口薄壳、路由核心唯一真源、知识层骨架/肉、执行与闭合、维护校验脊柱、上下游生命周期。</desc>
+<style>
+svg{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,sans-serif}
+.t{font-size:14px;fill:#1c1c1a}
+.ts{font-size:12px;fill:#5f5e5a}
+.th{font-size:14px;font-weight:500;fill:#1c1c1a}
+.arr{stroke:#888780;stroke-width:1.5;fill:none}
+.c-gray rect{fill:#F1EFE8;stroke:#5F5E5A}
+.c-teal rect{fill:#E1F5EE;stroke:#0F6E56}
+.c-coral rect{fill:#FAECE7;stroke:#993C1D}
+.c-amber rect{fill:#FAEEDA;stroke:#854F0B}
+.c-blue rect{fill:#E6F1FB;stroke:#185FA5}
+.c-purple rect{fill:#EEEDFE;stroke:#534AB7}
+.c-gray .t,.c-gray .ts,.c-gray .th{fill:#2C2C2A}
+.c-teal .t,.c-teal .ts,.c-teal .th{fill:#04342C}
+.c-coral .t,.c-coral .ts,.c-coral .th{fill:#4A1B0C}
+.c-amber .t,.c-amber .ts,.c-amber .th{fill:#412402}
+.c-blue .t,.c-blue .ts,.c-blue .th{fill:#042C53}
+.c-purple .t,.c-purple .ts,.c-purple .th{fill:#26215C}
+</style>
+<rect x="0" y="0" width="680" height="906" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+<rect x="40" y="44" width="600" height="92" rx="12" fill="none" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="64" text-anchor="start" dominant-baseline="central">① 触发 · 活化（description 粗活化）</text>
+<g class="c-gray"><rect x="56" y="80" width="190" height="44" rx="8" stroke-width="0.5"/><text class="th" x="151" y="102" text-anchor="middle" dominant-baseline="central">用户 / 新任务</text></g>
+<g class="c-gray"><rect x="256" y="80" width="368" height="44" rx="8" stroke-width="0.5"/><text class="th" x="440" y="102" text-anchor="middle" dominant-baseline="central">harness：Claude Code · Cursor · Codex · Gemini</text></g>
+<line x1="340" y1="136" x2="340" y2="156" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="352" y="146" text-anchor="start" dominant-baseline="central">醒来 → 读入口薄壳</text>
+
+<rect x="40" y="160" width="600" height="92" rx="12" fill="none" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="180" text-anchor="start" dominant-baseline="central">② 入口薄壳（由 routing 生成 · 只做 bootstrap）</text>
+<g class="c-gray"><rect x="56" y="196" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="110" y="218" text-anchor="middle" dominant-baseline="central">AGENTS.md</text></g>
+<g class="c-gray"><rect x="168" y="196" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="222" y="218" text-anchor="middle" dominant-baseline="central">CLAUDE.md</text></g>
+<g class="c-gray"><rect x="280" y="196" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="334" y="218" text-anchor="middle" dominant-baseline="central">CODEX.md</text></g>
+<g class="c-gray"><rect x="392" y="196" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="446" y="218" text-anchor="middle" dominant-baseline="central">GEMINI.md</text></g>
+<g class="c-gray"><rect x="504" y="196" width="120" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="564" y="218" text-anchor="middle" dominant-baseline="central">.cursor/rules</text></g>
+<line x1="340" y1="252" x2="340" y2="272" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="352" y="262" text-anchor="start" dominant-baseline="central">指向 SKILL.md + bootstrap</text>
+
+<rect x="40" y="276" width="600" height="100" rx="12" fill="none" stroke="#7F77DD" stroke-width="0.9" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="296" text-anchor="start" dominant-baseline="central">③ 路由核心 · 唯一真源</text>
+<g class="c-purple"><rect x="56" y="312" width="180" height="48" rx="8" stroke-width="0.5"/><text class="th" x="146" y="330" text-anchor="middle" dominant-baseline="central">SKILL.md</text><text class="ts" x="146" y="347" text-anchor="middle" dominant-baseline="central">router · dual budget</text></g>
+<g class="c-purple"><rect x="246" y="312" width="180" height="48" rx="8" stroke-width="1.2"/><text class="th" x="336" y="330" text-anchor="middle" dominant-baseline="central">routing.yaml</text><text class="ts" x="336" y="347" text-anchor="middle" dominant-baseline="central">唯一真源</text></g>
+<g class="c-gray"><rect x="436" y="312" width="188" height="48" rx="8" stroke-width="0.5"/><text class="th" x="530" y="330" text-anchor="middle" dominant-baseline="central">Always Read · Common Tasks</text><text class="ts" x="530" y="347" text-anchor="middle" dominant-baseline="central">由 routing 生成</text></g>
+<line x1="340" y1="376" x2="340" y2="396" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="352" y="386" text-anchor="start" dominant-baseline="central">route.required_reads（分层）</text>
+
+<rect x="40" y="400" width="600" height="110" rx="12" fill="none" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="420" text-anchor="start" dominant-baseline="central">④ 知识层 · 按 abstraction 两层</text>
+<g class="c-teal"><rect x="56" y="436" width="280" height="60" rx="8" stroke-width="0.5"/><text class="th" x="196" y="458" text-anchor="middle" dominant-baseline="central">skill_root · 骨架（稳定）</text><text class="ts" x="196" y="478" text-anchor="middle" dominant-baseline="central">architecture · rules · workflows</text></g>
+<g class="c-coral"><rect x="344" y="436" width="280" height="60" rx="8" stroke-width="0.5"/><text class="th" x="484" y="458" text-anchor="middle" dominant-baseline="central">code_root · 肉（随代码漂）</text><text class="ts" x="484" y="478" text-anchor="middle" dominant-baseline="central">conventions · gotchas · references</text></g>
+<line x1="340" y1="510" x2="340" y2="530" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="352" y="520" text-anchor="start" dominant-baseline="central">route.workflow</text>
+
+<rect x="40" y="534" width="600" height="92" rx="12" fill="none" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="554" text-anchor="start" dominant-baseline="central">⑤ 执行 / 闭合</text>
+<g class="c-purple"><rect x="56" y="570" width="270" height="44" rx="8" stroke-width="0.5"/><text class="th" x="191" y="592" text-anchor="middle" dominant-baseline="central">workflows（plan/fix/implement/…）</text></g>
+<g class="c-teal"><rect x="336" y="570" width="180" height="44" rx="8" stroke-width="0.5"/><text class="th" x="426" y="592" text-anchor="middle" dominant-baseline="central">task-closure · 共享闸门</text></g>
+<g class="c-amber"><rect x="526" y="570" width="98" height="44" rx="8" stroke-width="0.5"/><text class="th" x="575" y="592" text-anchor="middle" dominant-baseline="central">桶 A/B/C</text></g>
+<line x1="340" y1="626" x2="340" y2="646" class="arr" marker-end="url(#arrow)"/>
+
+<rect x="40" y="650" width="600" height="92" rx="12" fill="none" stroke="#185FA5" stroke-width="0.9" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="670" text-anchor="start" dominant-baseline="central">⑥ 维护 / 校验脊柱 · 回灌 ③ 真源 · 保证可达（激活 not 存储）</text>
+<g class="c-blue"><rect x="56" y="686" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="110" y="708" text-anchor="middle" dominant-baseline="central">sync-routing</text></g>
+<g class="c-blue"><rect x="168" y="686" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="222" y="708" text-anchor="middle" dominant-baseline="central">smoke-test</text></g>
+<g class="c-blue"><rect x="280" y="686" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="334" y="708" text-anchor="middle" dominant-baseline="central">reachability</text></g>
+<g class="c-blue"><rect x="392" y="686" width="108" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="446" y="708" text-anchor="middle" dominant-baseline="central">audit-orphans</text></g>
+<g class="c-blue"><rect x="504" y="686" width="120" height="44" rx="8" stroke-width="0.5"/><text class="ts" x="564" y="708" text-anchor="middle" dominant-baseline="central">cross-refs</text></g>
+<line x1="340" y1="742" x2="340" y2="762" class="arr" marker-end="url(#arrow)"/>
+
+<rect x="40" y="766" width="600" height="100" rx="12" fill="none" stroke="#B4B2A9" stroke-width="0.8" stroke-dasharray="4 3"/>
+<text class="th" x="56" y="786" text-anchor="start" dominant-baseline="central">⑦ 生命周期 · 上游元仓 ↔ 下游 app</text>
+<g class="c-teal"><rect x="56" y="802" width="185" height="48" rx="8" stroke-width="0.5"/><text class="th" x="148" y="820" text-anchor="middle" dominant-baseline="central">元仓 skill_root</text><text class="ts" x="148" y="837" text-anchor="middle" dominant-baseline="central">骨架真源</text></g>
+<g class="c-coral"><rect x="251" y="802" width="195" height="48" rx="8" stroke-width="0.5"/><text class="th" x="348" y="820" text-anchor="middle" dominant-baseline="central">下游 app code_root</text><text class="ts" x="348" y="837" text-anchor="middle" dominant-baseline="central">vendored 肉</text></g>
+<g class="c-gray"><rect x="456" y="802" width="168" height="48" rx="8" stroke-width="0.5"/><text class="th" x="540" y="820" text-anchor="middle" dominant-baseline="central">同步机制</text><text class="ts" x="540" y="837" text-anchor="middle" dominant-baseline="central">vendor / upstream 同步</text></g>
+</svg>

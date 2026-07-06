@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="680" height="1420" viewBox="0 0 680 1420" role="img">
+<title>Skill-Based Architecture 完整流程</title>
+<desc>从用户提问到任务闭合的完整流程：入口引导、路由匹配、分层阅读、执行与跨端、闭合触发与桶分级、AAR 沉淀、路由同步与结构校验。</desc>
+<style>
+svg{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Roboto,sans-serif}
+.t{font-size:14px;fill:#1c1c1a}
+.ts{font-size:12px;fill:#5f5e5a}
+.th{font-size:14px;font-weight:500;fill:#1c1c1a}
+.arr{stroke:#888780;stroke-width:1.5;fill:none}
+.leader{stroke:#b4b2a9;stroke-width:1;stroke-dasharray:4 3;fill:none}
+.c-gray rect{fill:#F1EFE8;stroke:#5F5E5A}
+.c-teal rect{fill:#E1F5EE;stroke:#0F6E56}
+.c-coral rect{fill:#FAECE7;stroke:#993C1D}
+.c-amber rect{fill:#FAEEDA;stroke:#854F0B}
+.c-blue rect{fill:#E6F1FB;stroke:#185FA5}
+.c-purple rect{fill:#EEEDFE;stroke:#534AB7}
+.c-gray .t,.c-gray .ts,.c-gray .th{fill:#2C2C2A}
+.c-teal .t,.c-teal .ts,.c-teal .th{fill:#04342C}
+.c-coral .t,.c-coral .ts,.c-coral .th{fill:#4A1B0C}
+.c-amber .t,.c-amber .ts,.c-amber .th{fill:#412402}
+.c-blue .t,.c-blue .ts,.c-blue .th{fill:#042C53}
+.c-purple .t,.c-purple .ts,.c-purple .th{fill:#26215C}
+</style>
+<rect x="0" y="0" width="680" height="1420" fill="#ffffff"/>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="#888780" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+
+<g class="c-gray"><rect x="40" y="51" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="66" text-anchor="middle" dominant-baseline="central">① 入口</text></g>
+<g class="c-gray"><rect x="40" y="249" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="264" text-anchor="middle" dominant-baseline="central">② 路由</text></g>
+<g class="c-gray"><rect x="40" y="319" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="334" text-anchor="middle" dominant-baseline="central">③ 阅读</text></g>
+<g class="c-gray"><rect x="40" y="459" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="474" text-anchor="middle" dominant-baseline="central">④⑤ 执行</text></g>
+<g class="c-gray"><rect x="40" y="723" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="738" text-anchor="middle" dominant-baseline="central">⑥ 闭合</text></g>
+<g class="c-gray"><rect x="40" y="863" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="878" text-anchor="middle" dominant-baseline="central">⑦ 沉淀</text></g>
+<g class="c-gray"><rect x="40" y="1197" width="94" height="30" rx="6" stroke-width="0.5"/><text class="ts" x="87" y="1212" text-anchor="middle" dominant-baseline="central">⑧ 校验</text></g>
+
+<g class="c-gray"><rect x="150" y="44" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="66" text-anchor="middle" dominant-baseline="central">用户提问 / 新任务</text></g>
+<line x1="300" y1="91" x2="300" y2="103" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="106" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="128" text-anchor="middle" dominant-baseline="central">同一会话的后续任务？</text></g>
+<line x1="450" y1="128" x2="470" y2="128" class="leader"/>
+<text class="ts" x="452" y="118" text-anchor="start" dominant-baseline="central">是</text>
+<g class="c-gray"><rect x="470" y="100" width="170" height="56" rx="8" stroke-width="0.5"/><text class="th" x="555" y="116" text-anchor="middle" dominant-baseline="central">会话纪律</text><text class="ts" x="555" y="133" text-anchor="middle" dominant-baseline="central">重匹配 route</text><text class="ts" x="555" y="148" text-anchor="middle" dominant-baseline="central">仅变化/压缩才重读</text></g>
+<line x1="300" y1="153" x2="300" y2="165" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="168" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="188" text-anchor="middle" dominant-baseline="central">读入口薄壳 → 指向 SKILL.md</text><text class="ts" x="300" y="206" text-anchor="middle" dominant-baseline="central">薄壳只做引导 · 带 routing bootstrap</text></g>
+<line x1="300" y1="223" x2="300" y2="235" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="238" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="258" text-anchor="middle" dominant-baseline="central">扫 SKILL.md → 命中哪个 skill？</text><text class="ts" x="300" y="276" text-anchor="middle" dominant-baseline="central">→ 前端 / 后端 / 双Skill / other</text></g>
+<line x1="300" y1="293" x2="300" y2="305" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="308" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="328" text-anchor="middle" dominant-baseline="central">读 Always Read + routing.yaml</text><text class="ts" x="300" y="346" text-anchor="middle" dominant-baseline="central">匹配 route（无匹配 → other 兜底）</text></g>
+<line x1="300" y1="363" x2="300" y2="375" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="378" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="398" text-anchor="middle" dominant-baseline="central">只读 required_reads（按需）</text><text class="ts" x="300" y="416" text-anchor="middle" dominant-baseline="central">token 收口 → 按 骨架/肉 分层取用</text></g>
+<line x1="300" y1="433" x2="300" y2="445" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="448" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="468" text-anchor="middle" dominant-baseline="central">执行 route.workflow</text><text class="ts" x="300" y="486" text-anchor="middle" dominant-baseline="central">前端 UI/请求/状态 ┃ 后端 接口/服务/数据</text></g>
+<line x1="300" y1="503" x2="300" y2="515" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="518" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="540" text-anchor="middle" dominant-baseline="central">是否跨端任务？</text></g>
+<line x1="450" y1="540" x2="470" y2="540" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="530" text-anchor="start" dominant-baseline="central">否</text>
+<g class="c-gray"><rect x="470" y="518" width="170" height="44" rx="8" stroke-width="0.5"/><text class="th" x="555" y="540" text-anchor="middle" dominant-baseline="central">单 Skill 完成</text></g>
+<path d="M555 562 L555 672 L452 672" class="arr" fill="none" marker-end="url(#arrow)"/>
+<line x1="300" y1="565" x2="300" y2="577" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="580" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="600" text-anchor="middle" dominant-baseline="central">跨端 · 契约优先</text><text class="ts" x="300" y="618" text-anchor="middle" dominant-baseline="central">后端契约 → 前端约束 → 对齐 → 联调</text></g>
+<line x1="300" y1="635" x2="300" y2="647" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="650" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="672" text-anchor="middle" dominant-baseline="central">任务主体完成</text></g>
+<line x1="300" y1="697" x2="300" y2="709" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="712" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="732" text-anchor="middle" dominant-baseline="central">Trigger Policy：改了代码/文档？</text><text class="ts" x="300" y="750" text-anchor="middle" dominant-baseline="central">纯 Q&amp;A / 只读 → 豁免</text></g>
+<line x1="450" y1="738" x2="470" y2="738" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="728" text-anchor="start" dominant-baseline="central">否</text>
+<g class="c-gray"><rect x="470" y="712" width="170" height="52" rx="8" stroke-width="0.5"/><text class="th" x="555" y="730" text-anchor="middle" dominant-baseline="central">豁免 → 结束</text><text class="ts" x="555" y="748" text-anchor="middle" dominant-baseline="central">纯 Q&amp;A / 只读</text></g>
+<line x1="300" y1="767" x2="300" y2="779" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="782" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="802" text-anchor="middle" dominant-baseline="central">blast-radius 桶（只看路径）</text><text class="ts" x="300" y="820" text-anchor="middle" dominant-baseline="central">取最大桶 A&gt;B&gt;C · A 桶小改也全闭合</text></g>
+<line x1="450" y1="808" x2="470" y2="808" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="798" text-anchor="start" dominant-baseline="central">C</text>
+<g class="c-gray"><rect x="470" y="786" width="170" height="44" rx="8" stroke-width="0.5"/><text class="th" x="555" y="808" text-anchor="middle" dominant-baseline="central">C 桶 → 跳过 → 结束</text></g>
+<line x1="300" y1="837" x2="300" y2="849" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="852" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="872" text-anchor="middle" dominant-baseline="central">AAR 30 秒扫描（5 问）</text><text class="ts" x="300" y="890" text-anchor="middle" dominant-baseline="central">复发?成本?会漏?规则失准?外部事实?</text></g>
+<line x1="300" y1="907" x2="300" y2="919" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="922" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="944" text-anchor="middle" dominant-baseline="central">达到阈值且需要沉淀？</text></g>
+<line x1="450" y1="944" x2="470" y2="944" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="934" text-anchor="start" dominant-baseline="central">否</text>
+<g class="c-gray"><rect x="470" y="922" width="170" height="44" rx="8" stroke-width="0.5"/><text class="th" x="555" y="944" text-anchor="middle" dominant-baseline="central">跳过沉淀 → ⑧</text></g>
+<line x1="300" y1="969" x2="300" y2="981" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="984" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1004" text-anchor="middle" dominant-baseline="central">想象痛点闸门</text><text class="ts" x="300" y="1022" text-anchor="middle" dominant-baseline="central">有具体 file+line / commit / session？</text></g>
+<line x1="450" y1="1010" x2="470" y2="1010" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="1000" text-anchor="start" dominant-baseline="central">否</text>
+<g class="c-gray"><rect x="470" y="984" width="170" height="52" rx="8" stroke-width="0.5"/><text class="th" x="555" y="1002" text-anchor="middle" dominant-baseline="central">给不出 → 丢弃</text><text class="ts" x="555" y="1020" text-anchor="middle" dominant-baseline="central">imagined-pain</text></g>
+<line x1="300" y1="1039" x2="300" y2="1051" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-gray"><rect x="150" y="1054" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1074" text-anchor="middle" dominant-baseline="central">查重 → 泛化 → 选落点 → 激活闸门</text><text class="ts" x="300" y="1092" text-anchor="middle" dominant-baseline="central">落到 骨架/肉 · reached ≠ activated</text></g>
+<line x1="300" y1="1109" x2="300" y2="1121" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-amber"><rect x="150" y="1124" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1146" text-anchor="middle" dominant-baseline="central">改动触及路由 / A 桶文件？</text></g>
+<line x1="450" y1="1146" x2="470" y2="1146" class="arr" marker-end="url(#arrow)"/>
+<text class="ts" x="452" y="1136" text-anchor="start" dominant-baseline="central">否</text>
+<g class="c-gray"><rect x="470" y="1124" width="170" height="44" rx="8" stroke-width="0.5"/><text class="th" x="555" y="1146" text-anchor="middle" dominant-baseline="central">结束（B 桶）</text></g>
+<line x1="300" y1="1171" x2="300" y2="1183" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-blue"><rect x="150" y="1186" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1206" text-anchor="middle" dominant-baseline="central">更新 routing.yaml → sync-routing.sh</text><text class="ts" x="300" y="1224" text-anchor="middle" dominant-baseline="central">回灌 Always Read/Common Tasks/薄壳</text></g>
+<line x1="300" y1="1241" x2="300" y2="1253" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-blue"><rect x="150" y="1256" width="300" height="60" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1274" text-anchor="middle" dominant-baseline="central">结构 · 激活校验（A 桶必跑）</text><text class="ts" x="300" y="1292" text-anchor="middle" dominant-baseline="central">smoke-test · route-reachability</text><text class="ts" x="300" y="1308" text-anchor="middle" dominant-baseline="central">audit-orphans · check-cross-references</text></g>
+<line x1="300" y1="1319" x2="300" y2="1333" class="arr" marker-end="url(#arrow)"/>
+
+<g class="c-teal"><rect x="180" y="1336" width="240" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1358" text-anchor="middle" dominant-baseline="central">结束（任务闭合完成）</text></g>
+</svg>
