@@ -86,7 +86,7 @@ done
 echo ""
 echo "Summary: $UNREACHED unreachable / $TOTAL active-tier file(s)"
 if [[ "$UNREACHED" -gt 0 ]]; then
-  echo "For each: add it to a task's required_reads, OR list it (skill-root-relative inline-code path) in a routed index.md hub. See references/rate-of-change-split.md § 4."
+  echo "For each: add it to a task's required_reads, OR list it (skill-root-relative inline-code path) in a routed index.md hub. See references/skeleton-flesh-split.md § 4."
   exit 1
 fi
 exit 0

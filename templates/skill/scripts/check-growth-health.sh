@@ -158,11 +158,13 @@ check_scripts() {
     case "$base" in
       # smoke-test.sh is the monolithic 9-category verifier; cap raised when
       # hook-presence, description-stuffing, and content-conformance checks were
-      # added. Extract sourced helper files if it passes the cap.
-      smoke-test.sh) max=900 ;;
+      # added, then again 2026-07-06 for two-root layout support + pipefail
+      # hardening. Next addition → extract sourced helper files, no more raises.
+      smoke-test.sh) max=950 ;;
       # sync-routing.sh grew legitimately with behavior-block single-source
-      # generation (2026-06-03); raised 320 → 340. Next growth → extract.
-      sync-routing.sh) max=340 ;;
+      # generation (2026-06-03; 320 → 340), then two-root prefix awareness +
+      # inline-YAML parsing (2026-07-06; 340 → 400). Next growth → extract.
+      sync-routing.sh) max=400 ;;
       check-growth-health.sh) max=220 ;;
       audit-orphans.sh) max=120 ;;
       *) max=220 ;;

@@ -139,10 +139,35 @@ section() {
   fi
 }
 
-SKILL_DIR="skills/$NAME"
+# Accept a skill name (standard skills/<name> layout), a skill directory path,
+# or "." / cwd — meta-repo layouts like apps/<app>/skills/<name> and
+# self-hosting roots are valid skill roots too. skills/$NAME stays the fallback.
+if [[ -f "$NAME/SKILL.md" ]]; then
+  SKILL_DIR="${NAME%/}"
+  NAME="$(awk -F: '/^name:/{gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2); print $2; exit}' "$SKILL_DIR/SKILL.md")"
+  NAME="${NAME:-$(basename "$SKILL_DIR")}"
+elif [[ -f "$NAME/SKILL.md.template" ]]; then
+  SKILL_DIR="${NAME%/}"
+  NAME="$(basename "$SKILL_DIR")"
+elif [[ -f "SKILL.md" && -f "routing.yaml" && ( "$NAME" == "." || "$NAME" == "$(pwd)" ) ]]; then
+  SKILL_DIR="."
+  NAME="$(awk -F: '/^name:/{gsub(/^[[:space:]]+|[[:space:]]+$/, "", $2); print $2; exit}' SKILL.md)"
+  NAME="${NAME:-$(basename "$(pwd)")}"
+else
+  SKILL_DIR="skills/$NAME"
+fi
 SKILL_MD="$SKILL_DIR/SKILL.md"
 ROUTING_YAML="$SKILL_DIR/routing.yaml"
 CURSOR_ENTRY=".cursor/skills/$NAME/SKILL.md"
+
+# Two-root layout (skeleton-flesh-split.md §7): when routing.yaml declares
+# path_resolution, thin shells / Cursor entries may be rendered by an external
+# assembler outside this repo — those absence checks downgrade to WARN.
+# Single-root skills keep them as FAIL (a missing shell there is a real fault).
+TWO_ROOT=0
+if [[ -f "$ROUTING_YAML" ]] && grep -q '^path_resolution:' "$ROUTING_YAML"; then
+  TWO_ROOT=1
+fi
 
 PASS=0
 FAIL=0
@@ -222,6 +247,7 @@ if sub_runs "1a-workflows"; then
     while IFS= read -r workflow; do
       [[ -n "$workflow" ]] || continue
       [[ "$workflow" == *"FILL:"* ]] && continue
+      workflow="${workflow#skill:}"
       [[ "$workflow" == workflows/* ]] || continue
       ROUTED_WORKFLOWS+=("${workflow%%#*}")
     done < <(awk '
@@ -255,7 +281,7 @@ if sub_runs "1a-gotchas"; then
   elif [[ -f "$SKILL_DIR/references/gotchas.md" ]]; then
     pass "$SKILL_DIR/references/gotchas.md exists"
   else
-    GOTCHA_FILE=$(find "$SKILL_DIR/references" -maxdepth 1 -type f \( -name '*pitfall*' -o -name '*gotcha*' \) 2>/dev/null | head -1)
+    GOTCHA_FILE=$(find "$SKILL_DIR/references" -maxdepth 1 -type f \( -name '*pitfall*' -o -name '*gotcha*' \) 2>/dev/null | head -1 || true)
     if [[ -n "$GOTCHA_FILE" ]]; then
       pass "gotchas/pitfalls reference found: $(basename "$GOTCHA_FILE")"
     else
@@ -268,6 +294,8 @@ fi
 if sub_runs "1b"; then
   if [[ -f "$CURSOR_ENTRY" ]]; then
     pass "Cursor entry $CURSOR_ENTRY exists"
+  elif [[ "$TWO_ROOT" == "1" ]]; then
+    warn "Cursor entry $CURSOR_ENTRY missing (two-root layout: entry may be rendered by an external assembler — verify there)"
   else
     fail "Cursor entry $CURSOR_ENTRY missing (Cursor will never discover this skill)"
   fi
@@ -277,7 +305,11 @@ fi
 if sub_runs "1c"; then
   for shell in AGENTS.md CLAUDE.md CODEX.md GEMINI.md; do
     if [[ ! -f "$shell" ]]; then
-      fail "$shell missing"
+      if [[ "$TWO_ROOT" == "1" ]]; then
+        warn "$shell missing (two-root layout: shells may be rendered by an external assembler — verify there)"
+      else
+        fail "$shell missing"
+      fi
     elif has_routing_bootstrap "$shell"; then
       pass "$shell exists with routing.yaml bootstrap"
     else
@@ -295,9 +327,11 @@ if sub_runs "1c"; then
     fi
   fi
 
-  MDC_COUNT=$(find .cursor/rules -name '*.mdc' 2>/dev/null | wc -l | tr -d ' ')
+  MDC_COUNT=$(find .cursor/rules -name '*.mdc' 2>/dev/null | wc -l | tr -d ' ' || true)
   if [[ "$MDC_COUNT" -gt 0 ]]; then
     pass ".cursor/rules/ has $MDC_COUNT .mdc file(s)"
+  elif [[ "$TWO_ROOT" == "1" ]]; then
+    warn ".cursor/rules/ has no .mdc files (two-root layout: Cursor shell may be rendered by an external assembler)"
   else
     fail ".cursor/rules/ has no .mdc files"
   fi
@@ -391,7 +425,7 @@ for gotcha_file in "$SKILL_DIR/references"/*gotcha*.md "$SKILL_DIR/references"/*
   [[ -f "$gotcha_file" ]] || continue
   [[ "$(basename "$gotcha_file")" == "index.md" ]] && continue
   check_lines "$gotcha_file" "$GOTCHAS_MAX_LINES" "$(basename "$gotcha_file") (pitfall log)"
-  DUPLICATE_HEADINGS=$(grep "^## " "$gotcha_file" | sort | uniq -d)
+  DUPLICATE_HEADINGS=$(grep "^## " "$gotcha_file" | sort | uniq -d || true)
   if [[ -n "$DUPLICATE_HEADINGS" ]]; then
     fail "$(basename "$gotcha_file") has duplicate ## headings — same entry recorded twice"
     echo "$DUPLICATE_HEADINGS" | head -5 | sed 's/^/       duplicate: /'
@@ -583,7 +617,7 @@ if [[ -f "$SKILL_MD" ]]; then
     ROUTING_SYNC="$SCRIPT_DIR/sync-routing.sh"
   fi
   if [[ -f "$ROUTING_YAML" && -f "$ROUTING_SYNC" ]]; then
-    if ROUTING_OUTPUT=$(bash "$ROUTING_SYNC" "$NAME" --check 2>&1); then
+    if ROUTING_OUTPUT=$(bash "$ROUTING_SYNC" "$SKILL_DIR" --check 2>&1); then
       pass "routing.yaml generated blocks are in sync"
     else
       fail "routing.yaml generated blocks drifted"

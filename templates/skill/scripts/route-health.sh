@@ -40,6 +40,15 @@ def clean(v):
         return v[1:-1]
     return v
 
+def parse_inline_list(v):
+    v = v.strip()
+    if not (v.startswith("[") and v.endswith("]")):
+        return []
+    inner = v[1:-1].strip()
+    if not inner:
+        return []
+    return [clean(part.strip()) for part in inner.split(",") if part.strip()]
+
 # --- parse tasks: id + trigger_examples ---
 tasks, cur, sec, top = [], None, None, None
 for raw in manifest.read_text().splitlines():
@@ -53,7 +62,13 @@ for raw in manifest.read_text().splitlines():
         tasks.append(cur); sec = None; continue
     if cur is None:
         continue
-    if raw.startswith("    trigger_examples:"): sec = "te"; continue
+    if raw.startswith("    trigger_examples:"):
+        sec = "te"
+        _, value = s.split(":", 1)
+        cur["triggers"].extend(parse_inline_list(value))
+        if value.strip().startswith("["):
+            sec = None
+        continue
     if raw.startswith("    required_reads:") or raw.startswith("    labels:"): sec = None; continue
     if sec == "te" and raw.startswith("      - "): cur["triggers"].append(clean(s[2:])); continue
     if raw.startswith("    ") and ":" in s: sec = None

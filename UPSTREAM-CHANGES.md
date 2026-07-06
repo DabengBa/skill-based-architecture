@@ -48,6 +48,18 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-06 - Script debt repaid: two-root layout support + pipefail hardening in vendored scripts
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/scripts/sync-routing.sh` — **two-root prefix awareness** (`skill:`/`code:` normalized in schema + path validation; `code:` paths skipped — the code_root's own tooling validates them) + **inline-YAML parsing** (`labels: { zh: … }`, `required_reads: [a, b]`, `trigger_examples: [a, b]`) + summary formatter tolerates a missing `route:`. Fixes a docs-promised/scripts-refused contract break: `routing.yaml`'s two-root comment and skeleton-flesh-split §7's worked example previously hard-failed (prefixes, inline labels) or silently dropped (inline trigger lists) under the shipped parser. Budget raised 340 → 400 (dated note in `templates/README.md`).
+  - `templates/skill/scripts/smoke-test.sh` — accepts a skill **directory path** / cwd (meta-repo layouts like `apps/<app>/skills/<name>`; name read from SKILL.md frontmatter; `skills/$NAME` remains the fallback); **`path_resolution`-gated exemption** — thin-shell / Cursor-entry / `.mdc` absence downgrades fail→warn *only* when `routing.yaml` declares two roots (single-root behavior unchanged); internal sync-routing call passes `$SKILL_DIR` instead of `$NAME`; **pipefail fixes** per the script's own maintenance note — `DUPLICATE_HEADINGS` grep (a gotcha file with no `## ` headings silently killed the entire run), `MDC_COUNT` find, `GOTCHA_FILE` find. Budget note corrected (file had drifted to 903 unrecorded; now ≤ 950, next addition forces extraction).
+  - `templates/skill/scripts/route-health.sh` — inline `trigger_examples: [a, b]` parsing (previously dropped silently → false no-trigger smells).
+  - `templates/skill/scripts/route-reachability.sh` — stale pointer fixed: `rate-of-change-split.md` → `skeleton-flesh-split.md`.
+  - `templates/skill/scripts/check-growth-health.sh` + `templates/README.md` — per-script budget caps updated in both (they are a pair; a pairing note now says so in the budget table).
+- Why it matters: upstream debt, surfaced by the chaos downstream carrying local fixes for it — the docs (routing.yaml two-root comment, skeleton-flesh-split §7 worked example) promised a layout and syntax the shipped scripts rejected or silently mis-parsed, and smoke-test violated its own pipefail maintenance rule (a whole run could die silently). Parser ideas absorbed from chaos's local patches, re-reviewed line-by-line; chaos's unconditional fail→warn downgrades were NOT taken (exemption here is gated on `path_resolution` presence).
+- Downstream refresh guidance: all five files are vendor-class — `sync-vendor.sh` picks them up mechanically. Single-root downstreams: every change is a no-op for your layout except the pipefail fixes — take them. Two-root downstreams: this release makes the shipped scripts actually support your layout; retire any local parser forks you carried.
+
 ## 2026-06-27 - Activation gate gains an actionability dimension (eval-derived)
 
 - Upstream commit: pending in this working tree

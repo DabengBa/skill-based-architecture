@@ -74,6 +74,39 @@ def clean(value: str) -> str:
         return value[1:-1]
     return value
 
+def parse_inline_list(value: str) -> list[str]:
+    value = value.strip()
+    if not (value.startswith("[") and value.endswith("]")):
+        return []
+    inner = value[1:-1].strip()
+    if not inner:
+        return []
+    return [clean(part.strip()) for part in inner.split(",") if part.strip()]
+
+def parse_inline_map(value: str) -> dict[str, str]:
+    value = value.strip()
+    if not (value.startswith("{") and value.endswith("}")):
+        return {}
+    inner = value[1:-1].strip()
+    result = {}
+    for part in inner.split(","):
+        if ":" not in part:
+            continue
+        key, item = part.split(":", 1)
+        result[clean(key).strip()] = clean(item)
+    return result
+
+# Two-root support (skeleton-flesh-split.md §7): `skill:` paths resolve inside
+# this skill root; `code:` paths live in the code_root repo and are skipped by
+# existence checks here — the code_root's own tooling validates them.
+def normalize_path(item: str) -> str:
+    if item.startswith("skill:"):
+        return item[len("skill:"):]
+    return item
+
+def is_code_path(item: str) -> bool:
+    return item.startswith("code:")
+
 def parse_manifest():
     always_read = []
     tasks = []
@@ -105,12 +138,24 @@ def parse_manifest():
             continue
         if raw.startswith("    labels:"):
             section = "labels"
+            _, value = stripped.split(":", 1)
+            current["labels"].update(parse_inline_map(value))
+            if current["labels"]:
+                section = None
             continue
         if raw.startswith("    required_reads:"):
             section = "required_reads"
+            _, value = stripped.split(":", 1)
+            current["required_reads"].extend(parse_inline_list(value))
+            if value.strip().startswith("["):
+                section = None
             continue
         if raw.startswith("    trigger_examples:"):
             section = "trigger_examples"
+            _, value = stripped.split(":", 1)
+            current["trigger_examples"].extend(parse_inline_list(value))
+            if value.strip().startswith("["):
+                section = None
             continue
         if section == "labels" and raw.startswith("      ") and ":" in stripped:
             key, value = stripped.split(":", 1)
@@ -149,7 +194,10 @@ def validate_schema(always_read, tasks):
         if not item or "FILL:" in item:
             continue
         tier_prefixes = ("rules/", "workflows/", "references/", "architecture/", "gotchas/", "conventions/")
-        if not any(item.startswith(prefix) for prefix in tier_prefixes):
+        normalized = normalize_path(item)
+        if is_code_path(item):
+            continue
+        if not any(normalized.startswith(prefix) for prefix in tier_prefixes):
             errors.append(f"always_read path should be skill-relative one of {', '.join(tier_prefixes)}: {item}")
     return errors
 
@@ -194,13 +242,15 @@ def format_triggers(examples):
 def format_workflow(value):
     if not value:
         return "none"
-    if value.startswith("workflows/"):
+    if normalize_path(value).startswith("workflows/"):
         return f"`{value}`"
     return value
 
 summary_block = "\n".join(
     f"- {label_for(task)} -> reads {format_reads(task.get('required_reads', []))}; "
-    f"workflow {format_workflow(task.get('workflow', ''))}; {task.get('route', '').strip()}{format_triggers(task.get('trigger_examples', []))}"
+    f"workflow {format_workflow(task.get('workflow', ''))}"
+    f"{('; ' + task.get('route', '').strip()) if task.get('route', '').strip() else ''}"
+    f"{format_triggers(task.get('trigger_examples', []))}"
     for task in tasks
 )
 always_skill_block = format_always_skill(always_read)
@@ -233,22 +283,27 @@ def validate_paths():
     for item in always_read:
         if "*" in item or "FILL:" in item:
             continue
-        target = skill_root / item.split("#", 1)[0]
+        if is_code_path(item):
+            continue
+        target = skill_root / normalize_path(item).split("#", 1)[0]
         if not target.exists():
             errors.append(f"always_read missing: {item}")
     for task in tasks:
         if "FILL:" in str(task):
             continue
         workflow = task.get("workflow", "")
-        if workflow.startswith("workflows/"):
-            target = skill_root / workflow.split("#", 1)[0]
+        normalized_workflow = normalize_path(workflow)
+        if normalized_workflow.startswith("workflows/"):
+            target = skill_root / normalized_workflow.split("#", 1)[0]
             if not target.exists():
                 errors.append(f"{task.get('id')}: workflow missing: {workflow}")
         for item in task.get("required_reads", []):
             if "*" in item or "FILL:" in item or item.startswith("task-relevant "):
                 continue
+            if is_code_path(item):
+                continue
             if "/" in item:
-                target = skill_root / item.split("#", 1)[0]
+                target = skill_root / normalize_path(item).split("#", 1)[0]
                 if not target.exists():
                     errors.append(f"{task.get('id')}: required_read missing: {item}")
     return errors

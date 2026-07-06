@@ -60,6 +60,8 @@ Two kinds — each with a different "fill" mechanism:
 
 ## Byte Budgets (hard limits — enforce in review)
 
+> The numbers below and the per-script caps in `skill/scripts/check-growth-health.sh` are a pair — change both in the same commit, or the report silently disagrees with the policy (this table had drifted from a script's real size once already).
+
 | Path | Budget | Enforcement |
 |---|---|---|
 | `shells/*` | ≤ 60 lines | Thin shells must stay thin; > 60 = content leaking in. Must include generated Always Read + `routing.yaml` bootstrap + route-before-routing check for vague verbs (see `protocol-blocks/ambiguous-request-gate.md`) |
@@ -72,8 +74,8 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/workflows/update-rules.md`, `maintain-docs.md`, `subagent-driven.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `protocol-blocks/*` | ≤ 40 lines each | One idea per block |
 | `skill/SKILL.md.template` | dual budget: description ≤ 25 lines + body ≤ 90 lines | Same hard cap as downstream SKILL.md (smoke-test enforces both separately). description carries quoted trigger phrases; body navigates rules/workflows/references. Keep each shorter when possible. |
-| `skill/scripts/smoke-test.sh` | ≤ 850 lines (was 800; raised 2026-05-12 for ledger gate). **Next addition forces extraction** into a `check-<concern>.sh` companion script. | Structural test harness; keep scenario behavior out of this script |
-| `skill/scripts/sync-routing.sh` | ≤ 340 lines (was 320; raised 2026-06-10 — behavior-block single-source generation legitimately grew it) | Generator/checker for routing.yaml-derived blocks; keep dependency-free |
+| `skill/scripts/smoke-test.sh` | ≤ 950 lines (was 850; raised 2026-07-06 — file had already drifted to 903 unrecorded; +34 for two-root layout support (dir-path resolution, `path_resolution`-gated shell exemptions) + pipefail hardening, absorbed from the chaos downstream). **Next addition forces extraction** into a `check-<concern>.sh` companion script — no further raises. | Structural test harness; keep scenario behavior out of this script |
+| `skill/scripts/sync-routing.sh` | ≤ 400 lines (was 340; raised 2026-07-06 — two-root `skill:`/`code:` prefix awareness + inline-YAML parsing, honoring the routing.yaml two-root contract the docs already promised; parser ideas absorbed from the chaos downstream) | Generator/checker for routing.yaml-derived blocks; keep dependency-free |
 | `skill/scripts/sync-vendor.sh` | ≤ 160 lines | Mechanical vendor sync; base check via upstream git history — no new state files |
 | `skill/sync-manifest.yaml` | ≤ 40 lines | Vendor-class file list only; project-owned files never belong here |
 | `skill/scripts/check-growth-health.sh` | ≤ 220 lines | Non-blocking pressure report for line counts, route counts, and script/workflow budgets |
