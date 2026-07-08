@@ -37,7 +37,7 @@ It focuses on the rule system itself: structure, routing, workflows, validation,
 
 Then [trigger it](#quick-start); pull updates later with `/plugin marketplace update`.
 
-**Try without installing:** [Run Skill Based Architecture in Telegram or WhatsApp](https://app.clawmama.run/skills/i78bb1/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_wojisama_skill_based_architecture) via ClawMama's Skill catalog. Use it with the [copy-paste demo input](examples/simple-repo/COPY-PASTE-INPUT.md) or other non-sensitive rule files; for real project migration, install locally with Claude Code or clone the repo.
+**Try without installing:** [Run Skill Based Architecture in Telegram or WhatsApp](https://app.clawmama.run/skills/i78bb1/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_wojisama_skill_based_architecture) via ClawMama's Skill catalog. Use it with the [copy-paste demo input](examples/simple-repo/COPY-PASTE-INPUT.md) or other non-sensitive rule files. The bundled demo is deliberately the most basic smoke-test input, so the generated structure will be small; for real project migration, install locally with Claude Code or clone the repo.
 
 **Cursor / Codex / Gemini / other harnesses** don't share Claude Code's plugin system — clone the repo instead (see [Quick Start](#quick-start)).
 
@@ -114,7 +114,7 @@ Equivalent triggers: "Organize the project rules", "Migrate rules to skills/", "
 
 The agent then copies the pre-built scaffold from [`templates/`](templates/) into `skills/<name>/`, creates the thin shells, fills every `<!-- FILL: -->` marker, and runs validation. Full procedure: [WORKFLOW.md](WORKFLOW.md).
 
-Want a safe first run? Use [`examples/simple-repo/COPY-PASTE-INPUT.md`](examples/simple-repo/COPY-PASTE-INPUT.md) in hosted previews, or [`examples/simple-repo/`](examples/simple-repo/) as a local target project input. It is a small fake project with duplicated `AGENTS.md`, `CLAUDE.md`, Cursor rules, and README notes, designed to show the migration without exposing private code.
+Want a safe first run? Use [`examples/simple-repo/COPY-PASTE-INPUT.md`](examples/simple-repo/COPY-PASTE-INPUT.md) in hosted previews, or [`examples/simple-repo/`](examples/simple-repo/) as a local target project input. It is a deliberately tiny fake project with duplicated `AGENTS.md`, `CLAUDE.md`, Cursor rules, and README notes. Treat it as the most basic proof of routing/thin-shell behavior, not as a showcase of the full migration depth a real repo can produce.
 
 ### 3. (Codex only) Manually request sub-agent / parallel work
 

@@ -1,11 +1,18 @@
 # Simple Repo Demo
 
 This fixture is a safe input for hosted previews or first-run evaluations of
-Skill-Based Architecture. It is intentionally small, public, and fake: no
-secrets, no private business rules, and no real customer data.
+Skill-Based Architecture. It is intentionally the most basic smoke-test input:
+small, public, and fake, with no secrets, no private business rules, and no real
+customer data.
 
 Use it when someone wants to see what the meta-skill does before cloning or
 installing it locally.
+
+Do not treat the output from this fixture as the ceiling of the system. Because
+the input only has a few short rule files, a good result should also be small:
+mostly a `SKILL.md`, a few `rules/`, a few `workflows/`, one `references/`
+gotcha file, and thin shells. Real projects with larger, messier rule surfaces
+produce deeper routing, fuller workflows, and more useful reference extraction.
 
 ## How To Try It
 

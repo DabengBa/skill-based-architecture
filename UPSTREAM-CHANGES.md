@@ -52,8 +52,8 @@ The archive file has the same format and is read on demand if a downstream agent
 
 - Upstream commit: pending in this working tree
 - Changed areas:
-  - `README.md`, `README.zh-CN.md`, `EXAMPLES.md` — hosted preview pointers now target `examples/simple-repo/COPY-PASTE-INPUT.md`.
-  - `examples/simple-repo/` — adds a single copy-paste input bundle and clarifies that hosted agents should not clone, fetch, or inspect the GitHub folder.
+  - `README.md`, `README.zh-CN.md`, `EXAMPLES.md` — hosted preview pointers now target `examples/simple-repo/COPY-PASTE-INPUT.md` and set expectation that the bundled demo is a minimal smoke-test input.
+  - `examples/simple-repo/` — adds a single copy-paste input bundle and clarifies that hosted agents should not clone, fetch, or inspect the GitHub folder; README now states the generated output should be small because the fixture is intentionally tiny.
 - Why it matters: Hermes-style hosted previews may block clone flows that try to clean `/tmp` paths, so the safe demo path must pass the small fixture as pasted context instead of asking the hosted agent to read a GitHub directory.
 - Downstream refresh guidance: no downstream scaffold action. This is only an upstream README/examples demo-path clarification; projects that copied the previous hosted-preview wording may update it, but no templates, scripts, routing, or conformance behavior changed.
 
