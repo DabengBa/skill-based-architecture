@@ -8,6 +8,21 @@ Executable is an execution-mode axis, not a full shape replacement. Decide it
 separately from structure tier (Single-file / Folder-light / Full) and domain
 topology (Single-skill / Multi-skill candidate).
 
+## Degrees of Freedom
+
+Before promoting a skill toward executable shape, ask: what is the most fragile
+step, and how much freedom can the agent safely have?
+
+| Freedom | Signal | Skill shape |
+|---|---|---|
+| High | Many valid approaches; judgment-heavy work; no fixed output contract | Pure reference or workflow prose |
+| Medium | A preferred command or check exists, but parameters vary by task | Workflow prose plus inline shell or a small validator |
+| Low | Fragile sequence; fixed format/API; side effects; repeated exact logic | Script/CLI-first; consider this executable shape |
+
+Low freedom is only a pressure signal. It does not override the "at least two
+pressures" gate below; do not promote a skill just because a script would look
+tidy.
+
 ## When To Use
 
 Adopt the executable shape only when at least two pressures are present:

@@ -48,6 +48,15 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-08 - Skill authoring judgement checks
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `references/layout.md` — description quality now includes a near-miss anti-trigger check: name similar user requests that should not activate the skill, or the domain is probably too broad.
+  - `references/executable-skill-architecture.md` — adds a Degrees of Freedom classifier before promoting a skill toward script/CLI-first execution.
+- Why it matters: borrowed from `skill-authoring` as lightweight judgement checks, not mechanisms. They help avoid over-broad activation and premature executable scaffolding without adding default workflow burden.
+- Downstream refresh guidance: optional reference-doc update only; no template, conformance, script, or user-facing behavior change.
+
 ## 2026-07-07 - Black-box downstream scaffolding internals
 
 - Upstream commit: pending in this working tree

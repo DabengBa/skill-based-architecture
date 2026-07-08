@@ -105,6 +105,7 @@ Guidelines:
 - **Third-person format** — "This skill should be used when…" not "I help with…"
 - **Include activation conditions** — describe the context, not just the action
 - **Do not enumerate workflows** — `fix-bug`, `release`, `maintain-docs`, etc. belong in Common Tasks unless they identify a separate domain skill
+- **Name near-miss anti-triggers** — list three similar user requests that should NOT activate this skill. If you cannot name them, the description is probably too broad; move workflow verbs into Common Tasks or split the domain.
 
 #### Trap: a step-summary in the description suppresses reading the body
 
@@ -128,7 +129,7 @@ description: >
 
 **Check — applies at every summary→detail link, not just the description:** does the description, *or any Common Tasks row / `routing.yaml` label*, carry any HOW an agent could execute without opening the body or workflow file? If yes, the agent will do exactly that and skip the detail — strip it to WHEN + which-file; the steps live only in the body/workflow. (Same shortcut as Pitfall #8 "I already know the rules", generalized: any layer that leaks enough HOW gets the layer below it skipped.)
 
-Re-read the `description` block aloud after changing frontmatter. Listen for over-broad scope, workflow keyword stuffing, and (in multi-skill repos) duplicate trigger phrases between skills. No script substitutes for this judgment.
+Re-read the `description` block aloud after changing frontmatter. Listen for over-broad scope, workflow keyword stuffing, near-misses you cannot exclude, and (in multi-skill repos) duplicate trigger phrases between skills. No script substitutes for this judgment.
 
 The template above uses a two-tier structure:
 
