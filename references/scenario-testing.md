@@ -52,6 +52,22 @@ This upstream repo keeps only minimal self-hosting route proofs in
 default downstream harness; downstream projects add their own scenario tests
 only for routes with real behavior risk.
 
+### Case Split for Skill Upgrades
+
+When a rule or workflow change is meant to fix a behavior failure, do not test
+only the incident that inspired it. Split cases before applying:
+
+- **Incident** — the original failure or pressure scenario.
+- **Candidate rule** — the durable behavior being proposed, phrased without the
+  source project's names.
+- **Regression case** — a normal task that should still work after the change.
+- **Boundary case** — a near-negative where the new rule should not over-fire.
+- **Holdout challenge** — kept back until after the rule is written; never use
+  it to invent the rule, only to validate generalization.
+
+If the holdout fails, revise the rule or reject it. Do not add another special
+case unless it passes the recording, activation, and net-benefit gates.
+
 ## When To Add Scenario Tests
 
 Add a scenario test when one of these is true:

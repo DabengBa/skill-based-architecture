@@ -25,6 +25,8 @@ Before editing, answer these out loud in your working notes:
 
 If any answer blocks the change, stop and propose the correct destination instead of weakening the template boundary.
 
+For external-project absorbs, benchmark/eval lessons, default scaffold changes, or new reusable mechanisms, first follow `update-rules.md` § Plan-Only Gate for Skill Upgrades: list absorb candidates, rejected items, impact, activation path, net benefit, and validation; stop until the user approves that plan.
+
 ## Steps
 
 1. **Classify the artifact** — shell, hook, protocol block, workflow, rule template, reference template, migration helper, or checklist.

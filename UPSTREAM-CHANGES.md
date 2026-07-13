@@ -48,6 +48,16 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-08 - Skill upgrade plan-only gate
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - `templates/skill/workflows/update-rules.md` — adds a plan-only gate for high-impact skill upgrades: external-project absorbs, benchmark/eval lessons, major template/default scaffold changes, Always Read/routing behavior, or new reusable mechanisms must first produce an upgrade plan and stop until the user approves that exact plan. Also adds a net-benefit + validation gate before adding rules/workflows/references/hooks/scripts/templates.
+  - `templates/skill/workflows/edit-templates.md` — points external absorbs and reusable mechanism changes to the plan-only gate before editing copied scaffold artifacts.
+  - `references/scenario-testing.md` — adds a case split for skill upgrades: incident, candidate rule, regression case, boundary case, and holdout challenge; holdout is post-rule validation, not rule-design input.
+- Why it matters: distilled from `compass-skills` without importing its personal task OS. The useful pattern is not task DAG/profile/session state; it is the lightweight discipline that large skill upgrades first surface candidates, rejected items, impact, activation path, net benefit, and validation before mutating shared scaffolds.
+- Downstream refresh guidance: optional but recommended workflow update for projects that absorb external skill patterns or maintain shared scaffolds. No script, conformance, routing, or default harness behavior changed.
+
 ## 2026-07-08 - Hosted preview demo uses copy-paste input
 
 - Upstream commit: pending in this working tree

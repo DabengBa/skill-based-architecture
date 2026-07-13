@@ -50,6 +50,19 @@ Applies only to a rule whose whole job is to change behavior under pressure — 
 
 Never run a baseline for routine recording where the failure already happened in front of you.
 
+### Plan-Only Gate for Skill Upgrades
+
+Before editing existing skill rules/workflows/references when the driver is an external-project absorb, benchmark/eval feedback, major template change, default scaffold change, Always Read/routing behavior, or new reusable mechanism:
+
+1. Produce an upgrade plan and **stop before file edits** unless the user has already approved that exact plan.
+2. Plan must list: absorb candidates, rejected items + why, affected files/routes/templates, activation path, net benefit vs added context/complexity, and cheapest validation.
+3. Apply only after explicit approval of the plan. Approval of the general idea is not enough if the plan changed.
+4. Skip only for exact user-specified edits, typo/stale-fact fixes, or urgent breakage repairs; still run the recording and activation gates below.
+
+### Net Benefit + Validation Gate
+
+Before adding or expanding any rule, workflow, reference, hook, script, or template mechanism, state in working notes or PR text: real evidence, why benefit exceeds context/complexity cost, why a lighter destination is insufficient, and how to validate. Weak evidence + no validation path → do not record; keep as discussion or maintenance note.
+
 ### Search Before Record (mandatory)
 
 Before writing anything new, search existing docs for the same or similar lesson. This is Tier 1 of the maintenance trigger discipline (see `maintain-docs.md § Step 1b` for the full tier table). It is cheap because the agent already has the new entry's content and context in hand — a targeted scan of 3–5 candidate entries is far cheaper than reading the whole file.
@@ -228,3 +241,4 @@ After completing rule updates, check the line count of modified files. If any ex
 - Obsolete rules have been removed or marked
 - Recording threshold checked on every substantive task; when it passed, the appropriate file was updated before closure
 - Every new `references/` entry has a declared activation path (workflow line / `SKILL.md` route / rule summary) added in the **same commit** — no orphan shipped
+- High-impact external absorbs / scaffold changes passed the plan-only and net-benefit gates before applying
