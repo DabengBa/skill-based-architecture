@@ -15,7 +15,7 @@ templates/
 │   ├── rules/{project-rules,coding-standards,agent-behavior}.md
 │   ├── workflows/{profile-project,plan-feature,update-upstream,update-rules,fix-bug,change-managed,edit-templates,maintain-docs,subagent-driven,subagent-orchestration}.md
 │   ├── workflows/invoke-skill.md.example  (copy-paste template for Pattern A composition; rename and adapt)
-│   ├── references/{gotchas,behavior-failures}.md
+│   ├── references/{gotchas,behavior-failures,minimal-sufficient-context}.md
 │   ├── protocol-blocks/       → internal Task Closure / routing reinforcement blocks
 │   └── scripts/              → automated verification (lives inside the skill)
 │       ├── smoke-test.sh                (fully automated structural + routing checks)
@@ -78,6 +78,7 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/scripts/audit-orphans.sh` | ≤ 120 lines | Zero-inbound report for content tiers (`rules/` `references/` `architecture/` `gotchas/` `conventions/`); scans `routing.yaml` too; heuristic, run before deleting flagged files |
 | `skill/references/gotchas.md` | ≤ 25 lines (seed) | MUST stay near-empty — content grows post-deployment |
 | `skill/references/behavior-failures.md` | ≤ 25 lines (seed) | MUST stay near-empty — agent-behavior violations logged via AAR |
+| `skill/references/minimal-sufficient-context.md` | ≤ 80 lines | Shared route-intake protocol for context/validation escalation; workflows should link here instead of carrying small/large tiers |
 
 Anything over budget needs either splitting or rejection. See `ANTI-TEMPLATES.md`.
 

@@ -11,8 +11,8 @@ Use this for non-bug changes where partial edits can create drift: new features,
 ## Read First
 
 1. Re-open `SKILL.md` → match this change to a Common Tasks route
-2. Read `rules/project-rules.md` and task-relevant `rules/*.md`
-3. Read task-relevant `references/*.md`, especially any source-of-truth or generated-file notes
+2. Apply `references/minimal-sufficient-context.md`; start with the route's core files and the smallest source-of-truth slice
+3. Expand to task-relevant `rules/*.md` or `references/*.md` only when scope, ownership, generated files, contracts, permissions, config, or shared runtime state require it
 4. If the change touches templates, scaffolds, copied shell blocks, generated files, or reusable project structure, switch to `workflows/edit-templates.md` or run its template-specific checks as a sub-step
 
 ## Steps

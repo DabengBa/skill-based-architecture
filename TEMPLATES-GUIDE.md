@@ -74,6 +74,8 @@ For the protocol-level concepts (recording threshold, where to record, generaliz
 
 Reusable reinforcement blocks live in [`templates/skill/protocol-blocks/`](templates/skill/protocol-blocks/) and are copied inside each downstream skill — workflows link them without user-visible setup (`reboot-check.md`, `rationalizations-table.md`, `red-flags-stop.md`, `ambiguous-request-gate.md`, `subagent-contract.md`).
 
+Route intake uses [`templates/skill/references/minimal-sufficient-context.md`](templates/skill/references/minimal-sufficient-context.md) to keep per-task context and validation proportional: workflows keep their invariant core, while extra references/runtime/release evidence are added only when concrete risk signals appear.
+
 ## Workflow Templates
 
 Real workflow templates live under [`templates/skill/workflows/`](templates/skill/workflows/) — they are copied byte-for-byte into downstream skills:

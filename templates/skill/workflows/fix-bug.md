@@ -11,13 +11,13 @@
 ## Read First
 
 1. Re-open `SKILL.md` → match this bug to a Common Tasks route
-2. Read **all** files listed for that route (not just the ones you remember)
-3. Read task-relevant `references/*.md` (especially `references/gotchas.md`)
+2. Read the route's core files only if needed by Session Discipline; then apply `references/minimal-sufficient-context.md`
+3. Expand to `references/gotchas.md`, source indexes, callers, or extra rules only when root-cause work hits an expansion signal
 
 ## Steps
 
 1. Restate the bug scope and affected behavior
-2. Read the minimum necessary files — do not read files unrelated to the symptom
+2. Read the minimum necessary files; re-enter `references/minimal-sufficient-context.md` if ownership, callers, contracts, or runtime dependencies become unclear
 3. **Reproduce first** — express the bug as a repeatable check (a failing test, a script, or a written manual sequence) and confirm it fails *for the reported reason* before touching code. If it passes or fails differently, fix the reproduction or your acceptance understanding first. Can't be automated → write the repeatable manual steps + why not.
 4. Identify the root cause — not the first plausible cause, the actual one. **If 2+ plausible hypotheses survive a 30-second think**, see § Hypothesis Fan-out below before reading more code.
 5. Implement the smallest correct fix — no "while we're here" cleanups

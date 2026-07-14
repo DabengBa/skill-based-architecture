@@ -74,4 +74,5 @@ required_files:
   - path: workflows/fix-bug.md
   - path: workflows/maintain-docs.md
   - path: workflows/update-upstream.md
+  - path: references/minimal-sufficient-context.md
   - path: routing.yaml

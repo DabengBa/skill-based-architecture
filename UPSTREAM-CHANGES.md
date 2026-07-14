@@ -48,6 +48,17 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-09 - Minimal sufficient context route intake
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - NEW `templates/skill/references/minimal-sufficient-context.md` — shared route-intake protocol: start from Always Read + route `required_reads` + workflow, expand context only on concrete signals, and escalate validation from command evidence to runtime/release evidence only when needed.
+  - `templates/skill/SKILL.md.template` and `templates/skill/routing.yaml` — clarify that `required_reads` are core reads, not safety-blanket context; do not split routes/workflows into small/large variants.
+  - `templates/skill/workflows/fix-bug.md` and `templates/skill/workflows/change-managed.md` — Read First sections now point to the shared protocol instead of broad default `rules/*.md` / `references/*.md` reads.
+  - `templates/skill/conformance.yaml`, `templates/README.md`, `TEMPLATES-GUIDE.md` — register and document the new required reference.
+- Why it matters: small tasks were paying the full skill cost because context, validation, and closure rigor were being encoded inside each workflow. This keeps workflow intent cores stable while route intake owns variable rigor. "Small" now means narrow context footprint, not weaker proof.
+- Downstream refresh guidance: add the new reference, update generated SKILL/routing prose, and trim workflow Read First blocks that default to broad reads. Preserve project-specific validation commands, but move any generic light/heavy ladder out of individual workflows and into this shared route-intake protocol. Run `sync-routing.sh --check`, `smoke-test.sh`, and conformance against the refreshed upstream manifest.
+
 ## 2026-07-08 - Skill upgrade plan-only gate
 
 - Upstream commit: pending in this working tree
