@@ -50,11 +50,12 @@ The archive file has the same format and is read on demand if a downstream agent
 
 ## 2026-07-17 - Simplify default scaffold and make integrity checks truthful
 
-- Upstream commit: pending in this working tree
+- Upstream commit: branch `codex/simplify-template-maintenance-20260717` (`96cd072` plus the conformance literal follow-up)
 - Changed areas:
   - REMOVED `footprint.sh`, `check-cross-references.sh`, and `check-growth-health.sh`: the first undercounted mandatory reads and failed on two-root prefixes; the second guessed semantic drift from mtime and duplicated link checks; the third emitted permanent review noise while always succeeding.
   - `audit-orphans.sh` and `route-reachability.sh` now accept `--namespace skill|code --routing <path>` and keep identical `skill:` / `code:` paths distinct; route reachability now includes workflows. Single-root zero-argument behavior remains.
   - `_parse_conformance.py` was merged into the public `check-version-conformance.sh` CLI; conformance assertions now protect fewer load-bearing contracts instead of duplicating file existence and wording.
+  - Conformance phrases are passed to `grep` after `--`, so a required or forbidden literal beginning with `-` / `--` cannot be misread as a command option; the main suite covers both positive and negative option-like phrases.
   - REMOVED the implicit-Always-Read `minimal-sufficient-context.md`; concise context/evidence escalation now lives in Always Read `agent-behavior.md`, while Fix Bug, Change Managed, and Task Closure retain only task/timing-specific decisions.
   - `agent-behavior.md`, subagent workflows, Fix Bug, Change Managed, Receiving Review, and Task Closure were reconciled and compressed. The three subagent modes remain separate because their selection timing differs; only the main agent runs Task Closure after integrated work.
   - Tests-as-Spec and Permission Model moved from the default downstream scaffold to upstream adoption guides under `references/`. Projects materialize them only after real testing/operation pressure and add a project-specific activation path.

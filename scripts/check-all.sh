@@ -157,6 +157,34 @@ YAML
   rm -rf "$tmp"
 }
 
+check_conformance_option_like_phrases() {
+  local tmp script
+  tmp="$(mktemp -d)"
+  script="$ROOT/templates/skill/scripts/check-version-conformance.sh"
+  printf '%s\n' '# Fixture' '--present' > "$tmp/fixture.md"
+
+  cat > "$tmp/pass.yaml" <<'YAML'
+required_sections:
+  - file: fixture.md
+    must_contain:
+      - "--present"
+YAML
+  bash "$script" "$tmp" --conformance "$tmp/pass.yaml" >/dev/null
+
+  cat > "$tmp/fail.yaml" <<'YAML'
+required_sections:
+  - file: fixture.md
+    must_not_contain:
+      - "--present"
+YAML
+  if bash "$script" "$tmp" --conformance "$tmp/fail.yaml" >/dev/null 2>&1; then
+    echo "conformance must_not_contain accepted an option-like phrase that exists" >&2
+    rm -rf "$tmp"
+    return 1
+  fi
+  rm -rf "$tmp"
+}
+
 if [[ "$MODE" == "staged" ]]; then
   run "upstream change-note guard (staged)" bash scripts/check-upstream-changes.sh --base "$BASE" --staged
   run "whitespace diff check (staged)" git diff --cached --check
@@ -171,6 +199,7 @@ run "template routing manifest check" bash templates/skill/scripts/sync-routing.
 run "template SessionStart hook runtime contract" bash scripts/check-template-hooks.sh
 run "temporary downstream scaffold smoke test" check_downstream_scaffold
 run "single-root + two-root integrity contracts" check_two_root_integrity
+run "conformance option-like phrase contract" check_conformance_option_like_phrases
 run "self-hosting shells + activation check" bash scripts/check-self-shells.sh
 run "self-hosting scenario checks" bash scripts/check-self-scenarios.sh
 run "self-hosting phase 7 smoke test" bash templates/skill/scripts/smoke-test.sh skill-based-architecture --phase 7
