@@ -68,7 +68,7 @@ A move that leaves routing untouched produces incoherent routes.
 ## 6. Validate
 
 - `audit-orphans.sh` → **0 orphans** (every tier file is link-reachable).
-- `route-reachability.sh` → **0 unreachable** (every active-tier file is route-reachable — directly on a route or through a routed selecting index/reference, §4; this is the check that catches the stored-not-activated waste).
+- `route-reachability.sh` → **0 unreachable** (every active-tier file and workflow is route-reachable — directly on a route or through a routed selecting index/reference, §4).
 - `smoke-test.sh <name>` → tier checks pass (`constraint surface` across rules/architecture/conventions; gotchas tier recognized); `routing.yaml` ≤ 140 lines.
 - `route-health.sh <name>` → no routing-quality smells.
 
@@ -112,7 +112,10 @@ tasks:
 **What changes under two roots:**
 
 - The `code_root` dir is **not** the entry — its `SKILL.md` is a thin stub that points at `skill_root` (entry / routing / skeleton live upstream).
-- `audit-orphans` / `route-reachability` run **per root**; same-dir cross-links keep working because each root still holds its own tier dirs.
+- `audit-orphans` / `route-reachability` run **per root** with the shared routing manifest and explicit namespace:
+  - skill root: `--namespace skill --routing <skill_root>/routing.yaml`
+  - code root: `--namespace code --routing <skill_root>/routing.yaml`
+  Namespace identity prevents a routed `code:gotchas/x.md` from falsely activating a same-path `skill:gotchas/x.md`; zero-argument mode remains for single-root skills.
 - The assembler that materializes `skill_root` into consumer dirs is **project-specific** — SBA specifies the *split + prefix contract*, not the tool.
 - When a tier glob (e.g. `gotchas/**`) appears under **both** roots' `owns` (legal per the coupling test above), resolution follows the **path prefix** on each reference (`skill:` / `code:`) — `owns` documents intent; the prefix is the contract the scripts resolve.
 - **Cross-repo writes need a guard.** Before a workflow writes into the *other* root (or any path outside the current skill dir), run a literal existence check on the target root (e.g. `test -d <code_root>/.git`) and **stop on failure** — never silently `mkdir` the target tree in whatever repo you happen to be in. (Real downstream failure: docs nearly created at the meta-repo root, where the assembler would never ship them.)

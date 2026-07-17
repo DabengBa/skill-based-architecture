@@ -18,10 +18,10 @@ Runs the self-hosting upstream maintenance checks used before commit/push:
   - temporary downstream scaffold smoke test
   - self-hosting shells + activation check
   - whitespace diff check
-  - growth health report
+  - single-root + two-root integrity contracts
   - self-hosting scenario checks
   - self-hosting phase 7 smoke test
-  - template + self-hosting orphan audit (rules/ + references/)
+  - self-hosting orphan audit
   - template content conformance (downstream contract)
   - self-hosting content conformance (upstream-canon)
 
@@ -101,11 +101,60 @@ check_downstream_scaffold() {
 
     bash "skills/$name/scripts/sync-routing.sh" "$name" --check
     bash "skills/$name/scripts/smoke-test.sh" "$name" --phase 8
+    (
+      cd "skills/$name"
+      bash scripts/audit-orphans.sh
+      bash scripts/route-reachability.sh
+    )
   )
   status=$?
   set -e
   rm -rf "$tmp"
   return "$status"
+}
+
+check_two_root_integrity() {
+  local tmp skill_root code_root routing
+  tmp="$(mktemp -d)"
+  skill_root="$tmp/skill"
+  code_root="$tmp/code"
+  routing="$skill_root/routing.yaml"
+  mkdir -p "$skill_root/rules" "$skill_root/workflows" "$skill_root/gotchas" "$code_root/gotchas"
+
+  printf '# Base\n' > "$skill_root/rules/base.md"
+  printf '# Run\n' > "$skill_root/workflows/run.md"
+  printf '# Code shared\n' > "$code_root/gotchas/shared.md"
+  printf '# Skill collision\n' > "$skill_root/gotchas/shared.md"
+  cat > "$routing" <<'YAML'
+path_resolution:
+  skill_root: {owns: [rules/**, workflows/**, gotchas/**]}
+  code_root: {owns: [gotchas/**]}
+always_read:
+  - skill:rules/base.md
+tasks:
+  - id: fixture
+    required_reads:
+      - code:gotchas/shared.md
+    workflow: skill:workflows/run.md
+YAML
+
+  if (cd "$skill_root" && bash "$ROOT/templates/skill/scripts/audit-orphans.sh" --namespace skill --routing "$routing") >/dev/null 2>&1; then
+    echo "two-root audit failed to isolate a same-path skill:/code: collision" >&2
+    rm -rf "$tmp"
+    return 1
+  fi
+  if (cd "$skill_root" && bash "$ROOT/templates/skill/scripts/route-reachability.sh" --namespace skill --routing "$routing") >/dev/null 2>&1; then
+    echo "two-root route check failed to isolate a same-path skill:/code: collision" >&2
+    rm -rf "$tmp"
+    return 1
+  fi
+
+  rm "$skill_root/gotchas/shared.md"
+  (cd "$skill_root" && bash "$ROOT/templates/skill/scripts/audit-orphans.sh" --namespace skill --routing "$routing")
+  (cd "$skill_root" && bash "$ROOT/templates/skill/scripts/route-reachability.sh" --namespace skill --routing "$routing")
+  (cd "$code_root" && bash "$ROOT/templates/skill/scripts/audit-orphans.sh" --namespace code --routing "$routing")
+  (cd "$code_root" && bash "$ROOT/templates/skill/scripts/route-reachability.sh" --namespace code --routing "$routing")
+  rm -rf "$tmp"
 }
 
 if [[ "$MODE" == "staged" ]]; then
@@ -121,8 +170,8 @@ run "upstream supersedes refs check" bash scripts/check-upstream-supersedes.sh
 run "template routing manifest check" bash templates/skill/scripts/sync-routing.sh templates/skill --check
 run "template SessionStart hook runtime contract" bash scripts/check-template-hooks.sh
 run "temporary downstream scaffold smoke test" check_downstream_scaffold
+run "single-root + two-root integrity contracts" check_two_root_integrity
 run "self-hosting shells + activation check" bash scripts/check-self-shells.sh
-run "growth health report" bash templates/skill/scripts/check-growth-health.sh .
 run "self-hosting scenario checks" bash scripts/check-self-scenarios.sh
 run "self-hosting phase 7 smoke test" bash templates/skill/scripts/smoke-test.sh skill-based-architecture --phase 7
 run "self-hosting orphan audit" bash templates/skill/scripts/audit-orphans.sh

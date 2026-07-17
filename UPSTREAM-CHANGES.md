@@ -48,6 +48,20 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-17 - Simplify default scaffold and make integrity checks truthful
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - REMOVED `footprint.sh`, `check-cross-references.sh`, and `check-growth-health.sh`: the first undercounted mandatory reads and failed on two-root prefixes; the second guessed semantic drift from mtime and duplicated link checks; the third emitted permanent review noise while always succeeding.
+  - `audit-orphans.sh` and `route-reachability.sh` now accept `--namespace skill|code --routing <path>` and keep identical `skill:` / `code:` paths distinct; route reachability now includes workflows. Single-root zero-argument behavior remains.
+  - `_parse_conformance.py` was merged into the public `check-version-conformance.sh` CLI; conformance assertions now protect fewer load-bearing contracts instead of duplicating file existence and wording.
+  - REMOVED the implicit-Always-Read `minimal-sufficient-context.md`; concise context/evidence escalation now lives in Always Read `agent-behavior.md`, while Fix Bug, Change Managed, and Task Closure retain only task/timing-specific decisions.
+  - `agent-behavior.md`, subagent workflows, Fix Bug, Change Managed, Receiving Review, and Task Closure were reconciled and compressed. The three subagent modes remain separate because their selection timing differs; only the main agent runs Task Closure after integrated work.
+  - Tests-as-Spec and Permission Model moved from the default downstream scaffold to upstream adoption guides under `references/`. Projects materialize them only after real testing/operation pressure and add a project-specific activation path.
+  - Editor-local `.idea/` files were removed; template indexes, sync manifest, diagrams, update guidance, and validation were updated.
+- Why it matters: a green structural suite was hiding inaccurate reports, duplicate thresholds, implicit co-loading, and opt-in files copied to every project. The smaller scaffold makes every retained file/check answer an independent question and strengthens actual two-root activation.
+- Downstream refresh guidance: remove the three deleted report scripts and `_parse_conformance.py`; re-vendor the retained integrity/conformance scripts; delete `minimal-sufficient-context.md` only after moving any project-specific expansion/validation rules into an actual Always Read rule or task workflow. Keep adopted local Tests-as-Spec/Permission rules if the project has real baselines, but stop treating them as universal template files. Preserve project-specific Fix Bug/validation semantics while removing duplicate core/checklist text. Regenerate routing and run smoke, orphan, route-reachability, route-health, and conformance checks.
+
 ## 2026-07-17 - Business global model, durable-record gates, and conditional loading
 
 - Upstream commit: pending in this working tree
@@ -80,6 +94,7 @@ The archive file has the same format and is read on demand if a downstream agent
 
 ## 2026-07-09 - Minimal sufficient context route intake
 
+- Status: superseded by 2026-07-17 - Simplify default scaffold and make integrity checks truthful
 - Upstream commit: pending in this working tree
 - Changed areas:
   - NEW `templates/skill/references/minimal-sufficient-context.md` — shared route-intake protocol: start from Always Read + route `required_reads` + workflow, expand context only on concrete signals, and escalate validation from command evidence to runtime/release evidence only when needed.
@@ -161,6 +176,7 @@ The archive file has the same format and is read on demand if a downstream agent
 
 ## 2026-07-02 - Permission model (opt-in): operation-authority engine + design↔operation double helix
 
+- Status: superseded by 2026-07-17 - Simplify default scaffold and make integrity checks truthful
 - Upstream commit: pending in this working tree
 - Changed areas:
   - `templates/skill/references/permission-model.md` (**new, ships**) — the **operation axis** ("may the agent take this action?"), distinct from the design axis (code correctness: architecture/conventions/gotchas). **Not a list to match but a classifier you run** before any side-effecting op, keyed on **operation × target/environment** (the same action is 🟢 local/reversible, escalates against prod/shared/irreversible). Contents: the 3-question classifier (🔴 refuse / 🟡 propose-and-stop-*before*-acting / 🟢 default-not-a-list), tier semantics, the **🟡 proposal format** (the 5 things a stop must surface — else "stop and ask" is inert), the **enforcement ladder** (prose → remove-material → pre-commit → CI; "in a doc" ≠ enforced = theater; machine layers only for real-baseline rules, imagined-pain guard), and the **two-axis double helix** — independent-but-paired with the design axis, bound by three rungs. *Additive≠breaking* and *target-decides* refinements are baked into the classifier. report-not-block (🟡 judged by the user; only 🔴 earns a machine gate). Orthogonal to Blast-Radius Buckets (path/closure-rigor) and the subagent Negative list (delegation) — three axes.
@@ -173,6 +189,7 @@ The archive file has the same format and is read on demand if a downstream agent
 
 ## 2026-07-01 - Tests-as-spec discipline (opt-in): spec-first cases + human oracle + trichotomy
 
+- Status: superseded by 2026-07-17 - Simplify default scaffold and make integrity checks truthful
 - Upstream commit: pending in this working tree
 - Changed areas:
   - `templates/skill/references/tests-as-spec.md` (**new, ships**) — the full opt-in discipline: (1) write the plan's **test cases at plan time** as the spec; (2) the cases are the **question-generator** that surfaces boundary/failure decisions to the human, who is the **correctness oracle** (the agent can't verify "right thing" against its own single mental model → false-green); (3) cases constrain implementation, realized as unit tests; (4) a failing test = the **trichotomy** (code wrong | case/understanding wrong; revise-with-reason, never edit-to-green); (5) **verification modes** — automated test for unit-testable logic, **human sign-off** for subjective/visual/UX (never machine-tested). Includes when-NOT-to-adopt + the **reports-not-blocks** model: not a blocking gate — the agent generates to spec + lists cases/results transparently, and the user makes the final acceptance call (tests verify code-vs-cases; the user verifies cases-vs-intent).

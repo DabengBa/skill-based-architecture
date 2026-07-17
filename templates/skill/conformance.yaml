@@ -1,45 +1,15 @@
-# Conformance manifest — required content for any skill that follows this
-# architecture. Validated by `templates/skill/scripts/check-version-conformance.sh`.
-#
-# This file is the upstream's promise about its own templates AND the contract
-# that downstream skills must continue to satisfy after `update-upstream`. Do
-# not version-stamp it: each commit IS the version.
-#
-# Bump rule: when a release introduces a new mandatory section / phrase that
-# downstream must propagate, add it here in the SAME commit. Otherwise
-# downstream upgrades will silently stay incomplete.
-#
-# Concerns NOT covered here (use the listed mechanism instead):
-#   - "downstream changelog impact for upstream edit"  → check-upstream-changes.sh + UPSTREAM-CHANGES.md
-#   - "routing/manifest in sync with generated blocks" → sync-routing.sh --check
-#   - "file size / SKILL.md dual budget (desc ≤ 25 + body ≤ 90)" → smoke-test.sh / check-growth-health.sh
-#   - "trigger phrase routes to expected workflow"    → check-self-scenarios.sh
-#
-# This file fills a different gap: "did downstream forget to copy a mandatory
-# section/phrase from the upstream template?". File-level presence + phrase
-# presence — no hash/byte comparison (that's a separate, future concern).
+# Downstream behavior contract for the reusable scaffold.
+# Validated by scripts/check-version-conformance.sh. Keep only load-bearing
+# behavior anchors here; routing, generated blocks, links, and budgets have
+# their own checks.
 
 required_sections:
-  # plan-feature.md must keep the gates and workflow-state machinery — these are
-  # what downstream agents rely on. Complex-plan **structure** is intentionally
-  # NOT asserted: the canonical schema (decisions.md / implement.jsonl /
-  # check.jsonl / etc.) was removed 2026-05-19 after 0 plans ever used it. The
-  # only required file inside a complex plan dir is prd.md; everything else is
-  # the author's call. Likewise NOT asserted: the Plan Skeleton section
-  # vocabulary, "## Task Breakdown", and "## Brainstorm" (added 2026-06-27) —
-  # these are upstream guidance a project may adapt (the skeleton is a
-  # recommended menu, not a mandatory section list), so they stay out of
-  # must_contain by design.
   - file: workflows/plan-feature.md
     must_contain:
       - "## Complexity Gate"
       - "## Question Gate"
-      - "Gate A:"
-      - "Gate B:"
-      - "Gate C:"
       - "## Business-Semantics Gate"
       - "## Complex Plan"
-      - "prd.md"
       - "[workflow-state:planning]"
     must_not_contain:
       - "Pervasive reverse-question — default habit"
@@ -52,8 +22,6 @@ required_sections:
       - "## Synthesis"
       - "## Parallel Analysis"
 
-  # task-closure.md is the canonical home for the cross-cutting closure gate.
-  # Every downstream workflow that runs the closure gate references this file.
   - file: workflows/task-closure.md
     must_contain:
       - "## Task Closure Protocol"
@@ -61,9 +29,6 @@ required_sections:
       - "### Red Flags"
       - "## After-Action Review"
 
-  # update-rules.md holds the recording mechanics the closure gate's
-  # "record if needed" step calls into (threshold, activation, generalization),
-  # plus rule sync and deprecation.
   - file: workflows/update-rules.md
     must_contain:
       - "### Recording Threshold"
@@ -77,20 +42,6 @@ required_sections:
       - "## Step 2: Independent Load-Reason Audit"
       - "## Step 5: Semantic Before/After Reconciliation"
 
-  - file: workflows/subagent-auxiliary.md
-    must_contain:
-      - "## Admission Test"
-      - "## Never Delegate"
-      - "## Interception Transparency"
-
-  - file: workflows/subagent-driven.md
-    must_contain:
-      - "## Mode Selection"
-      - "## Parallelism Premise"
-      - "## Interception Transparency"
-
-  # fix-bug.md must enforce TCP — the older "After-Action Review" reference
-  # alone is not enough.
   - file: workflows/fix-bug.md
     must_contain:
       - "## Mandatory Pre-Step"
@@ -100,29 +51,46 @@ required_sections:
       - "Pervasive reverse-question — default habit"
       - "directly `spawn_agent`"
 
-  # Delegation is optional and net-benefit-driven. These phrases prevent the
-  # old "mechanical step => mandatory spawn" and spawn-then-wait behavior from
-  # returning during downstream refreshes.
   - file: rules/agent-behavior.md
     must_contain:
-      - "## 7. Delegate Only for Net Benefit"
+      - "## 4. Minimal Context, Sufficient Evidence"
+      - "## 6. Delegate Only for Net Benefit"
       - "Inline is the default"
-      - "Never spawn if the next main-thread action would be waiting"
     must_not_contain:
       - "must directly call `spawn_agent`"
       - "continuous self-judgment + auto-dispatch"
 
+  - file: workflows/subagent-auxiliary.md
+    must_contain:
+      - "## Admission Test"
+      - "## Main-Agent Boundary"
+      - "## Interception Transparency"
+
   - file: workflows/subagent-driven.md
     must_contain:
-      - "Inline is the default"
-      - "positive Net Benefit"
-      - "Worker count cannot exceed independent workstreams"
-      - "the next action after dispatch would be waiting"
-      - "never poll-loop"
+      - "## Mode Selection"
+      - "## Mode 2 Entry"
+      - "## Harness Compatibility"
     must_not_contain:
       - "Iron Law (violation = task failure"
       - "must directly call `spawn_agent`"
-      - "continuous self-judgment + auto-dispatch"
+
+  - file: workflows/subagent-orchestration.md
+    must_contain:
+      - "## 1. Contract"
+      - "## 3. Main-Agent Review"
+      - "does **not** run project-wide Task Closure"
+
+  - file: workflows/receiving-review.md
+    must_contain:
+      - "## Process"
+      - "Verify every claim"
+
+  - file: workflows/update-upstream.md
+    must_contain:
+      - "## Hard Rules"
+      - "## Procedure"
+      - "conformance.yaml"
 
   - file: workflows/change-managed.md
     must_not_contain:
@@ -134,19 +102,5 @@ required_sections:
       - "batch by physical region anyway to enable parallel dispatch"
       - "Full test suite passes"
 
-# Files required to exist (presence-only check).
 required_files:
-  - path: workflows/plan-feature.md
-  - path: workflows/plan-large.md
-  - path: workflows/subagent-auxiliary.md
-  - path: workflows/subagent-driven.md
-  - path: workflows/subagent-orchestration.md
-  - path: workflows/task-closure.md
-  - path: workflows/update-rules.md
-  - path: workflows/fix-bug.md
-  - path: workflows/maintain-docs.md
-  - path: workflows/update-upstream.md
-  - path: references/minimal-sufficient-context.md
-  - path: workflows/subagent-driven.md
-  - path: rules/agent-behavior.md
   - path: routing.yaml

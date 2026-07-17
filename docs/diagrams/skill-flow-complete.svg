@@ -81,7 +81,7 @@ svg{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micro
 <g class="c-gray"><rect x="470" y="786" width="170" height="44" rx="8" stroke-width="0.5"/><text class="th" x="555" y="808" text-anchor="middle" dominant-baseline="central">C 桶 → 跳过 → 结束</text></g>
 <line x1="300" y1="837" x2="300" y2="849" class="arr" marker-end="url(#arrow)"/>
 
-<g class="c-gray"><rect x="150" y="852" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="872" text-anchor="middle" dominant-baseline="central">AAR 30 秒扫描（5 问）</text><text class="ts" x="300" y="890" text-anchor="middle" dominant-baseline="central">复发?成本?会漏?规则失准?外部事实?</text></g>
+<g class="c-gray"><rect x="150" y="852" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="872" text-anchor="middle" dominant-baseline="central">AAR 30 秒扫描（4 问）</text><text class="ts" x="300" y="890" text-anchor="middle" dominant-baseline="central">新模式?错路?规则失准?外部事实?</text></g>
 <line x1="300" y1="907" x2="300" y2="919" class="arr" marker-end="url(#arrow)"/>
 
 <g class="c-amber"><rect x="150" y="922" width="300" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="944" text-anchor="middle" dominant-baseline="central">达到阈值且需要沉淀？</text></g>
@@ -108,7 +108,7 @@ svg{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Micro
 <g class="c-blue"><rect x="150" y="1186" width="300" height="52" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1206" text-anchor="middle" dominant-baseline="central">更新 routing.yaml → sync-routing.sh</text><text class="ts" x="300" y="1224" text-anchor="middle" dominant-baseline="central">回灌 Always Read/Common Tasks/薄壳</text></g>
 <line x1="300" y1="1241" x2="300" y2="1253" class="arr" marker-end="url(#arrow)"/>
 
-<g class="c-blue"><rect x="150" y="1256" width="300" height="60" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1274" text-anchor="middle" dominant-baseline="central">结构 · 激活校验（A 桶必跑）</text><text class="ts" x="300" y="1292" text-anchor="middle" dominant-baseline="central">smoke-test · route-reachability</text><text class="ts" x="300" y="1308" text-anchor="middle" dominant-baseline="central">audit-orphans · check-cross-references</text></g>
+<g class="c-blue"><rect x="150" y="1256" width="300" height="60" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1274" text-anchor="middle" dominant-baseline="central">结构 · 激活校验（A 桶必跑）</text><text class="ts" x="300" y="1292" text-anchor="middle" dominant-baseline="central">smoke-test · route-reachability</text><text class="ts" x="300" y="1308" text-anchor="middle" dominant-baseline="central">audit-orphans · route-health</text></g>
 <line x1="300" y1="1319" x2="300" y2="1333" class="arr" marker-end="url(#arrow)"/>
 
 <g class="c-teal"><rect x="180" y="1336" width="240" height="44" rx="8" stroke-width="0.5"/><text class="th" x="300" y="1358" text-anchor="middle" dominant-baseline="central">结束（任务闭合完成）</text></g>

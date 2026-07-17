@@ -234,15 +234,21 @@ Give the subagent a realistic migration or bug-fix task that *should* trigger th
 
 **What to capture:** if the subagent skips the protocol, **copy its verbatim rationalization** from the transcript. Phrases like "this task was small enough, skipping AAR" or "the user is in a hurry, I'll do AAR next time" are the raw material.
 
-### GREEN — Fold verbatim rationalizations into the table
+### GREEN — Reconcile verbatim rationalizations with the table
 
-Open `skills/<name>/workflows/task-closure.md` § "Rationalizations to Reject" — the only正文 source — and add a new row:
+Open `skills/<name>/workflows/task-closure.md` § "Rationalizations to Reject" — the only正文 source — and compare the captured phrase with existing root causes before editing:
+
+- same root cause → merge the sharper wording or replace the weaker row;
+- obsolete/overlapping row → retire or consolidate it;
+- genuinely independent failure mode → add one new row.
+
+When a new row is justified, preserve the observed wording:
 
 | Rationalization (verbatim from subagent) | Reality (the rebuttal) |
 |---|---|
 | "<paste the exact phrase>" | <one sentence that makes the excuse untenable> |
 
-Re-run the same subagent prompt. It should now either comply, or produce a *different* rationalization — not the same one. Keep looping until the rationalization pool stabilizes.
+Re-run the same subagent prompt. It should now comply or expose a genuinely different uncovered root cause. Keep looping until coverage stabilizes; do not treat every new phrase as a new table entry.
 
 ### REFACTOR — Ask the violating agent what would have stopped it
 
@@ -255,7 +261,7 @@ Take its answer literally and fold it into the workflow text. The subagent's own
 ### Completion criteria
 
 - At least 2 distinct pressure-test scenarios run against the migrated skill
-- Any captured rationalizations added to the Rationalizations table verbatim
+- Every captured rationalization reconciled with the Rationalizations table; only independent root causes added verbatim
 - Final re-run: under maximum pressure, the subagent runs the Task Closure Protocol and cites the relevant rule/workflow
 
 **Recommended:** install `templates/hooks/session-start` so the router and Task Closure Protocol are re-injected on `/clear` and `/compact`. For long workflows, also install `templates/hooks/workflow-state`; it reads `.skill-workflow-state` and injects only the matching `[workflow-state:*]` block. Context compression is itself a pressure source — without hooks, a single `/compact` can silently disable routing, planning, and protocol enforcement. Multi-skill projects should create `skills/router/SKILL.md` or set `SKILL_ROUTER_PATH`; do not inject every skill.

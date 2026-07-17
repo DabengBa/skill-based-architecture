@@ -4,7 +4,7 @@ Tooling for the skill-based-architecture project — both upstream maintenance s
 
 ## Check Suite Matrix
 
-Each check covers a different drift dimension. The columns are intentional: a check that's "report-only" never blocks a build, and a check that lives in `templates/skill/scripts/` is **also delivered to every downstream skill** when they scaffold.
+Each retained check covers a different blocking drift dimension. Scripts under `templates/skill/scripts/` are also delivered to downstream skills.
 
 ### Drift dimensions
 
@@ -15,10 +15,8 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | Template hook runtime contract | Does `templates/hooks/session-start` emit the right per-harness JSON shape and inject at most one router? | `check-template-hooks.sh` *(upstream-only)* |
 | Routing trigger coverage | Do `trigger_examples` actually route to the intended workflow? | `check-self-scenarios.sh` (upstream-only) |
 | Structural budgets + content | SKILL.md dual budget (desc ≤ 25 + body ≤ 90), FILL/placeholder residue, broken links, SessionStart-hook presence, description keyword-stuffing, and content conformance (§9, when `conformance.yaml` exists) | `smoke-test.sh` |
-| Growth pressure | Are files growing past evaluation thresholds? | `check-growth-health.sh` *(report-only)* |
 | Orphan content-tier + workflow files | `rules/`/`references/`/`architecture/`/`gotchas/`/`conventions/`/`workflows/` files with zero inbound links (link-reachable). Workflows match by basename (sibling same-dir links + routing `workflow:`/`required_reads` both count); a workflow on no route and referenced by no other workflow is dead weight | `audit-orphans.sh` |
-| Unactivated content files | active-tier files (`architecture/`/`conventions/`/`gotchas/`/`rules/`) on no task route — link-reachable but never read (stored-not-activated) | `route-reachability.sh` |
-| Cross-references | Broken inline markdown link targets | `check-cross-references.sh` |
+| Unactivated task files | active-tier files plus `workflows/` on no task route — link-reachable but never read (stored-not-activated) | `route-reachability.sh` |
 | **Content conformance (downstream)** | Did downstream omit a mandatory phrase or reintroduce a forbidden anti-pattern? | `check-version-conformance.sh <skill> --conformance <upstream-clone>/templates/skill/conformance.yaml` — supports `must_contain` + `must_not_contain`, and is also run by `smoke-test.sh` §9 against the skill's own manifest |
 | **Content presence (upstream-canon)** | Does THIS repo still teach what its templates promise? | `check-version-conformance.sh . --conformance references/self-hosting-conformance.yaml` |
 | UPSTREAM-CHANGES coverage | Downstream-facing edit landed without an update note? | `check-upstream-changes.sh` *(upstream pre-commit)* |
@@ -34,15 +32,12 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | `check-upstream-changes.sh` | `scripts/` | Upstream-only (UPSTREAM-CHANGES.md guard) |
 | `check-upstream-supersedes.sh` | `scripts/` | Upstream-only (validates `Status: superseded by` refs in UPSTREAM-CHANGES{.md,-archive.md}) |
 | `sync-self-shells.sh` | `scripts/` | Upstream-only (generates root shells from `self-hosting-shell-base.md` + `self-hosting-shells.yaml`) |
-| `skill-asset` | `scripts/` | Both — AAR consolidation helper (ships to downstream) |
+| `skill-asset` | `scripts/` | Upstream-only consolidation helper; it is not copied by the scaffold |
 | `smoke-test.sh` | `templates/skill/scripts/` | Downstream — Phase-aware structural gate |
 | `sync-routing.sh` | `templates/skill/scripts/` | Downstream — `routing.yaml` is the source of truth |
-| `check-growth-health.sh` | `templates/skill/scripts/` | Downstream + upstream |
 | `audit-orphans.sh` | `templates/skill/scripts/` | Downstream + upstream — finds zero-inbound content-tier + workflow files |
-| `route-reachability.sh` | `templates/skill/scripts/` | Downstream — finds active-tier files on no route (link-reachable but not activated) |
-| `check-cross-references.sh` | `templates/skill/scripts/` | Downstream |
+| `route-reachability.sh` | `templates/skill/scripts/` | Downstream + upstream — finds active-tier/workflow files on no task route |
 | `check-version-conformance.sh` | `templates/skill/scripts/` | Both — runs against any skill root + manifest |
-| `_parse_conformance.py` | `templates/skill/scripts/` | Helper for `check-version-conformance.sh` (no standalone use) |
 
 ### When to run what
 
@@ -53,13 +48,15 @@ Each check covers a different drift dimension. The columns are intentional: a ch
 | Upstream maintainer added `must_contain` / `must_not_contain` to `templates/skill/conformance.yaml` | Mirror the same anchor into `references/self-hosting-conformance.yaml` if a self-hosting file teaches the same protocol |
 | Downstream just scaffolded | `bash skills/<name>/scripts/smoke-test.sh <name>` |
 | Downstream `update-upstream` | `smoke-test.sh` + `check-version-conformance.sh <skill> --conformance $tmp/upstream/templates/skill/conformance.yaml` (use upstream's manifest, NOT local — the local file is a snapshot from initial scaffold) |
-| Downstream doc edit | `audit-orphans.sh`, `check-cross-references.sh` |
+| Downstream doc edit | `audit-orphans.sh`; add `route-reachability.sh` when routing/activation changed |
 | Downstream added a content file or split a tier | `route-reachability.sh` (is it actually on a route?), `audit-orphans.sh` |
 | Suspected description hit-rate problem | Read SKILL.md description aloud; does it use the user's actual phrases? `routing.yaml` `trigger_examples` is the place to add more — no script substitute for human re-read. |
 
 ### Anti-pattern: bypass the matrix and add a new orphan check
 
-Every check above has a one-sentence "what gap it covers". Before adding a new check script, write the gap in that form and confirm none of the existing ones already cover it. If yes, extend the existing one. If genuinely new, add it AND a row in this matrix AND wire it into `check-all.sh` in the same commit — the conformance check itself is the cautionary tale: it shipped a release ahead of being wired in, so for one cycle it was "stored, not activated" (Pitfall #4 in [SKILL.md](../SKILL.md)).
+For a two-root skill, run `audit-orphans.sh` and `route-reachability.sh` once per root with `--namespace skill|code --routing <skill-root>/routing.yaml`; zero-argument mode remains the single-root contract.
+
+Every check above has a one-sentence "what gap it covers". Before adding a new check script, confirm none of the existing ones already cover it. If genuinely new, add it to this matrix and wire it into `check-all.sh` in the same commit.
 
 The reverse anti-pattern is just as expensive: shipping a script that *expects a protocol no one will follow* (e.g. requiring authors to hand-mark each external fact with a `<!-- verified=YYYY-MM-DD -->` comment so a script can check freshness). If the precondition is a discipline you cannot reasonably enforce, the script will run empty forever — that is "stored, not activated" in script form. Five such scripts (`check-external-facts.sh`, `test-trigger.sh`, `check-description-routing.sh`, `audit-references.sh`, `audit-route-paths.sh`) were removed in May 2026; see UPSTREAM-CHANGES for context before reintroducing anything similar.
 

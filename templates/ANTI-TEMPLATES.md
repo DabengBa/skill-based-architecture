@@ -45,6 +45,10 @@ When the candidate is **borrowed from an external skill, project, or benchmark**
 - **Why rejected:** opinionated. Some projects use `pytest`, some use `unittest`, some are untested legacy. The 80% coverage number in common rules is itself a soft default — the template should not harden it.
 - **Where it should go:** `rules/coding-standards.md` or a `rules/testing-rules.md` written by the project.
 
+### Opt-in discipline documents in the default scaffold
+- **Why rejected:** copying a Tests-as-Spec, permission/operation model, or similar opt-in doctrine into every downstream makes stored content look adopted even when no route, baseline, or project table activates it.
+- **Where it should go:** an upstream adoption guide under `references/`; materialize a project file only after real pressure, then add its task path and concrete project decisions in the same change.
+
 ### Pre-populated "Common Tasks" entries in SKILL.md
 - **Why rejected:** the whole value of Common Tasks routing is that it reflects *this project's* actual recurring tasks. A generic list ("Add feature", "Fix bug", "Refactor") teaches agents to route generically.
 - **Where it should go:** `routing.yaml` with `<!-- FILL: -->` markers, then generate `SKILL.md` Common Tasks and thin-shell blocks via `scripts/sync-routing.sh`.

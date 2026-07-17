@@ -36,7 +36,6 @@ Outdated or false existing content is corrected directly; it need not re-earn th
 - For discipline rules whose only job is changing behavior under pressure, require an observed/known failure or run a baseline scenario; do not codify a hunch.
 - For external absorbs, benchmark/eval lessons, major template/default-scaffold changes, Always Read/routing changes, or reusable mechanisms, require the user's approval of an exact upgrade plan before editing.
 - State the evidence, net benefit over context/complexity cost, why a lighter destination is insufficient, and the cheapest meaningful validation.
-- Optional permission-model projects: check whether a recorded design gotcha implies an operation tier, or vice versa.
 
 ### Fidelity Gate
 

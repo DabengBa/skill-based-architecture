@@ -1,4 +1,4 @@
-# Reference — Permission Model (operation-authority engine) · OPT-IN
+# Reference — Permission Model Adoption Guide
 
 The **operation axis**: not "is the code right?" (the design axis — architecture/conventions/gotchas) but **"may the agent take this action?"** An opt-in discipline for skills whose agent performs side-effecting operations. **Not a list you match — a classifier you run** before any such operation; the project's concrete lists are its worked outputs. report-not-block: 🟡 is proposed by the agent and judged by the user, not a gate it self-certifies; only 🔴 earns a machine gate.
 
@@ -37,7 +37,7 @@ prose (declares; doesn't block) → remove-the-material (`.env.example`, deploy-
 This axis is **independent from but paired with** the design axis (code correctness) — a double helix. Bind them at three points:
 
 1. **At classification (operation ← design):** if the action touches an architecturally load-bearing area or a known gotcha, raise it **at least to 🟡** even if unlisted — design weight lifts the operation tier.
-2. **At closure (read both strands):** task-closure asks, beyond "is the code right?", **"were any 🟡/🔴 operations taken, and was each surfaced for judgment before acting?"** A 🟡 done unannounced = a logged overstep.
+2. **At closure (read both strands):** adoption is incomplete until the project adds this question to its own Task Closure: **"were any 🟡/🔴 operations taken, and was each surfaced for judgment before acting?"** A 🟡 done unannounced = a logged overstep. The default scaffold does not carry this opt-in strand.
 3. **At growth (mutual template):** when recording a lesson, ask whether the paired strand needs a rung — a code gotcha may imply an operation tier ("editing X silently breaks prod → editing X is 🟡"); an operation incident may imply a design convention ("a secret leaked → secrets never in committed config, inject at deploy").
 
 ## Boundary / orthogonality

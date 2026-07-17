@@ -48,13 +48,101 @@ if [[ -z "$CONFORMANCE_PATH" ]]; then
 fi
 [[ -f "$CONFORMANCE_PATH" ]] || { echo "conformance.yaml not found: $CONFORMANCE_PATH" >&2; exit 2; }
 
-PARSER="$(dirname "$0")/_parse_conformance.py"
-[[ -f "$PARSER" ]] || { echo "Missing helper: $PARSER" >&2; exit 2; }
-
 PARSED_FILE="$(mktemp)"
 trap 'rm -f "$PARSED_FILE"' EXIT
 
-if ! python3 "$PARSER" "$CONFORMANCE_PATH" > "$PARSED_FILE"; then
+if ! python3 - "$CONFORMANCE_PATH" > "$PARSED_FILE" <<'PY'
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+def normalize(line: str) -> str:
+    """Strip YAML comments while preserving hashes inside quoted strings."""
+    out: list[str] = []
+    quote: str | None = None
+    for char in line:
+        if char in ("'", '"'):
+            if quote is None:
+                quote = char
+            elif quote == char:
+                quote = None
+            out.append(char)
+        elif char == "#" and quote is None:
+            break
+        else:
+            out.append(char)
+    return "".join(out).rstrip()
+def parse(path: Path) -> list[tuple[str, str, str]]:
+    lines: list[tuple[int, str]] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = normalize(raw)
+        if line.strip():
+            lines.append((len(line) - len(line.lstrip()), line.strip()))
+
+    records: list[tuple[str, str, str]] = []
+    section: str | None = None
+    item_indent: int | None = None
+    list_indent: int | None = None
+    current_file: str | None = None
+    phrase_kind: str | None = None
+    def flush_exists() -> None:
+        if section == "required_files" and current_file:
+            records.append(("EXISTS", current_file, ""))
+
+    for indent, body in lines:
+        if indent == 0 and body.endswith(":"):
+            flush_exists()
+            section = body[:-1].strip()
+            item_indent = list_indent = None
+            current_file = phrase_kind = None
+            continue
+        if section not in ("required_sections", "required_files"):
+            continue
+        if (
+            phrase_kind is not None
+            and list_indent is not None
+            and indent >= list_indent
+            and body.startswith("- ")
+        ):
+            phrase = body[2:].strip().strip('"').strip("'")
+            if current_file and phrase:
+                records.append((phrase_kind, current_file, phrase))
+            continue
+        if body.startswith("- ") and (item_indent is None or indent <= item_indent):
+            flush_exists()
+            item_indent = indent
+            list_indent = None
+            current_file = phrase_kind = None
+            payload = body[2:].strip()
+            if ":" in payload:
+                key, _, value = payload.partition(":")
+                if key.strip() in ("file", "path"):
+                    current_file = value.strip().strip('"').strip("'")
+            continue
+        if ":" not in body:
+            continue
+        key, _, value = body.partition(":")
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key in ("file", "path"):
+            current_file = value
+            phrase_kind = None
+        elif key == "must_contain":
+            phrase_kind = "CONTAINS"
+            list_indent = indent + 2
+        elif key == "must_not_contain":
+            phrase_kind = "NOT_CONTAINS"
+            list_indent = indent + 2
+    flush_exists()
+    return records
+def main() -> int:
+    path = Path(sys.argv[1])
+    for kind, file, phrase in parse(path):
+        print(f"{kind}\t{file}\t{phrase}")
+    return 0
+raise SystemExit(main())
+PY
+then
   echo "Failed to parse conformance.yaml" >&2
   exit 2
 fi

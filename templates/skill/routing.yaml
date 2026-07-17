@@ -16,15 +16,15 @@ always_read:
 
 # FILL: Replace scaffold rows with this project's real 3-8 recurring task types;
 # keep an "other" fallback. required_reads lists ONLY route-specific core reads
-# not already in always_read. It is not a safety blanket: add context by the
-# escalation signals in references/minimal-sufficient-context.md, not by splitting
+# not already in always_read. It is not a safety blanket: add context only on
+# concrete ambiguity/risk signals in the Always Read behavior rule, not by splitting
 # routes into small/large variants. Optional high-risk routing fields:
 # positive_signals, negative_signals, confidence, slots, target. Two-root skills:
 # prefix required_reads/workflow with `skill:`/`code:` + add path_resolution.
 tasks:
   - id: fix-bug
     labels: { en: Fix bug, zh: 修复 bug / 排查异常 }
-    route: follow `workflows/fix-bug.md`; expand context via `references/minimal-sufficient-context.md`; ref `references/gotchas.md` only when a signal points there
+    route: follow `workflows/fix-bug.md`; ref `references/gotchas.md` only when a concrete signal points there
     workflow: workflows/fix-bug.md
     trigger_examples:
       - 这个接口报错了
@@ -32,7 +32,7 @@ tasks:
       - fix this failing test
   - id: change-managed
     labels: { en: Add / refactor / optimize non-bug behavior, zh: 新增 / 重构 / 优化非 bug 行为 }
-    route: follow `workflows/change-managed.md`; expand context via `references/minimal-sufficient-context.md`; for refactors that touch ≥5 independent usage points, use `workflows/refactor-fanout.md`
+    route: follow `workflows/change-managed.md`; for refactors that touch ≥5 independent usage points, use `workflows/refactor-fanout.md`
     workflow: workflows/change-managed.md
     trigger_examples:
       - 优化这个模块

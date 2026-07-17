@@ -134,7 +134,7 @@ Each layer can be silenced by compression; the next layer catches it.
 | "I remember the rules well enough" | Re-read costs 10 seconds; remembering wrong costs hours. |
 | "The two tasks are related — backend rules partly apply" | They don't. Different layer, different conventions, different file paths. Routes are not aesthetically joinable. |
 
-See [templates/skill/workflows/task-closure.md § Rationalizations to Reject](../templates/skill/workflows/task-closure.md) for the full table (rows 7 and 8 cover this exact failure mode).
+See [templates/skill/workflows/task-closure.md § Rationalizations to Reject](../templates/skill/workflows/task-closure.md) for the current canonical table.
 
 ---
 

@@ -83,15 +83,11 @@ the same A/B/C headings, anchored in its own `references/protocols.md`.
 
 > **Reconcile tip (gate 3)**: before writing a recorded lesson, run `bash scripts/skill-asset where <keywords>` to surface existing sections that may already cover the topic. Avoids duplicate sections accumulating across files. See [`scripts/README.md`](../scripts/README.md) for `where` / `related` / `group` usage.
 
-### AAR Scan Questions
+### AAR Scan
 
-1. Did this task reveal a recurring pitfall?
-2. Was the debugging or design cost high?
-3. Would a future agent miss this by reading code alone?
-4. Did an existing rule turn out to be inaccurate or obsolete?
-5. Did the task rely on an external fact that could have changed since the rule was written?
-
-Skip the AAR entirely for: pure Q&A, code explanation, read-only investigation, advice with no file changes; formatting-only, comment-only, dependency-version-only, or behavior-preserving refactors.
+Use the canonical questions and exemptions in
+[`templates/skill/workflows/task-closure.md`](../templates/skill/workflows/task-closure.md#after-action-review).
+Do not maintain a second question list here.
 
 ## Recording Threshold
 

@@ -31,7 +31,7 @@
 3. **路由核心 · 唯一真源** —— `SKILL.md`(router, dual budget) + `routing.yaml`(唯一真源)。薄壳 bootstrap、Common Tasks、Always Read **都是它生成的投影**。
 4. **知识层 · 按 abstraction 两层** —— 骨架 `skill_root`（architecture/rules/workflows，稳定）vs 肉 `code_root`（conventions/gotchas/references，随代码漂）。
 5. **执行 / 闭合** —— `workflows`（plan/fix/implement/…）+ `task-closure`（共享闭合闸门）+ blast-radius 桶 A/B/C。
-6. **维护 / 校验脊柱** —— `sync-routing / smoke-test / route-reachability / audit-orphans / check-cross-references`，回灌 ③ 真源、保证每个文件可达（**激活 not 存储**）。
+6. **维护 / 校验脊柱** —— `sync-routing / smoke-test / route-reachability / audit-orphans`，回灌 ③ 真源、分别保证结构、链接与任务激活真实可达（**激活 not 存储**）。
 7. **生命周期** —— 上游元仓 ↔ 下游 app，机制文件字节同步、骨架变更手工搬运。
 
 ---
@@ -49,8 +49,8 @@
    - **B**（模板 rules/workflows、SKILL 链接的 references、full-migration）→ 轻量 AAR，不跑 smoke-test；
    - **C**（README/examples/docs/UPSTREAM/*.example/未链接 references）→ 跳过闭合。
    多文件取最大桶 A>B>C；A 桶内改错别字也走完整闭合（桶量的是「能炸什么」）。
-6. **⑦ AAR + 沉淀** —— AAR 五问 → 想象痛点闸门（要有具体 file+line/commit/session）→ 查重 → 泛化 → 选落点 → **激活闸门**（在路径上 且 改变 agent 下一步；reached ≠ activated）。
-7. **⑧ 路由同步 + 校验** —— 改路由则更新 routing.yaml + `sync-routing.sh` 回灌薄壳；A 桶完整闭合跑四道校验（smoke-test / route-reachability / audit-orphans / check-cross-references）。
+6. **⑦ AAR + 沉淀** —— AAR 四问 → 想象痛点闸门（要有具体 file+line/commit/session）→ 查重 → 泛化 → 选落点 → **激活闸门**（在路径上 且 改变 agent 下一步；reached ≠ activated）。
+7. **⑧ 路由同步 + 校验** —— 改路由则更新 routing.yaml + `sync-routing.sh` 回灌薄壳；A 桶完整闭合运行 smoke-test、route-reachability 与 audit-orphans。
 
 ---
 
