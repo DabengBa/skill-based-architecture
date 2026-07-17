@@ -1,6 +1,6 @@
 # Workflow: Subagent Orchestration (Mode 2 — Four Phases)
 
-> This is **Mode 2 of [`subagent-driven.md`](subagent-driven.md)** — the full orchestrator pattern for work planned as several independent workstreams. Read its Delegation Admission Gate, Main-Thread Non-Blocking Rule, count discipline, Negative list, and Rationalizations first. A plan with many tasks does not automatically justify many workers.
+> This is the Mode 2 executor selected by [`subagent-driven.md`](subagent-driven.md). Its positive-Net-Benefit gate, parallelism/non-blocking premise, bounded fan-out, main-agent ownership boundary, interception rule, and Rationalizations/Red Flags bind every phase below. A plan with many tasks does not automatically justify many workers.
 
 ### Phase 1 — Plan
 

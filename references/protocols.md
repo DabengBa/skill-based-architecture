@@ -1,13 +1,23 @@
 # Reference — Protocols & Verification
 
+## Contents
+
+- [Meta-Workflow Templates](#meta-workflow-templates)
+- [Task Closure Protocol](#task-closure-protocol)
+- [Recording Threshold](#recording-threshold)
+- [Where To Record](#where-to-record)
+- [Recording Destination Guide](#recording-destination-guide)
+- [Generalization Rule](#generalization-rule)
+- [When References Alone Are Not Enough](#when-references-alone-are-not-enough)
+- [Skill Activation Verification](#skill-activation-verification)
 
 ## Meta-Workflow Templates
 
 The canonical workflow templates live under `templates/skill/workflows/`. Every project should adopt at least these:
 
 - [`task-closure.md`](../templates/skill/workflows/task-closure.md) — cross-cutting closure gate (Task Closure Protocol, AAR, Rationalizations, Red Flags); referenced by every behavior-changing workflow at closure.
-- [`update-rules.md`](../templates/skill/workflows/update-rules.md) — recording mechanics the gate calls into (threshold, activation, generalization), plus rule sync, deprecation, and post-update health check.
-- [`maintain-docs.md`](../templates/skill/workflows/maintain-docs.md) — file health check, split, merge, and reference integrity.
+- [`update-rules.md`](../templates/skill/workflows/update-rules.md) — recording mechanics the gate calls into: threshold, fidelity, reconciliation, activation, destination durability, sync, and retirement.
+- [`maintain-docs.md`](../templates/skill/workflows/maintain-docs.md) — independent-load-reason audit, semantic before/after reconciliation, file health, split/merge/index decisions, and reference integrity.
 
 For a higher-level orientation and the minimal starter scaffold, see [`TEMPLATES-GUIDE.md`](../TEMPLATES-GUIDE.md).
 
@@ -105,6 +115,8 @@ Skip recording:
 - facts already obvious from existing code
 - content already well covered by official docs and not project-specific
 
+Passing the threshold is only admission. Before writing, follow the three canonical gates in [`update-rules.md`](../templates/skill/workflows/update-rules.md): preserve decision-bearing meaning (**fidelity**), integrate/correct/retire existing knowledge before adding (**reconciliation**), and prove an action-changing task path (**activation**).
+
 ## Where To Record
 
 *Operating summary — canonical: [`update-rules.md`](../templates/skill/workflows/update-rules.md) § Where To Record. Keep the two in sync when destinations change.*
@@ -113,12 +125,13 @@ Use the lightest useful destination:
 
 - Stable constraint or convention → `rules/`
 - Pitfall, lifecycle gotcha, architecture note, source index → `references/`
+- Stable project-specific macro business types, flows, states, boundaries, or invariants → routed `references/business/<module>.md`; only current effective semantics, using the cross-implementation stability test
 - Ordered task step or completion check → `workflows/`
 - Task routing changed → `routing.yaml`, then `scripts/sync-routing.sh`
 - Always-read set changed → `routing.yaml`, then `scripts/sync-routing.sh`
 - Tool entry routing or Always Read changed → `routing.yaml`, then regenerate thin-shell generated blocks (`AGENTS.md`, `CLAUDE.md`, `CODEX.md`, `GEMINI.md`, `.cursor/rules/*.mdc`)
 
-Prefer appending to an existing file over creating a new one. Create a new file only when the topic is distinct enough to stay readable on its own.
+Prefer integrating into the closest existing entry/section over creating a parallel entry or file. Create a new file only when a real task selects it independently and activation points to it.
 
 ## Recording Destination Guide
 
@@ -135,13 +148,16 @@ When the user explicitly asks to "record this", "remember this", or "save this f
 
 **Default to skill docs.** In practice, most "record this" requests during development are technical and project-scoped. The agent's own memory should only be used for content that is truly personal and would not help another contributor.
 
-Apply the same recording threshold and generalization rule as AAR-initiated recordings — the destination changes, but the quality bar does not.
+Apply the same threshold plus fidelity/reconciliation/activation gates as AAR-initiated recordings. If the user says a business-model candidate is for “later”, keep it only in the current session; do not create a memory entry, file, directory, index, or placeholder route.
 
 ## Generalization Rule
 
-Records must be reusable knowledge, not project-specific narratives. Before writing, check: would this record make sense in a different project of the same type? If it mentions specific module names or business terms without an abstract explanation, rewrite it.
+Use the durability test that matches the destination:
 
-Pattern: `specific finding → abstract as general pattern → state consequence of not following it`
+- Generic rules, workflows, architecture notes, and gotchas must remain useful in another project of the same type: `specific finding → reusable pattern → consequence`.
+- Business global models are intentionally project-specific; require **cross-implementation stability** instead. If modules/classes are renamed and APIs, storage, or frameworks are replaced, the macro business statement must still hold.
+
+Do not erase legitimate business names merely to satisfy cross-project reuse, and do not admit code names/fields/paths into a business model merely because they are project-specific.
 
 For worked examples of good vs bad records, see [`templates/skill/workflows/update-rules.md`](../templates/skill/workflows/update-rules.md) (the canonical Generalization Rule section).
 

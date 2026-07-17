@@ -23,15 +23,16 @@ Use these labels in the output. Do not blur them together.
 1. **Set scope** — identify whether this is first migration, targeted refresh, or full re-profile.
 2. **Collect user language** — record the exact phrases users actually say in every language they use. These feed `description`, but only at domain / intent-cluster level.
 3. **Map domains** — list modules, subsystems, packages, apps, CLIs, services, data layers, or template areas that behave differently.
-4. **Find recurring work** — identify common task types from scripts, tests, docs, issue language, or user examples. These feed Common Tasks, not the frontmatter description.
-5. **Find always-read candidates** — choose only 2-3 files whose rules apply to almost every task. Domain-specific files stay task-routed.
-6. **Choose structure tier** — classify the documentation shape as Single-file, Folder-light, or Full. Default to the lightest tier unless concrete line, recurrence, procedure, harness-sharing, or lesson-capture pressure exists.
-7. **Choose execution mode** — classify the skill as Rule-only, Assisted-executable, or Executable. Upgrade only when evidence shows external APIs/CLIs, side effects, repeated script logic, local config, or stable output contracts.
-8. **Choose domain topology** — decide whether this is Single-skill or a Multi-skill candidate. Split only when trigger language and rule sets genuinely diverge.
-9. **Draft activation** — write a coarse `description` with real trigger phrases and activation conditions; do not enumerate every workflow.
-10. **Draft routing** — propose Common Tasks rows with exact required reads and workflows.
-11. **Draft validation** — list the commands or manual checks that prove ordinary changes are safe. For executable or high-risk routes, include contract/scenario-test candidates.
-12. **Mark unknowns** — keep unresolved facts visible instead of converting them into rules.
+4. **Detect business-model pressure (product projects only)** — identify modules with stable types, macro flows, states, boundaries, or invariants that are repeatedly needed and not obvious from code. Present candidates; do not create files until the user chooses "now". "Later" creates nothing. Adopt `profile-business-model.md.example` only for real candidates.
+5. **Find recurring work** — identify common task types from scripts, tests, docs, issue language, or user examples. These feed Common Tasks, not the frontmatter description.
+6. **Find always-read candidates** — choose only 2-3 files whose rules apply to almost every task. Domain-specific and business-model files stay task-routed.
+7. **Choose structure tier** — classify the documentation shape as Single-file, Folder-light, or Full. Default to the lightest tier unless concrete line, recurrence, procedure, harness-sharing, or lesson-capture pressure exists.
+8. **Choose execution mode** — classify the skill as Rule-only, Assisted-executable, or Executable. Upgrade only when evidence shows external APIs/CLIs, side effects, repeated script logic, local config, or stable output contracts.
+9. **Choose domain topology** — decide whether this is Single-skill or a Multi-skill candidate. Split only when trigger language and rule sets genuinely diverge.
+10. **Draft activation** — write a coarse `description` with real trigger phrases and activation conditions; do not enumerate every workflow.
+11. **Draft routing** — propose Common Tasks rows with exact required reads and workflows.
+12. **Draft validation** — list the commands or manual checks that prove ordinary changes are safe. For executable or high-risk routes, include contract/scenario-test candidates.
+13. **Mark unknowns** — keep unresolved facts visible instead of converting them into rules.
 
 ## Output Shape
 
@@ -49,6 +50,7 @@ Produce a compact project profile with these sections:
 - Split / no-split recommendation
 - Validation commands
 - Gotchas candidates
+- Business-global-model candidates (product projects only; candidate + why + now/later/not-needed, no files yet)
 - Unknowns and follow-up checks
 
 Each non-obvious claim must carry one evidence label. Only `Confirmed from code/config` claims should become stable `rules/` content.
@@ -62,6 +64,7 @@ Each non-obvious claim must carry one evidence label. Only `Confirmed from code/
 - [ ] Structure tier defaults to the lightest tier with evidence-backed upgrade pressure
 - [ ] Execution mode names concrete APIs, CLIs, side effects, scripts, local config, or output contracts when present
 - [ ] Domain topology explains trigger-language and rule-set pressure before recommending a split
+- [ ] Product projects: business-model candidates were proposed only with stable/cross-task/non-obvious evidence; "later" created no artifact
 - [ ] Unknowns remain labeled
 - [ ] No brainstorm-only claim was promoted to a hard rule
 - [ ] Ran `route-health.sh`; any no/weak-trigger or overlap warnings on the drafted routes were addressed or noted

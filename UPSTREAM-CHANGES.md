@@ -48,6 +48,20 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-17 - Business global model, durable-record gates, and conditional loading
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - NEW `references/business-global-model.md` and opt-in `templates/skill/workflows/profile-business-model.md.example` — model only stable, implementation-independent macro business types/flows/states/boundaries/invariants; distinguish absent, locally unclear, conflicting, and sufficient states; “later” creates no artifact.
+  - `plan-feature.md`, `fix-bug.md`, `change-managed.md`, and `minimal-sufficient-context.md` — business model → architecture/contracts → code/tests/runtime comparison; explicit `business-model impact`; bug classification (`IMPLEMENTATION_BUG` / `DESIGN_CHANGE` / `INSUFFICIENT_BUSINESS_CONTEXT`); type/flow/state/invariant changes exit bugfix and require an approved Plan.
+  - `update-rules.md`, `maintain-docs.md`, `gotchas.md`, `references/protocols.md`, `references/layout.md`, `references/skeleton-flesh-split.md`, `route-reachability.sh`, and `SKILL.md` — fidelity + five-way reconciliation + activation gates; generic cross-project vs business cross-implementation durability; no chronological Gotcha append; independent load-reason and semantic before/after audits; known leaves route directly and selecting indexes appear only after real multi-file pressure.
+  - NEW `plan-large.md` and `subagent-auxiliary.md`; `plan-feature.md` and `subagent-driven.md` are now small conditional routers. Large analysis and day-to-day auxiliary delegation no longer inflate ordinary Plan/Mode-2 task paths. The auxiliary/Mode-2 split retains the latest inline-default, positive-Net-Benefit, bounded-fan-out, and no-spawn-then-wait rules from the 2026-07-15 scheduling change.
+  - `references/self-hosting-routing.yaml` and `templates/skill/routing.yaml` — planning and plan distillation use separate phases; single-skill routing does not preload multi-skill guidance; ordinary rule edits do not preload layout; update-rules classifies before selecting Gotcha vs behavior-failure evidence.
+  - REMOVED `protocol-blocks/rationalizations-table.md` and `protocol-blocks/red-flags-stop.md` — `workflows/task-closure.md` is the sole body source; sync manifest and references were updated.
+  - Conformance, migration guidance, scenario checks, budgets, and template indexes now assert the new conditional files and contracts.
+- Why it matters: code shows current behavior but not necessarily intended business meaning. The new opt-in layer gives Plan and Fix Bug a stable semantic baseline without turning business detail into Always Read context. The same change closes two knowledge-rot paths: lossy summaries and append-only documents, while reducing route-time co-loading.
+- Downstream refresh guidance: add `plan-large.md` and `subagent-auxiliary.md`; port the business-semantics gates and update-rules/maintain-docs contracts while preserving project-owned rules and Gotchas. Remove the two deleted protocol blocks and their vendor entries. Regenerate routing after adopting conditional update-rules reads. Product projects should copy/rename the business-model example only after a real module passes admission; non-product projects keep it inactive. Run conformance, sync-routing, smoke-test, orphan/reachability, and relevant behavior scenarios.
+
 ## 2026-07-15 - Subagent scheduling: inline default, Net Benefit gate, and no spawn-then-wait
 
 - Upstream commit: pending in this working tree

@@ -15,13 +15,17 @@ Not every skill needs the full `skills/<name>/` tree. Start at the smallest tier
 Add structure when **any** of these fires, not before:
 
 1. **Line pressure** — `SKILL.md` body crosses 90 lines (or description exceeds 25 lines) despite compression attempts. Move body content to a sub-file in the next tier down (e.g. workflows go to `workflows/` once you have 2+); split intent clusters in description when activate-when grows long.
-2. **Recurrence pressure** — the same pitfall is recorded in Common Pitfalls twice, or the same question gets asked by the agent twice in different sessions. Promote it to a `gotchas/` file for that module (listed in `gotchas/index.md`). A single `references/gotchas.md` is the small-skill form; once one subsystem accumulates several, give each module its own file so a bug reads one small file, not a 200-line dump.
+2. **Recurrence pressure** — the same pitfall is recorded in Common Pitfalls twice, or the same question gets asked by the agent twice in different sessions. Promote it into a routed Gotcha entry organized by stable root cause. A single `references/gotchas.md` is the small-skill form. Split into module files only when real tasks select them independently; add `gotchas/index.md` only when task signals use it to choose the next file, never as a passive hub by default.
 3. **Abstraction tangle (骨架/肉)** — a `rules/` (or `architecture/`) file mixes invariant design theory with current-code facts: a module map or directory layout (flesh) sits next to a layering principle (skeleton), so `architecture/` both drifts and diverges (re-describing the code instead of converging on the few invariants). Split by abstraction: abstract design theory → `architecture/`, **code maps** (module tree, dir layout, source index) → `references/`, house style → `conventions/`, landmines → per-module `gotchas/`; **methodology stays in `rules/`**. The most common Full-tier pressure for code-coupled skills — judgement test + full playbook: [skeleton-flesh-split.md](skeleton-flesh-split.md).
 4. **Procedure pressure** — you catch yourself writing "how to do X in steps" inside a rule file. Steps belong in `workflows/`, not `rules/`. Create the `workflows/` directory.
 5. **Harness-sharing pressure** — two harness entries (e.g. `AGENTS.md` and `CLAUDE.md`) need the same route lookup logic, or you're manually keeping them in sync. Move task data into `routing.yaml` and generate thin-shell blocks.
 6. **Cross-session lesson pressure** — you want a lesson from today to persist into a `/clear`-fresh session next week. A single-file skill with no `references/` has no durable place for it.
 
 **Downgrade is also fine.** If a skill lost a domain or shed complexity, collapse back. Structure serves the content, not the other way around. Empty `workflows/` or `references/` directories are a smell.
+
+### Optional business-global-model pressure
+
+Product/business projects may add `references/business/<module>.md` when stable domain meaning (types, macro flow, states, boundaries, invariants) is repeatedly needed to plan or classify bugs and is not obvious from code. Start absent and then single-file. Retain/split by cross-implementation stability and independent task selection, not by length; merge parts every real caller co-loads. This is project-specific flesh, not universal architecture and not an Always Read default. See [business-global-model.md](business-global-model.md).
 
 ## Why this matters
 

@@ -1,0 +1,79 @@
+# Profile Business Model Workflow (Opt-In Example)
+
+Copy this file to `workflows/profile-business-model.md`, adapt the paths, and add a project route only when the project has real stable business semantics. Do not activate it for ordinary libraries, CLIs, or modules whose behavior is obvious from code.
+
+## Trigger Classification
+
+| State | Action |
+|---|---|
+| No model and the gap affects the task | Explain what macro meaning is missing; ask whether to model now or continue without persistence |
+| Existing model is locally unclear | Inspect code/tests; ask only the missing business question; update the file in place |
+| Existing model conflicts with code/tests/runtime | Show the conflict; ask which side is the correct business intent; then route bug/design/doc drift |
+| Existing model is sufficient | Use it without another question |
+
+"Later" is session-only. Do not create a backlog, empty directory, empty index, placeholder file, or placeholder route.
+
+## Initialization Scan
+
+When profiling a new product project:
+
+1. Inspect modules, entry points, stable types/enums, states, tests, and existing docs.
+2. List only modules that appear to have low-volatility macro semantics needed across tasks.
+3. For each candidate, explain the likely value and ask: model now, later, or not needed.
+4. Run the full workflow only for "now". Create nothing for later/not-needed.
+
+## Full Modeling Steps
+
+1. **Set the module boundary** — name the module and the decision this model must support.
+2. **Search evidence first** — inspect code, config, tests, contracts, and current docs. Extract only stable types, macro flow, business states, boundaries, relationships, and invariants.
+3. **Remove volatile detail** — drop classes, methods, endpoints, fields, config keys, UI behavior, one bug narrative, and one requirement's temporary decisions.
+4. **Draft evidence states** — separate current implementation facts, inferred meaning, user-confirmed intent, and unknowns.
+5. **Brainstorm with the user** — ask only what evidence cannot decide: business names, historical intent, target meaning, forbidden directions, and hidden boundaries.
+6. **Keep the current effective baseline** — approved but unimplemented semantics remain in the active plan until code/tests/behavior land.
+7. **Write the minimum sufficient file** — start with `references/business/<module>.md`; use only sections the module needs.
+8. **Run semantic read-back** — preserve the load-bearing definition, condition, boundary/counterexample, and reason. A fresh Agent must be able to reconstruct the same key decision.
+9. **Confirm macro meaning** — show the user the final durable meaning when creating the model or changing types, flow direction, states, or invariants.
+10. **Activate the read path** — add the file to the relevant route/workflow. Never add it to Always Read.
+
+## Progressive Split
+
+Do not create an index for one file. Split only when a real request reads one part without all siblings and routing can select it. If all callers co-load the parts, keep or restore one file.
+
+Example only after pressure:
+
+```text
+references/business/<module>/
+├── index.md
+├── types.md
+└── lifecycle.md
+```
+
+The index must select a leaf from task signals. A passive file list has no activation value.
+
+## Plan and Fix Bug Handoff
+
+For business-sensitive work, compare in order:
+
+1. business model — what should be true;
+2. architecture/rules/contracts — how design intends to realize it;
+3. code/tests/runtime — what is true now.
+
+Classify a reported bug before changing code:
+
+- `IMPLEMENTATION_BUG` — code violates the confirmed model; continue the bugfix loop.
+- `DESIGN_CHANGE` — the proposed fix changes a type, flow direction, state machine, or invariant; stop and switch to planning with user approval.
+- `INSUFFICIENT_BUSINESS_CONTEXT` — run the missing/unclear path above; do not guess expected behavior.
+
+Obvious technical failures do not require business modeling unless the correct behavior is ambiguous.
+
+## Completion Checklist
+
+- [ ] The module passed the stable, cross-task, non-obvious admission test
+- [ ] No empty directory, index, placeholder section, or deferred-candidate file was created
+- [ ] Evidence and user-confirmed intent were not blurred together
+- [ ] The live model describes effective behavior, not an unimplemented plan
+- [ ] Implementation details and one-off requirements were excluded
+- [ ] Semantic read-back preserved conditions, boundaries, and reasons
+- [ ] New/changed macro meaning was confirmed by the user
+- [ ] The file has a specific routed load reason and is not Always Read
+- [ ] Every split leaf has a real task that loads it independently

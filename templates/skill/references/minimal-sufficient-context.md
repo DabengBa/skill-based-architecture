@@ -27,6 +27,7 @@ Read more before continuing if any signal appears:
 - root cause or source of truth has more than one plausible location
 - change crosses modules, skills, public APIs, schemas, permissions, config, generated files, or shared runtime state
 - code evidence conflicts with the user's report, tests, logs, or existing docs
+- expected behavior depends on a business type, macro flow, state transition, boundary, or invariant: read the routed `references/business/<module>.md`; if completely absent and blocking, ask whether to model now; if present but locally unclear, search evidence first, ask only the missing macro question, and reconcile the existing file in place
 - the first fix/plan attempt fails, or the premise becomes unstable
 - a routed file names a task-specific gotcha, convention, source index, or compatibility note
 

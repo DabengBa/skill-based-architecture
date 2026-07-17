@@ -73,10 +73,7 @@ tasks:
       - refresh from upstream
   - id: update-rules
     labels: { en: Update skill rules or record lessons, zh: 更新 skill 规则 / 记录经验 }
-    route: follow `workflows/update-rules.md`; record only generalized, activated lessons; behavior failures go to `references/behavior-failures.md`
-    required_reads:
-      - references/gotchas.md
-      - references/behavior-failures.md
+    route: follow `workflows/update-rules.md`; classify first; read `references/gotchas.md` only for a project/technical gotcha, `references/behavior-failures.md` only for an Agent behavior failure, and the target rule/reference only for that destination; never preload both evidence stores
     workflow: workflows/update-rules.md
     trigger_examples:
       - 记录这个规则

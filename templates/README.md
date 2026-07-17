@@ -13,8 +13,9 @@ templates/
 │   ├── routing.yaml            (single source for Always Read + Common Tasks + shell bootstraps)
 │   ├── sync-manifest.yaml      (vendor-class file list consumed by scripts/sync-vendor.sh)
 │   ├── rules/{project-rules,coding-standards,agent-behavior}.md
-│   ├── workflows/{profile-project,plan-feature,update-upstream,update-rules,fix-bug,change-managed,edit-templates,maintain-docs,subagent-driven,subagent-orchestration}.md
+│   ├── workflows/{profile-project,plan-feature,plan-large,update-upstream,update-rules,fix-bug,change-managed,edit-templates,maintain-docs,subagent-auxiliary,subagent-driven,subagent-orchestration}.md
 │   ├── workflows/invoke-skill.md.example  (copy-paste template for Pattern A composition; rename and adapt)
+│   ├── workflows/profile-business-model.md.example  (opt-in product/business model workflow; rename only after real pressure)
 │   ├── references/{gotchas,behavior-failures,minimal-sufficient-context}.md
 │   ├── protocol-blocks/       → internal Task Closure / routing reinforcement blocks
 │   └── scripts/              → automated verification (lives inside the skill)
@@ -66,8 +67,9 @@ Two kinds — each with a different "fill" mechanism:
 | `skill/rules/agent-behavior.md` | ≤ 100 lines, fully pre-filled | Universal coding defaults. Exception to the stub-only rule — ships as content. **Growth gated** by `ANTI-TEMPLATES.md § Admission Threshold` (convention-level, ~30% hostile-prompt block rate). For mechanism-level enforcement install `templates/hooks/agent-behavior-gate.sh` — blocks 100% of tested attack classes deterministically |
 | `hooks/session-start`, `hooks/workflow-state`, `hooks/agent-behavior-gate.sh` | ≤ 150 lines each | Optional hook scripts. Keep per-harness branching in-script; see `hooks/README.md` |
 | `hooks/README.md` | ≤ 150 lines | Per-hook rollout guidance; allowed larger because it documents optional installs + tuning |
-| `skill/workflows/profile-project.md`, `plan-feature.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md`, `subagent-orchestration.md` | ≤ 100 lines | Task-specific workflows stay lean |
-| `skill/workflows/update-rules.md`, `maintain-docs.md`, `subagent-driven.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
+| `skill/workflows/profile-project.md`, `plan-feature.md`, `plan-large.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md`, `subagent-auxiliary.md`, `subagent-driven.md`, `subagent-orchestration.md` | ≤ 100 lines | Task-specific or conditionally selected workflows stay lean |
+| `skill/workflows/profile-business-model.md.example` | ≤ 100 lines | Optional business-model workflow; stays inactive until a downstream renames it and adds a real route |
+| `skill/workflows/update-rules.md`, `maintain-docs.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `skill/protocol-blocks/*` | ≤ 40 lines each | One idea per block |
 | `skill/SKILL.md.template` | dual budget: description ≤ 25 lines + body ≤ 90 lines | Same hard cap as downstream SKILL.md (smoke-test enforces both separately). description carries quoted trigger phrases; body navigates rules/workflows/references. Keep each shorter when possible. |
 | `skill/scripts/smoke-test.sh` | ≤ 950 lines (was 850; raised 2026-07-06 — file had already drifted to 903 unrecorded; +34 for two-root layout support (dir-path resolution, `path_resolution`-gated shell exemptions) + pipefail hardening, absorbed from the chaos downstream). **Next addition forces extraction** into a `check-<concern>.sh` companion script — no further raises. | Structural test harness; keep scenario behavior out of this script |

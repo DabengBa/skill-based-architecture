@@ -1,6 +1,6 @@
 # Ambiguous Request Gate
 
-Drop this block into any shell, workflow, or SKILL.md where the agent needs a pre-routing check on request clarity. Complements `protocol-blocks/red-flags-stop.md` (discipline erosion) and `protocol-blocks/reboot-check.md` (mid-task disorientation); this one catches the ambiguity **at the start** before any work begins.
+Drop this block into any shell, workflow, or SKILL.md where the agent needs a pre-routing check on request clarity. It complements `workflows/task-closure.md` § Red Flags (discipline erosion) and `protocol-blocks/reboot-check.md` (mid-task disorientation); this one catches ambiguity **at the start** before any work begins.
 
 ## Trigger
 

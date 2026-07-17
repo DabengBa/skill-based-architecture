@@ -19,10 +19,10 @@
 # workflows/ are routed by each task's `workflow:` field + covered by
 # check-cross-references.sh.
 #
-# The fix for a fine-grained tier is a routed index.md hub: route the hub, list
-# each file in it as a skill-root-relative inline-code path; the agent
-# navigates from there. One hub keeps a whole tier reachable without enumerating
-# every file in every route.
+# Route a leaf directly when the task signal already identifies it. Add a routed
+# index.md only when multiple independent leaves exist and task signals need the
+# index to choose the next read. A passive list, or an index whose callers always
+# read every leaf, is not useful activation.
 #
 # Usage (run from the skill root, the dir holding the tier directories):
 #   bash route-reachability.sh
@@ -86,7 +86,7 @@ done
 echo ""
 echo "Summary: $UNREACHED unreachable / $TOTAL active-tier file(s)"
 if [[ "$UNREACHED" -gt 0 ]]; then
-  echo "For each: add it to a task's required_reads, OR list it (skill-root-relative inline-code path) in a routed index.md hub. See references/skeleton-flesh-split.md § 4."
+  echo "For each: route the known leaf directly, OR list it as a skill-root-relative inline-code path in a routed selecting index/reference. Do not create a passive or single-file index. See references/skeleton-flesh-split.md § 4."
   exit 1
 fi
 exit 0

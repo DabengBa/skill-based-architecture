@@ -28,6 +28,7 @@ required_sections:
       - "## Progressive Rigor"
       - "Routing.yaml as source"
       - "Activation over storage"
+      - "every loaded file needs an independent task-time reason"
       - "Self-maintenance"
       - "Token efficiency"
 
@@ -43,6 +44,10 @@ required_sections:
       - "## Classification Guide"
       - "## Sync Targets"
       - "## Task Closure Protocol"
+      - "plan-large.md"
+      - "subagent-auxiliary.md"
+      - "subagent-driven.md"
+      - "subagent-orchestration.md"
 
   # WORKFLOW.md after the 2026-05-09 split is the Quick Start entry; the full
   # 9-phase content (including Phase 9 pressure-test) moved to
@@ -67,6 +72,9 @@ required_sections:
       - "## Task Closure Protocol"
       - "## Recording Threshold"
       - "## Generalization Rule"
+      - "fidelity"
+      - "reconciliation"
+      - "cross-implementation stability"
 
 # Files required to exist (presence-only check). Drift here means a
 # self-hosting structural piece was deleted without updating routing.
@@ -80,5 +88,6 @@ required_files:
   - path: workflows/full-migration.md
   - path: workflows/upgrade-downstream.md
   - path: references/self-hosting-routing.yaml
+  - path: references/business-global-model.md
   - path: templates/skill/conformance.yaml
   - path: templates/skill/scripts/check-version-conformance.sh

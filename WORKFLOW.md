@@ -83,6 +83,8 @@ echo "If this step fails partway through, run: rm -rf skills/$NAME .cursor/skill
 - Only then write project content into `rules/`, `workflows/`, `references/`, and `SKILL.md`. `rules/` and procedural `workflows/` must come from confirmed evidence, not brainstorm-only claims.
 - If the user declines brainstorming or explicitly asks to skip it, proceed with code-first evidence scanning and mark unclear conclusions as `Unknown` instead of guessing.
 
+After the evidence scan, product projects may present **business-global-model candidates**: modules whose stable types, macro flow, states, boundaries, or invariants are repeatedly needed and not obvious from code. Explain why each candidate matters and ask `model now / later / not needed`. Only `now` adopts `workflows/profile-business-model.md.example` and creates a routed model after evidence search + user calibration. `later` and `not needed` create no file, directory, index, route, or persistent queue.
+
 **Step 2 — Fill content.** Two kinds of placeholders, two different mechanisms:
 
 | Marker | How to fill |

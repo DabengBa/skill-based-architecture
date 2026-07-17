@@ -31,7 +31,7 @@ Once the policy says this task enters the protocol, the task is NOT complete unt
    - `bash "skills/<skill-name>/scripts/sync-routing.sh" "<skill-name>" --check` — generated Always Read, Common Tasks, and bootstraps match `routing.yaml`
    - `bash "skills/<skill-name>/scripts/smoke-test.sh" "<skill-name>" --phase 8` — markdown links, structure, routing, and budgets still pass
    - `(cd "skills/<skill-name>" && bash scripts/audit-orphans.sh)` — no content-tier file (`rules/` `references/` `architecture/` `gotchas/` `conventions/`) has zero inbound links (link-reachable)
-   - `(cd "skills/<skill-name>" && bash scripts/route-reachability.sh)` — every active-tier file (`architecture/` `conventions/` `gotchas/` `rules/`) is reachable by following `routing.yaml` + index hubs (route-reachable, i.e. actually read on a task — not just link-reachable). Fires whenever this task added a content file or changed routing
+   - `(cd "skills/<skill-name>" && bash scripts/route-reachability.sh)` — every active-tier file (`architecture/` `conventions/` `gotchas/` `rules/`) is reachable by following `routing.yaml` plus any selecting index/reference edges (route-reachable, i.e. actually read on a task — not just link-reachable). Fires whenever this task added a content file or changed routing
    - `bash "skills/<skill-name>/scripts/route-health.sh" "<skill-name>"` — advisory routing-quality smells (no/weak triggers, overlap, language); does not block, but review when this task added a route or changed its triggers
    - **Skeleton purity (judgement, not script)** — if this task added an `architecture/` file, apply the test: *after a refactor that renames modules and moves files, is it still true?* An invariant principle → keep. A map / name / path / call-graph of the current code → it is flesh, move it to `references/`. No script can tell a map from a principle; `architecture/` drifting back into a code map is caught here by discipline.
 5. **Cross-reference content sync** — if this task changed the *meaning* of a `rules/` or `references/` file (not just paths), grep `workflows/` for files that reproduce the changed invariant and update them in the same commit. Rule meaning drifts silently otherwise; a workflow that repeats a now-wrong invariant actively misleads.
@@ -39,7 +39,7 @@ Once the policy says this task enters the protocol, the task is NOT complete unt
 
 Do not run gates on tasks the Trigger Policy did not admit into the protocol. Steps 3–6 fire conditionally (3 on AAR hits, 4 on skill routing/structure/link-affecting changes, 5 on rules/references *meaning* changes, 6 on high-risk behavior changes) and are mandatory when their trigger fires.
 
-**Plan-closure prompt — not a gate, but follow it:** if this task flipped a plan in `docs/plans/` to `status: done`, sort every conclusion (wherever in the plan directory or simple plan body it landed) into `rules/` (must / must not), `references/gotchas.md` or SKILL.md § Common Pitfalls (anti-pattern with reasoning), or "neither — pure provenance, stays archived only". Update the plan's `distilled_to:` frontmatter accordingly. No script verifies this — the cost of skipping it is silent: load-bearing content stranded in a frozen plan that nobody re-reads. See `plan-feature.md` step 8 for the full trichotomy.
+**Plan-closure prompt — not a gate, but follow it:** if this task flipped a plan to `done`, reconcile every load-bearing conclusion through `update-rules.md`: future constraint → rules; rejected alternative/footgun → gotchas/Common Pitfalls; current implemented macro business fact → routed business model; pure provenance → archive only. Apply fidelity, reconciliation, and activation, then make `distilled_to:` truthful. See `plan-feature.md` step 8.
 
 ### Rationalizations to Reject
 
@@ -54,6 +54,8 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 | "The user is in a hurry" | The protocol exists *because* hurry produces the worst pitfalls. Pressure is a reason to run AAR, not skip it |
 | "I already know this lesson, don't need to record" | Recording is for future agents, not past you. Current knowledge is not durable |
 | "This is covered by the existing rules" | Then the scan returns "no" in 10 seconds. Faster to run it than argue about it |
+| "There are 3 subtasks, so I should dispatch 3 subagents" | Task count is not worker count. Dispatch only independent workstreams with positive Net Benefit and real overlap; otherwise stay inline |
+| "The worker almost got it right, so I must re-dispatch" | Re-run the Admission Test on the remaining delta. A small reviewed correction may now be cheaper inline |
 | "I already read SKILL.md for the previous task" | The new task may match a different route. Context compresses silently. Re-read costs seconds; skipping costs hours of wrong-direction work |
 | "User said 'record this' — I'll also archive the full session as YYYY-MM-DD-session-notes.md in `references/`" | "Record" means extract a **generalized, reusable lesson** into `rules/` or `references/<topic>.md`. Dated session narratives belong in `git log` / `CHANGELOG`, never in `references/`. `references/` rejects date-named narrative files — they violate the generalization rule (project-specific story, not reusable knowledge) and the activation rule (no routing path will ever read them) |
 | "I changed `rules/<x>.md` — workflows can be checked next task" | Cross-reference drift compounds silently. A workflow that repeats a now-wrong invariant is worse than one missing the new invariant; it actively misleads. The check takes seconds when the edit is fresh; next task, you'll forget what you changed |
@@ -71,6 +73,7 @@ When the Agent feels the urge to skip the AAR, these are the common excuses and 
 - "Nobody will know I skipped" — the next pitfall will
 - "The AAR is for big changes" — scope does not determine value; novelty does
 - "This is overhead, not work" — Task Closure *is* the task; anything that ships without it is half-done
+- "The protocol does not fit this case" — fix the protocol through the approved rule-update/design path; do not bypass it silently
 - "It should pass / probably builds / seems to work" said as a completion claim — you have not run it this message. A hedge word in front of a status claim is the tell. Run it, read the exit code, then claim
 
 ## After-Action Review

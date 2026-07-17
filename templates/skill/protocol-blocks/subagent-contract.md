@@ -1,5 +1,5 @@
 # Subagent Contract
-Every subagent dispatched via [`workflows/subagent-driven.md`](../workflows/subagent-driven.md) gets the five dispatch fields below plus one Return Status. Paste only the contract, not the main conversation history.
+Every subagent dispatched through [`subagent-auxiliary.md`](../workflows/subagent-auxiliary.md) or [`subagent-driven.md`](../workflows/subagent-driven.md) gets the five dispatch fields below plus one Return Status. Paste only the contract, not the main conversation history.
 From a plan? Lift Task Breakdown directly: Files+Produces → Outputs, Files+Consumes → Inputs, other tasks' files → Forbidden Zones, Acceptance → Acceptance Criteria.
 
 ```markdown

@@ -1,6 +1,6 @@
 # Refactor Fan-out Workflow
 
-> This workflow identifies possible fan-out; it does not require it. Keep the refactor inline unless several non-overlapping batches pass [`subagent-driven.md` § Delegation Admission Gate](subagent-driven.md#delegation-admission-gate) with positive Net Benefit. Never create workers by file count alone.
+> This workflow identifies possible fan-out; it does not require it. Keep the refactor inline unless several non-overlapping batches pass [`subagent-auxiliary.md` § Admission Test](subagent-auxiliary.md#admission-test) with positive Net Benefit and real overlap. Incidental mechanical sub-steps use that same workflow; admitted planned batches continue through [`subagent-driven.md`](subagent-driven.md) and [`subagent-orchestration.md`](subagent-orchestration.md). Never create workers by file count alone.
 
 Use this for refactors that touch **N independent usage points** of the same construct: renaming a function across 30 files, changing an API signature with many callers, extracting an interface with multiple implementations, migrating a config key.
 
@@ -19,7 +19,7 @@ If any condition fails: use `change-managed.md` and do the change sequentially i
 
 ## Harness Compatibility
 
-Same as [`subagent-driven.md` § Harness Compatibility](subagent-driven.md#harness-compatibility-shared-by-both-modes) — full parallel dispatch on Claude Code (and Codex with global authorization); degraded harnesses run the batches sequentially with contract discipline: you keep the safety, you lose the parallelism.
+Use [`subagent-driven.md` § Harness Compatibility](subagent-driven.md#harness-compatibility): native harnesses parallelize; degraded harnesses follow `subagent-orchestration.md` contract/review discipline without pretending sequential work is concurrent.
 
 ## Three Phases
 

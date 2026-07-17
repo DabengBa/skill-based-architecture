@@ -25,6 +25,8 @@ Read and inventory all existing rule sources:
 - `README.md` and directory-level READMEs
 - `docs/*` and any ad-hoc rule/doc files
 
+After inspecting real evidence, product projects may identify modules whose stable macro business meaning is repeatedly needed for plans/bug classification and not obvious from code. Present those as candidates with `model now / later / not needed`; only `now` adopts the optional `profile-business-model.md.example` workflow. `later` creates no persistent placeholder.
+
 Classify every section into four buckets:
 
 1. **Rules** — stable constraints, always true
@@ -44,7 +46,7 @@ Plan the file set based on project size:
 - **Add domain files** as needed: `frontend-rules.md`, `backend-rules.md`, `add-page.md`, `add-controller.md`, etc.
 - **Fullstack / multi-domain**: combine; consider separate skills if domains diverge significantly
 
-Don't create empty placeholder files. Each file should exist because it has meaningful content (at least 30 lines), not because a template says it should.
+Don't create empty placeholder files. Each file should exist because a real route/workflow/index selects it independently, or because ownership/generation requires the boundary — not because a template or line-count target says it should.
 
 See [`references/conventions.md § Common Rule File Sets by Project Type`](../references/conventions.md#common-rule-file-sets-by-project-type) for detailed per-type file lists.
 
@@ -124,7 +126,8 @@ Move explanatory content into `skills/<name>/references/`:
 - Architecture overviews
 - Environment/build notes
 - Source indexes and module maps
-- **Gotchas** — create `references/gotchas.md` (or domain-specific pitfall files like `frontend-pitfalls.md`) for known gotchas, footguns, and edge cases; then add brief summaries to SKILL.md's Known Gotchas section. Once one subsystem accumulates several, split into per-module `gotchas/` files under a `gotchas/index.md` hub — see [`references/skeleton-flesh-split.md`](../references/skeleton-flesh-split.md)
+- **Gotchas** — create `references/gotchas.md` (or a routed domain pitfall file) for known footguns and edge cases; add brief summaries to SKILL.md only when they must surface earlier. Split only when real tasks select module files independently; add `gotchas/index.md` only when task signals use it to choose a leaf — see [`templates/skill/workflows/maintain-docs.md`](../templates/skill/workflows/maintain-docs.md)
+- **Business global model (optional, product projects only)** — for candidates confirmed `now`, start with one `references/business/<module>.md` containing current, stable, implementation-independent macro semantics. Do not create an empty directory/index or add it to Always Read; route it only to relevant module tasks. See [`references/business-global-model.md`](../references/business-global-model.md)
 - Third-party dependency notes
 
 The gotchas file is often the **most valuable reference** in a skill — it captures expensive lessons that are not obvious from code alone and prevents repeated debugging. Keep it actively maintained via the After-Action Review.
@@ -233,7 +236,7 @@ Give the subagent a realistic migration or bug-fix task that *should* trigger th
 
 ### GREEN — Fold verbatim rationalizations into the table
 
-Open `skills/<name>/workflows/task-closure.md` § "Rationalizations to Reject" (or `templates/skill/protocol-blocks/rationalizations-table.md` for the reusable version). Add a new row:
+Open `skills/<name>/workflows/task-closure.md` § "Rationalizations to Reject" — the only正文 source — and add a new row:
 
 | Rationalization (verbatim from subagent) | Reality (the rebuttal) |
 |---|---|

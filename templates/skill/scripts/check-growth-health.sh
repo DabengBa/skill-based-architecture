@@ -141,7 +141,7 @@ check_workflows() {
     [[ -f "$f" ]] || continue
     base="$(basename "$f")"
     case "$base" in
-      update-rules.md|maintain-docs.md|subagent-driven.md) max=250 ;;
+      update-rules.md|maintain-docs.md) max=250 ;;
       *) max=100 ;;
     esac
     check_lines "$f" "$max" "workflow/$base"

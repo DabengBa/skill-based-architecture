@@ -15,7 +15,7 @@ Session Discipline (in `SKILL.md`) covers re-orientation at the start of a **new
 If any answer is "I don't know" or "I'd have to check" — **that is the next action**. Do not proceed with the original task, final answer, commit, or push until all five have concrete answers.
 
 **Pair with:**
-- `protocol-blocks/red-flags-stop.md` — red-flags catch discipline erosion (agent arguing itself out of protocol).
+- `workflows/task-closure.md` § Red Flags — the single source for discipline-erosion circuit breakers.
 - `protocol-blocks/reboot-check.md` (this file) — catches situational disorientation (agent is following protocol but has lost the thread).
 
 Origin: condensed from [OthmanAdi/planning-with-files](https://github.com/OthmanAdi/planning-with-files) 5-Question Reboot Test.

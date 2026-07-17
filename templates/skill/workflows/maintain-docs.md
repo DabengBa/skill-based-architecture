@@ -1,8 +1,8 @@
 # Documentation Health Maintenance
 
-Keep the skills directory from degrading: files not too long, not too fragmented, no broken links, no duplicated content.
+Keep the skills directory from degrading: no broken links, duplicated meaning, lossy accumulation, fake file boundaries, or unrelated content loaded together.
 
-**Core principle: line counts are signals, not commands.** Exceeding a threshold triggers evaluation, not action. Only split when "over threshold + topics genuinely separable"; only merge when "fragmented + topics genuinely belong together".
+**Core principle: line counts are signals, not commands.** A file boundary is justified by an independent loading, ownership, or generation reason. Short files may stay separate when tasks select them independently; long files may stay whole when every real task needs the whole meaning.
 
 ## When to Run
 
@@ -68,7 +68,7 @@ Run these passes **in order** — they form a "categorize before splitting" pipe
      Re-anchor scattered bullets under the chosen H2. If a single H2 grows past ~30 bullet-rules, extract that section into its own sub-rule file via Step 6 instead of letting one category dominate.
 4. **Structural scan** — after categorizing, re-anchor any remaining orphan entries under the correct H2 section.
 5. **Tag audit** — do all entries carry `**[topic]**` tags? If > 50% are untagged, tag them in this same pass while attention is on the file.
-6. **Split (last resort)** — only after dedup + categorize. Split when a single H2 category itself crosses the entry/line trigger, or when categories have genuinely different audiences (e.g. backend rules vs. frontend rules). Each resulting file should still be ≥ 30 lines after split (otherwise merge candidates).
+6. **Split (last resort)** — only after dedup + categorize. Split when a category has a genuinely different audience/task path and the route or selecting index can load it without all siblings. A short result is acceptable if it is independently selected; a long result is wrong if every caller still co-loads all siblings.
 7. **Update the maintenance ledger (closure gate)** — Tier-2 is incomplete until the ledger is updated. The ledger is the only mechanism that distinguishes "a duplicate in this file is normal noise" from "this file has drifted enough to need a full reorg"; without it, the > 30-days trigger in the list above has no clock and the whole tier model degrades to agent guesswork.
 
    - **Location:** `.maintenance-log.yaml` at skill root — `skills/<name>/.maintenance-log.yaml` downstream, `./.maintenance-log.yaml` self-hosting.
@@ -96,50 +96,81 @@ A gotchas file that's too long to scan quickly defeats its purpose — the whole
 
 > **Note (2026-05-19):** an earlier draft of this workflow added a "Step 1c: External Fact Freshness" requiring authors to hand-mark each vendor/tool/runtime fact with `<!-- external-fact: verified=YYYY-MM-DD source=... -->` and run `check-external-facts.sh`. That section was removed along with the script — no project ever enforced the marker, so the script ran empty. If you need to flag a fact as volatile, prefer the AAR's "Outdated/obsolete rule" question (`update-rules.md`) on the next task that touches the same file: human re-read at the right moment beats a marker no one writes.
 
-## Step 2: Evaluate — Should You Split?
+## Step 2: Independent Load-Reason Audit
+
+Run this before split/merge decisions and after route changes. For every candidate file or `required_reads` entry, record a compact matrix:
+
+| File | Real task/route | Why needed at task start | Loaded independently? | Conditional alternative |
+|---|---|---|---|---|
+
+Judge from real call paths, not headings or desired symmetry:
+
+1. **Independent selection** — name a real request that loads this file without every sibling.
+2. **Action change** — state what reading it changes next; background that changes nothing is not a load reason.
+3. **Timing** — if content is needed only at closure, Large-plan analysis, multi-skill routing, or another branch, remove it from the route's initial `required_reads` and load it at that branch.
+4. **Co-load test** — if all real callers load and modify two files together, prefer one file. Separate ownership or mechanical generation can preserve storage boundaries, but runtime routing still should not force unrelated co-loading.
+5. **Index test** — create an index only when multiple independent files exist and task signals let the index select the next read. A passive file list is not an index with activation value.
+
+Orphan/reachability scripts cannot prove this audit: they show that a path exists, not that its content is independently useful.
+
+## Step 3: Evaluate — Should You Split?
 
 When a file exceeds the reference range, answer these questions:
 
-1. **Are the topics separable?** — Does the file contain 2+ independent topics where removing one doesn't affect understanding of the other?
-2. **Is navigation difficult?** — Would someone looking for a specific section need to scroll through hundreds of lines to find it?
-3. **Can each part stand alone?** — Would each resulting file have enough content (> 30 lines) to be independently useful?
+1. **Are the topics semantically separable?** — removing one does not change understanding of the other.
+2. **Do real tasks select them differently?** — name the before/after route reads.
+3. **Can each part stand alone?** — no hidden need to load siblings to interpret it.
+4. **Does the split reduce irrelevant context?** — not merely make the directory look organized.
 
-**All three "yes" → splitting has value. Any "no" → don't split.**
+All four "yes" → splitting has value. Any "no" → keep one file and improve headings/navigation instead.
 
 ### When NOT to Split
 
 - File is long but highly coherent
-- Splitting would create a sub-file too small (< 30 lines) to maintain independently
 - Splitting would force readers to jump between two files to understand one concept
 - File barely exceeds the reference value with no actual navigation difficulty
+- Every real route would load all resulting files together
 
 ### Executing a Split
 
 1. **Identify boundaries** — find independent topic blocks (usually H2 headings)
 2. **Name new files** — rules: `*-rules.md`, workflows: verb-noun, references: noun-based
 3. **Migrate content** — move to new files, keep heading levels reasonable
-4. **Update routing** — edit `routing.yaml`, then run `scripts/sync-routing.sh`
+4. **Update routing** — route directly to independently selected leaves; add a selecting index only when task signals need it; then run `scripts/sync-routing.sh`
 5. **Update referrers** — other rule files that cross-reference the split files
 6. **Verify** — no broken links, no duplicated content, nothing left behind
 
-## Step 3: Evaluate — Should You Merge?
+## Step 4: Evaluate — Should You Merge?
 
 When fragment files are detected, answer these questions:
 
-1. **Are the topics related?** — Do these small files belong to the same subject area?
-2. **Is finding things easier after merging?** — Do readers frequently need to look at multiple files together?
-3. **Will the merged file stay within limits?**
+1. **Do all real callers load them together?** — compare routes/workflows/index branches, not file size.
+2. **Do they form one decision surface?** — definitions/conditions in one are needed to interpret the other.
+3. **Is there no independent ownership/generation contract that requires separate storage?**
+4. **Will headings keep the merged content navigable?**
 
-**All three "yes" → merging has value. Otherwise keep as-is.**
+All four "yes" → merge. Otherwise keep the boundary and document its independent load/ownership reason.
 
 ### Executing a Merge
 
 1. **Merge** — combine content into one file, use H2 headings to separate original topics
-2. **Check limits** — merged file should not exceed the type's reference limit
+2. **Check navigation** — line count triggers review, but coherent content may exceed the reference range
 3. **Update references** — all locations that referenced the original files
 4. **Clean up** — delete the original files
 
-## Step 4: Reference Integrity Check
+## Step 5: Semantic Before/After Reconciliation
+
+After deduplication, categorization, compression, split, or merge, compare the durable meaning before checking links:
+
+1. inventory load-bearing definitions, applicability conditions, boundaries/counterexamples, and reasons in the original;
+2. map each item to its destination after the edit;
+3. verify none was dropped, silently broadened/narrowed, or separated from context needed to interpret it;
+4. verify symptoms sharing one root cause remain integrated rather than becoming parallel entries;
+5. verify each resulting file still has the independent load reason recorded in Step 2.
+
+This is a judgment gate, not a request for a semantic-lint script. Save the compact before/after load matrix and meaning inventory in the task/PR evidence when the reorganization is substantial.
+
+## Step 6: Reference Integrity Check
 
 Run after any split, merge, rename, or deletion of files under `skills/{{NAME}}/`:
 
@@ -155,5 +186,8 @@ Run after any split, merge, rename, or deletion of files under `skills/{{NAME}}/
 ## Completion Criteria
 
 - Evaluated over-threshold files and made a **reasoned judgment** to keep or split
+- Every changed file boundary and route read has an independent load/ownership/generation reason
+- Before/after load matrix proves conditional content moved off unrelated task paths
+- Dedup/split/merge/compression passed semantic before/after reconciliation
 - If any file was split, merged, renamed, or deleted, reference integrity check passes
 - `routing.yaml` and SKILL.md navigation match current file structure

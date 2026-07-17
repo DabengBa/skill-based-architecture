@@ -42,7 +42,7 @@ When promoting content out of a single SKILL.md into the full directory, tier by
 - Abstract design theory — layering/contract/orchestration **principles**, the "why" (**NOT** the module map) → `architecture/` (骨架)
 - Code maps — module tree, dir layout, source index, build/env notes → `references/` (肉)
 - House style — naming, paths, commands, formats, must/never conventions → `conventions/` (肉)
-- Code-coupled landmines (symptom → cause → fix), **one file per module** → `gotchas/` (肉; hub: `gotchas/index.md`)
+- Code-coupled landmines (symptom → cause → fix) → `gotchas/` only after independently routed module pressure; add a selecting `gotchas/index.md` only for multiple task-selectable files
 - Task procedures with ordered steps (process theory) → `workflows/` (骨架)
 - Cross-cutting agent behavior / methodology → `rules/` (骨架)
 - External-facing material → `docs/`
@@ -72,7 +72,7 @@ This guide intentionally does not restate the protocol. When the protocol change
 
 For the protocol-level concepts (recording threshold, where to record, generalization rule, activation check, when not to record), see [`references/protocols.md`](references/protocols.md).
 
-Reusable reinforcement blocks live in [`templates/skill/protocol-blocks/`](templates/skill/protocol-blocks/) and are copied inside each downstream skill — workflows link them without user-visible setup (`reboot-check.md`, `rationalizations-table.md`, `red-flags-stop.md`, `ambiguous-request-gate.md`, `subagent-contract.md`).
+Reusable reinforcement blocks live in [`templates/skill/protocol-blocks/`](templates/skill/protocol-blocks/) and are copied inside each downstream skill — workflows link them without user-visible setup (`reboot-check.md`, `ambiguous-request-gate.md`, `subagent-contract.md`). Task Closure Rationalizations and Red Flags live only in `workflows/task-closure.md`.
 
 Route intake uses [`templates/skill/references/minimal-sufficient-context.md`](templates/skill/references/minimal-sufficient-context.md) to keep per-task context and validation proportional: workflows keep their invariant core, while extra references/runtime/release evidence are added only when concrete risk signals appear.
 
@@ -83,15 +83,19 @@ Real workflow templates live under [`templates/skill/workflows/`](templates/skil
 | Template | Purpose |
 |---|---|
 | [`task-closure.md`](templates/skill/workflows/task-closure.md) | The cross-cutting closure gate every behavior-changing task runs — Task Closure Protocol (Trigger Policy + steps), AAR scan, Rationalizations Table, Red Flags. Every other workflow's closure step references this file. |
-| [`update-rules.md`](templates/skill/workflows/update-rules.md) | Recording mechanics the closure gate calls into — Recording Threshold, Activation Check, Generalization Rule — plus rule sync, Rule Deprecation, and Post-Update Health Check. |
-| [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with mandatory pre-step (Session Discipline re-read), Fix Impact Analysis (4 questions), and Task Closure Protocol gate. |
-| [`maintain-docs.md`](templates/skill/workflows/maintain-docs.md) | File-health maintenance — size scan, evaluate-split / evaluate-merge / when-not-to gates, reference integrity check. |
-| [`plan-feature.md`](templates/skill/workflows/plan-feature.md) | Feature planning with Question Gate (A/B/C), Complexity Gate, optional plan folder (only `prd.md` required), workflow-state machinery. |
+| [`update-rules.md`](templates/skill/workflows/update-rules.md) | Recording mechanics: threshold, fidelity, five-way reconciliation, activation, destination durability, sync, and retirement. |
+| [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with design-or-defect classification, root-cause/reproduction gates, impact analysis, and Task Closure. |
+| [`maintain-docs.md`](templates/skill/workflows/maintain-docs.md) | Independent-load-reason and semantic before/after audits, then split/merge/index and link integrity. |
+| [`plan-feature.md`](templates/skill/workflows/plan-feature.md) | Core feature planning with Question/Complexity/Business-Semantics gates, plan interfaces, and closure distillation. |
+| [`plan-large.md`](templates/skill/workflows/plan-large.md) | Large-only multi-perspective analysis and Synthesis contract; not loaded by ordinary plans. |
 | [`profile-project.md`](templates/skill/workflows/profile-project.md) | Three-axis project profiling (structure / execution / topology) before scaffolding. |
+| [`profile-business-model.md.example`](templates/skill/workflows/profile-business-model.md.example) | Opt-in product-project workflow for stable macro business meaning: initialization candidates, missing vs unclear calibration, semantic read-back, and routed activation. Rename/adapt only after real pressure. |
 | [`update-upstream.md`](templates/skill/workflows/update-upstream.md) | Agent-led upstream refresh — clone, classify, compare, port, validate (including conformance against upstream's manifest). |
 | [`change-managed.md`](templates/skill/workflows/change-managed.md) | Non-bug changes with multiple derived/synced targets — defines scope, finds source-of-truth, maps fan-out, runs drift checks. |
 | [`edit-templates.md`](templates/skill/workflows/edit-templates.md) | Editing the upstream `templates/` tree — admission threshold, two-real-projects test, anti-pattern list. |
-| [`subagent-driven.md`](templates/skill/workflows/subagent-driven.md) | Long-running multi-subagent work — contracts, isolation, forbidden zones, acceptance commands. |
+| [`subagent-auxiliary.md`](templates/skill/workflows/subagent-auxiliary.md) | Day-to-day mechanical/result-only delegation from ordinary workflows. |
+| [`subagent-driven.md`](templates/skill/workflows/subagent-driven.md) | Planned multi-subtask/long-run mode selector; routes to full orchestration. |
+| [`subagent-orchestration.md`](templates/skill/workflows/subagent-orchestration.md) | Mode 2 contract dispatch, two-stage review, Return Status routing, and degraded mode. |
 
 For the "would two real projects disagree?" admission test that gates new template content, see [`templates/ANTI-TEMPLATES.md`](templates/ANTI-TEMPLATES.md).
 

@@ -44,9 +44,8 @@ tasks:
     required_reads:
       - SKILL.md
       - REFERENCE.md
-      - references/layout.md
     workflow: templates/skill/workflows/update-rules.md
-    note: For routing / description hit-rate changes use improve-activation-routing instead
+    note: Load references/layout.md only when document structure or paths change; description / activation / routing changes belong to improve-activation-routing
     trigger_examples:
       - 加一条核心原则
       - 修改 skill 设计原则或规则
@@ -88,8 +87,8 @@ tasks:
     required_reads:
       - SKILL.md
       - references/layout.md
-      - references/multi-skill-routing.md
     workflow: references/layout.md#description-as-trigger-condition
+    note: Load references/multi-skill-routing.md only when evidence shows multiple skills, primary-skill selection, cross-skill trigger overlap, shared resources, or ambiguous skill ownership
     trigger_examples:
       - description 命中率太低
       - 优化 routing.yaml
@@ -102,33 +101,41 @@ tasks:
       zh: 多子任务 / 长时间自主任务(横切修饰符,不是独立任务)
     required_reads:
       - SKILL.md
-      - templates/skill/workflows/subagent-driven.md
     workflow: templates/skill/workflows/subagent-driven.md
-    note: Apply ON TOP of the matched primary route (migrate-downstream, edit-templates, etc.); do not pick this instead of the task route. Layer it when the work is large or has independent parallel subtasks. Read subagent-driven.md to pick Mode 1 vs Mode 2 and dispatch non-blocking; subagent-contract.md is the Mode 2 contract template it points to
+    note: Apply ON TOP of the matched primary route; do not pick this instead of task intent. Use it for planned multi-subtask/long work and follow its Mode 2 selector. Ordinary workflows load subagent-auxiliary.md directly for occasional mechanical delegation
     trigger_examples:
       - 多个独立子任务并行
       - 这个任务比较大
       - run several subtasks
 
-  - id: plan-and-distill
+  - id: plan-feature
     labels:
-      en: Draft a plan; on close, lift load-bearing conclusions into rules / gotchas / pitfalls
-      zh: 写计划;结束时把有约束力的结论搬进 rules / gotchas / pitfalls
+      en: Draft or maintain a plan
+      zh: 编写或维护计划
     required_reads:
       - SKILL.md
       - docs/plans/README.md
-      - templates/skill/workflows/plan-feature.md
-      - templates/skill/workflows/update-rules.md
     workflow: templates/skill/workflows/plan-feature.md
+    note: If the request later enters persistent-knowledge recording, re-match to distill-plan-conclusions instead of preloading its workflow
     trigger_examples:
       - 我们规划一下
       - 制定一个 plan
-      - 这次改动总结成规则
-      - 把 plan 的结论沉淀下来
       - 看看之前有没有相关 rules 或 pitfalls
       - draft a plan
-      - distill plan conclusions
       - scan related rules and gotchas
+
+  - id: distill-plan-conclusions
+    labels:
+      en: Distill plan conclusions into persistent skill knowledge
+      zh: 把计划结论沉淀为长期 skill 知识
+    required_reads:
+      - SKILL.md
+      - docs/plans/README.md
+    workflow: templates/skill/workflows/update-rules.md
+    trigger_examples:
+      - 这次改动总结成规则
+      - 把 plan 的结论沉淀下来
+      - distill plan conclusions
 
   - id: receiving-review
     labels:

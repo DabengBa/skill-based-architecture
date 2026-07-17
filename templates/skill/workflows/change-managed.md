@@ -1,6 +1,6 @@
 # Change-Managed Workflow
 
-> **Inline by default.** Delegate only after [`subagent-driven.md` § Delegation Admission Gate](subagent-driven.md#delegation-admission-gate) proves positive Net Benefit and real concurrent main-thread work. A mechanical batch is still inline when dispatch/review costs or dependency order erase the gain.
+> **Inline by default.** Read [`subagent-auxiliary.md`](subagent-auxiliary.md) only when a mechanical/result-only sub-step may be an independent, net-positive workstream with real overlap. If the change is planned as a fanout refactor from the start, use [`refactor-fanout.md`](refactor-fanout.md).
 
 Use this for non-bug changes where partial edits can create drift: new features, refactors, optimizations, route changes, generated/copied files, shared configuration, or any change with multiple derived targets.
 
@@ -12,14 +12,14 @@ Use this for non-bug changes where partial edits can create drift: new features,
 
 1. Re-open `SKILL.md` → match this change to a Common Tasks route
 2. Apply `references/minimal-sufficient-context.md`; start with the route's core files and the smallest source-of-truth slice
-3. Expand to task-relevant `rules/*.md` or `references/*.md` only when scope, ownership, generated files, contracts, permissions, config, or shared runtime state require it
+3. For a routed business module, read its business global model before changing types, macro flow, states, boundaries, or invariants; expand to other task-relevant `rules/*.md` or `references/*.md` only when scope, ownership, generated files, contracts, permissions, config, or shared runtime state require it
 4. If the change touches templates, scaffolds, copied shell blocks, generated files, or reusable project structure, switch to `workflows/edit-templates.md` or run its template-specific checks as a sub-step
 
 ## Steps
 
-1. **Define scope** — name the exact files/modules owned by this change and the observable outcome that proves it worked. **Permission check (opt-in):** if the project uses a permission model, decide up front whether this is an *Ask-first* operation (crosses a contract, hard to reverse, blast radius beyond the task) → propose and stop for the user before editing; or *Never* → refuse. This is a **pre-execution authority** check — distinct from the **post-edit** blast-radius buckets in [`task-closure.md`](task-closure.md) (which gauge closure rigor, not permission). See [`../references/permission-model.md`](../references/permission-model.md).
+1. **Define scope** — name the exact files/modules owned by this change and the observable outcome that proves it worked. For business-bearing changes, state `business-model impact: unchanged / proposed change / unknown`; proposed type/flow/state/invariant changes belong in the plan until implementation lands, then update code/tests/model together. **Permission check (opt-in):** if the project uses a permission model, decide up front whether this is an *Ask-first* operation (crosses a contract, hard to reverse, blast radius beyond the task) → propose and stop for the user before editing; or *Never* → refuse. This is a **pre-execution authority** check — distinct from the **post-edit** blast-radius buckets in [`task-closure.md`](task-closure.md) (which gauge closure rigor, not permission). See [`../references/permission-model.md`](../references/permission-model.md).
 2. **Find the source of truth** — identify whether the changed content is canonical or derived. If derived, edit the canonical source first and use the project's sync/generation command.
-3. **Map fan-out targets** — list every file that must stay in sync before editing. Include thin shells, generated configs, docs indexes, tests, and registration files when relevant. Stay inline for one dependency chain or a small same-context batch. Use [`refactor-fanout.md`](refactor-fanout.md) only when several non-overlapping batches pass the Delegation Admission Gate; do not create a worker per file.
+3. **Map fan-out targets** — list every file that must stay in sync before editing. Include thin shells, generated configs, docs indexes, tests, and registration files when relevant. Stay inline for one dependency chain or a small same-context batch. For a real auxiliary candidate, run `subagent-auxiliary.md`; use `refactor-fanout.md` only for several non-overlapping, net-positive batches, never one worker per file.
 4. **Make the smallest coherent change** — avoid opportunistic cleanup outside the declared scope.
 5. **Sync derived files** — run the project-specific generator, sync script, formatter, or manual copy step required by the source-of-truth mapping.
 6. **Run drift checks** — run the project-specific drift/integrity checks. If none exist, compare the fan-out targets manually and consider recording the missing check via Task Closure Protocol.

@@ -49,6 +49,10 @@ When the candidate is **borrowed from an external skill, project, or benchmark**
 - **Why rejected:** the whole value of Common Tasks routing is that it reflects *this project's* actual recurring tasks. A generic list ("Add feature", "Fix bug", "Refactor") teaches agents to route generically.
 - **Where it should go:** `routing.yaml` with `<!-- FILL: -->` markers, then generate `SKILL.md` Common Tasks and thin-shell blocks via `scripts/sync-routing.sh`.
 
+### Default product-knowledge taxonomy or empty business-model placeholders
+- **Why rejected:** business-bearing projects disagree on module boundaries and on which macro facts are stable. Pre-creating product-context/use-case/domain/state/sequence trees, an empty `references/business/`, empty module files, or a placeholder index creates false completeness and invites volatile details to fill the space.
+- **Where it should go:** adopt [`references/business-global-model.md`](../references/business-global-model.md) only after a real module passes the admission test. Start with one `references/business/<module>.md`; split or add an index only when independent task reads prove the need.
+
 ### Workflow-level child skills by default
 - **Why rejected:** `fix-bug`, `add-feature`, `review`, and `update-docs` are usually procedures inside one project skill, not separate activation domains. Pre-building them as child skills turns one project rule system into competing descriptions that all share the same Always Read files.
 - **Where it should go:** `workflows/*.md` under the primary project skill. Split into multiple skills only when trigger language and rules genuinely diverge, such as app vs deploy vs data-migration.

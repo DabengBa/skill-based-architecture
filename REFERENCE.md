@@ -6,6 +6,7 @@ Look up what you need, not everything. Reference topics live under [`references/
 
 - **Laying out a new skill** → [`references/layout.md`](references/layout.md)
 - **Deciding when to grow / shrink / split a skill** → [`references/progressive-rigor.md`](references/progressive-rigor.md)
+- **Capturing stable macro business meaning without a heavy product-doc taxonomy** → [`references/business-global-model.md`](references/business-global-model.md)
 - **Diagnosing instability — is it prompt, context, or harness?** → [`references/layout.md § Positioning in the Agent Stack`](references/layout.md#positioning-in-the-agent-stack)
 - **Writing or debugging thin shells** → [`references/thin-shells.md`](references/thin-shells.md) (common body, hooks, hygiene); [`references/per-tool-shells.md`](references/per-tool-shells.md) (per-tool templates + compatibility matrix)
 - **Updating downstream task routing** → edit `skills/<name>/routing.yaml`, then `bash skills/<name>/scripts/sync-routing.sh <name> --check`
@@ -22,6 +23,7 @@ Look up what you need, not everything. Reference topics live under [`references/
 |---|---|
 | [layout.md](references/layout.md) | Recommended directory layout, `SKILL.md` template, description-as-trigger discipline, positioning in the agent stack, relation to the official Anthropic skill spec |
 | [progressive-rigor.md](references/progressive-rigor.md) | Three structural tiers (Single-file / Folder-light / Full), upgrade triggers, three-axis profile (structure / execution / topology), Simple vs Advanced route schema |
+| [business-global-model.md](references/business-global-model.md) | Optional project-specific macro business layer: admission, modeling/calibration, current-baseline semantics, Plan/Fix Bug consumption, progressive split, and route activation |
 | [thin-shells.md](references/thin-shells.md) | Cursor registration entry, common thin-shell body, Auto-Triggers, XML-Tag Injection, SessionStart hook, Context Hygiene Playbook |
 | [per-tool-shells.md](references/per-tool-shells.md) | Per-tool shell templates (AGENTS / CLAUDE / CODEX / GEMINI / Cursor / Windsurf / Claude native) + tool compatibility matrix |
 | [protocols.md](references/protocols.md) | Task Closure Protocol, recording threshold (2/3), recording destination guide, generalization rule, when references alone are not enough, skill activation verification |

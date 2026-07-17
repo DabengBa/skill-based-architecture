@@ -1,6 +1,6 @@
 # Receiving Code Review Workflow
 
-> Verifying and acting on review feedback is **main-agent judgment** (evaluating a critique, deciding to accept or push back) — it is on the Negative list, not delegable. The only delegable slice is mechanical re-verification (run the reviewer's repro, grep for usage); for that, see [`subagent-driven.md` § Mode 1](subagent-driven.md#mode-1-direct-auxiliary-delegation).
+> Verifying and acting on review feedback is **main-agent judgment** (evaluating a critique, deciding to accept or push back), not delegable. If mechanical re-verification becomes a delegation candidate (run the repro, grep usage), then read [`subagent-auxiliary.md`](subagent-auxiliary.md).
 
 Use this when you receive review feedback — from the user, a `code-reviewer` subagent, or a PR/MR review — and must act on it.
 
