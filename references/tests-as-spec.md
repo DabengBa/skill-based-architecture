@@ -1,4 +1,4 @@
-# Reference — Tests as Spec (spec-first, human-oracle) · OPT-IN
+# Reference — Tests as Spec Adoption Guide
 
 An **opt-in** discipline for projects whose work produces unit-testable code **and** where shipping under-tested changes has actually bitten you (e.g. recurring production incidents after only light testing). It is **not** a default: a project with no such baseline, or mostly non-unit-testable work (UI/visual/config), should not adopt it — forcing it would be the imagined-pain anti-pattern (SKILL.md Common Pitfalls #10). Frontend *style / interaction* is never in scope (§ Verification modes).
 
@@ -8,11 +8,11 @@ An **opt-in** discipline for projects whose work produces unit-testable code **a
 2. **The cases are the question-generator — this is the anti-false-green mechanism.** Writing a concrete case drags every silent assumption into the open ("expected result at `total = 100` → ?"). Each unresolved one is a **question for the human, at boundary/decision granularity**. Concretely: whenever a case's expected value depends on a rule you are *inferring* rather than one you were *told*, that inference is a question — ask it before coding. The human's answer is the independent **correctness oracle**: the agent cannot verify "did we build the *right* thing" against its own understanding — it wrote the code and the test from one mental model, so they agree *by construction, not by verification*.
 3. **The cases are the spec that constrains implementation.** Build to satisfy the cases; realize them as the project's unit tests.
 4. **Run. A failing test is a forced reconciliation (the trichotomy):** either the **code** is wrong, or the **test/case is wrong (our understanding was wrong)**. Fix the wrong one. If the case was wrong, **revise it with a one-line reason** — never edit a test just to make it green; that re-buries the bug.
-5. **Report, don't self-certify.** Run the tests with fresh evidence (per [`../workflows/task-closure.md`](../workflows/task-closure.md) § Fresh verification evidence — no "passes" without running it *this message*), then **lay out for the user**: which cases pass/fail, whether the whole suite is still green (new work shouldn't break the regression net), what is still uncertain, and what is subjective (→ their sign-off). The **user makes the final acceptance call** — the agent's job is faithful generation + honest reporting, not being the arbiter of "right".
+5. **Report, don't self-certify.** Run the tests with fresh evidence, then **lay out for the user**: which cases pass/fail, whether the regression set is still green, what is uncertain, and what is subjective. The **user makes the final acceptance call** — the agent's job is faithful generation + honest reporting, not being the arbiter of "right".
 
 ## The bugfix loop (red → green)
 
-For bug fixes under this discipline, the generic reproduce-first step in [`../workflows/fix-bug.md`](../workflows/fix-bug.md) (step 3: any repeatable check) upgrades to **write the acceptance test first**:
+For bug fixes under this discipline, the project's generic reproduce-first step upgrades to **write the acceptance test first**:
 
 1. Express the reported bug as an automated test (or repeatable script where a test has no seam) *before* any fix.
 2. **Run it red.** If it passes, the reproduction or the acceptance understanding is wrong — fix that first, not the code.

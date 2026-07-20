@@ -1,94 +1,114 @@
 #!/usr/bin/env bash
-# audit-orphans.sh — Surface content-tier + workflow files with zero inbound links.
-#
-# Audited dirs = rules/ references/ architecture/ gotchas/ conventions/ workflows/.
-# An orphan is a file in one of those whose relative path does not appear
-# (outside fenced code blocks) in any workflow / tier file / routing.yaml /
-# top-level shell. Either the activation pointer was never added, or the
-# routing that used to mention it was removed and the file lingered.
-#
-# Heuristic only: prose mentions of the concept without the path do not count.
-# routing.yaml IS scanned, so a file referenced only from a task's
-# required_reads counts as reachable (it is on a route). Whether that route
-# can actually match (trigger quality) is route-health.sh's job, not this one's.
-#
-# Usage (run from the skill root, the dir holding the tier directories):
-#   bash audit-orphans.sh
-#
-# Exit code: 0 = no orphans, 1 = one or more orphans found.
-
+# Surface content-tier + workflow files with zero inbound links.
+# Single-root compatibility:
+#   bash scripts/audit-orphans.sh
+# Two-root usage (run once from each local root):
+#   bash scripts/audit-orphans.sh --namespace skill --routing /path/to/routing.yaml
+#   bash /path/to/scripts/audit-orphans.sh --namespace code --routing /path/to/routing.yaml
+# `--namespace` prevents `code:gotchas/x.md` from making a same-path
+# `skill:gotchas/x.md` look reachable (and vice versa). Local unprefixed links
+# still count inside the root being audited.
 set -euo pipefail
-
 ROOT="$PWD"
+ROUTING="$ROOT/routing.yaml"
+NAMESPACE=""
 
-# Content tiers: audited for orphan status AND scanned as inbound-link sources.
-# Each is existence-guarded below, so a skill that uses only some tiers is fine.
-TIER_DIRS=(rules references architecture gotchas conventions)
+usage() {
+  echo "Usage: bash audit-orphans.sh [--namespace skill|code] [--routing <path>]" >&2
+}
 
-# Workflows are ALSO audited for orphan status: a workflow reachable from no
-# route (routing.yaml workflow:/required_reads), no other workflow, no rule,
-# SKILL.md, or shell is dead weight — routed OR cross-referenced = reachable.
-# (.example files are skipped by the *.md glob; README.md/index.md are skipped.)
-AUDIT_DIRS=("${TIER_DIRS[@]}" workflows)
-
-SCAN_DIRS=("$ROOT/workflows")
-for t in "${TIER_DIRS[@]}"; do SCAN_DIRS+=("$ROOT/$t"); done
-
-SCAN_FILES=()
-for f in "$ROOT"/*.md; do
-  [[ -f "$f" ]] && SCAN_FILES+=("$f")
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --namespace)
+      [[ $# -ge 2 ]] || { usage; exit 2; }
+      NAMESPACE="$2"; shift 2 ;;
+    --routing)
+      [[ $# -ge 2 ]] || { usage; exit 2; }
+      ROUTING="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage; exit 2 ;;
+  esac
 done
-# routing.yaml: a file in a task's required_reads is on a route → reachable.
-[[ -f "$ROOT/routing.yaml" ]] && SCAN_FILES+=("$ROOT/routing.yaml")
-# Nested under skills/<name>/? Also scan the parent harness shells.
+
+if [[ -z "$NAMESPACE" ]]; then
+  if [[ -f "$ROUTING" ]] && grep -q '^path_resolution:' "$ROUTING"; then
+    NAMESPACE="skill"
+  else
+    NAMESPACE="single"
+  fi
+fi
+case "$NAMESPACE" in single|skill|code) ;; *) usage; exit 2 ;; esac
+if [[ "$NAMESPACE" != "single" && ! -f "$ROUTING" ]]; then
+  echo "audit-orphans: two-root audit requires --routing <path>" >&2
+  exit 2
+fi
+
+TIER_DIRS=(rules references architecture gotchas conventions)
+AUDIT_DIRS=("${TIER_DIRS[@]}" workflows)
+LOCAL_SOURCES=()
+for dir in workflows "${TIER_DIRS[@]}"; do
+  for file in "$ROOT/$dir"/*.md; do [[ -f "$file" ]] && LOCAL_SOURCES+=("$file"); done
+done
+for file in "$ROOT"/*.md; do [[ -f "$file" ]] && LOCAL_SOURCES+=("$file"); done
 if [[ -f "$ROOT/../../AGENTS.md" || -f "$ROOT/../../CLAUDE.md" ]]; then
-  for s in AGENTS.md CLAUDE.md CODEX.md GEMINI.md; do
-    [[ -f "$ROOT/../../$s" ]] && SCAN_FILES+=("$ROOT/../../$s")
+  for shell in AGENTS.md CLAUDE.md CODEX.md GEMINI.md; do
+    [[ -f "$ROOT/../../$shell" ]] && LOCAL_SOURCES+=("$ROOT/../../$shell")
   done
 fi
 
-strip_fences() { awk 'BEGIN{f=0} /^```/ {f=1-f; next} !f' "$1"; }
+TMP_DIR="$(mktemp -d)"
+trap 'rm -rf "$TMP_DIR"' EXIT
+NORMALIZED_SOURCES=()
+SOURCE_ORIGINS=()
 
-mentions() {
-  [[ -f "$2" ]] || return 1
-  strip_fences "$2" | grep -qF "$1"
+normalize_local() {
+  awk 'BEGIN{f=0} /^```/ {f=1-f; next} !f' "$1" |
+    case "$NAMESPACE" in
+      skill) sed -E 's#code:(rules|references|architecture|gotchas|conventions|workflows)/[A-Za-z0-9._/-]+\.md##g' ;;
+      code) sed -E 's#skill:(rules|references|architecture|gotchas|conventions|workflows)/[A-Za-z0-9._/-]+\.md##g' ;;
+      single) sed -E 's#(skill|code):(rules|references|architecture|gotchas|conventions|workflows)/[A-Za-z0-9._/-]+\.md##g' ;;
+    esac
 }
 
-# $2 = the string to search for. Tiers pass the full rel path (precise); workflows
-# pass the bare basename, because sibling workflows cross-link same-dir style
-# ([x](task-closure.md)) AND routing/full-path refs (skill:workflows/task-closure.md)
-# both contain the basename — so basename catches both, full-path would miss the former.
-count_inbound() {
-  local rel="$1" abs="$ROOT/$1" match="${2:-$1}" count=0 dir f
-  for dir in "${SCAN_DIRS[@]}"; do
-    [[ -d "$dir" ]] || continue
-    for f in "$dir"/*.md; do
-      [[ -f "$f" && "$f" != "$abs" ]] || continue
-      mentions "$match" "$f" 2>/dev/null && count=$((count+1))
-    done
+i=0
+for file in "${LOCAL_SOURCES[@]:-}"; do
+  [[ -n "$file" && -f "$file" ]] || continue
+  normalized="$TMP_DIR/$i"
+  normalize_local "$file" > "$normalized"
+  SOURCE_ORIGINS+=("$file")
+  NORMALIZED_SOURCES+=("$normalized")
+  i=$((i+1))
+done
+
+routing_mentions() {
+  local rel="$1" token
+  [[ -f "$ROUTING" ]] || return 1
+  if [[ "$NAMESPACE" == "single" ]]; then token="$rel"; else token="$NAMESPACE:$rel"; fi
+  grep -vE '^[[:space:]]*#' "$ROUTING" | grep -qF "$token"
+}
+
+has_inbound() {
+  local rel="$1" match="$2" absolute="$ROOT/$1" idx
+  routing_mentions "$rel" && return 0
+  for ((idx=0; idx<${#NORMALIZED_SOURCES[@]}; idx++)); do
+    [[ "${SOURCE_ORIGINS[$idx]}" == "$absolute" ]] && continue
+    grep -qF "$match" "${NORMALIZED_SOURCES[$idx]}" && return 0
   done
-  for f in "${SCAN_FILES[@]:-}"; do
-    [[ -n "$f" && -f "$f" && "$f" != "$abs" ]] || continue
-    mentions "$match" "$f" 2>/dev/null && count=$((count+1))
-  done
-  echo "$count"
+  return 1
 }
 
 ORPHANS=0
 TOTAL=0
-echo "Orphan scan — content-tier + workflow files with zero inbound links"
-echo "==================================================================="
-for dir_name in "${AUDIT_DIRS[@]}"; do
-  dir_abs="$ROOT/$dir_name"
-  [[ -d "$dir_abs" ]] || continue
-  for f in "$dir_abs"/*.md; do
-    [[ -f "$f" ]] || continue
-    case "$(basename "$f")" in README.md|index.md) continue ;; esac
+echo "Orphan scan — namespace=$NAMESPACE, root=$ROOT"
+echo "============================================================"
+for dir in "${AUDIT_DIRS[@]}"; do
+  for file in "$ROOT/$dir"/*.md; do
+    [[ -f "$file" ]] || continue
+    case "$(basename "$file")" in README.md|index.md) continue ;; esac
     TOTAL=$((TOTAL+1))
-    rel="${f#$ROOT/}"
-    # workflows cross-link by bare same-dir filename; tiers use the full rel path
-    if [[ "$dir_name" == workflows ]]; then match="$(basename "$f")"; else match="$rel"; fi
-    if [[ "$(count_inbound "$rel" "$match")" -eq 0 ]]; then
+    rel="${file#$ROOT/}"
+    if [[ "$dir" == workflows ]]; then match="$(basename "$file")"; else match="$rel"; fi
+    if ! has_inbound "$rel" "$match"; then
       echo "ORPHAN  $rel"
       ORPHANS=$((ORPHANS+1))
     fi
@@ -97,8 +117,4 @@ done
 
 echo ""
 echo "Summary: $ORPHANS orphan(s) / $TOTAL file(s)"
-if [[ "$ORPHANS" -gt 0 ]]; then
-  echo "For each orphan: add an activation pointer (workflow / routing.yaml / SKILL.md route) or delete it."
-  exit 1
-fi
-exit 0
+[[ "$ORPHANS" -eq 0 ]] || exit 1

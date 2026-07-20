@@ -36,7 +36,7 @@ A forked downstream should still scan upstream's `UPSTREAM-CHANGES.md` on a cade
 4. **Classify files before editing**
    - Upstream-only: `$tmp/upstream/UPSTREAM-CHANGES.md`. Read during refresh; never port into downstream.
    - Project-owned: `rules/project-rules.md`, `rules/coding-standards.md`, `references/gotchas.md`, project-specific workflows, `SKILL.md` prose, `routing.yaml` task examples, and `.upstream-sync` (this project's recorded sync point — maintained locally, never ported from upstream). Preserve; merge manually if needed.
-   - Mechanism-owned: `scripts/*.sh`, `scripts/_parse_conformance.py`, `conformance.yaml`, universal hooks, protocol-blocks, reusable workflow scaffolding. Compare and port useful upstream changes; the vendor-class subset (scripts + protocol-blocks + `sync-manifest.yaml`) is synced mechanically in step 5. The local `conformance.yaml` is a **snapshot from initial scaffold** — overwrite it from upstream after a successful refresh; otherwise it silently re-validates against the old contract.
+   - Mechanism-owned: `scripts/*.sh`, `conformance.yaml`, universal hooks, protocol-blocks, reusable workflow scaffolding. Compare and port useful upstream changes; the vendor-class subset (scripts + protocol-blocks + `sync-manifest.yaml`) is synced mechanically in step 5. The local `conformance.yaml` is a **snapshot from initial scaffold** — overwrite it from upstream after a successful refresh; otherwise it silently re-validates against the old contract.
    - Generated: Always Read, Common Tasks, thin-shell bootstraps. Regenerate only.
 5. **Sync vendor files mechanically** — run `bash "skills/$NAME/scripts/sync-vendor.sh" "$NAME" --upstream "$tmp/upstream"` (dry-run), review the report, then re-run with `--apply`. NEW manifest files are copied in, files matching your synced-sha base are updated, LOCAL-EDIT files are listed and left untouched — reconcile those by hand (port your edit upstream, or keep the fork deliberately and record why in project rules). First refresh on a pre-manifest skill: copy `sync-manifest.yaml` + `scripts/sync-vendor.sh` from `$tmp/upstream/templates/skill/` first, then run it. **Non-vendor** new mechanism files (workflows, hooks with no local counterpart) are still scanned under `$tmp/upstream/templates/` and copied whole per Hard Rule #4; they continue through steps 6–7.
 6. **Compare as the agent (non-vendor files)** — for each remaining candidate upstream file (workflows, rules, references, conformance semantics), inspect local and upstream versions (`git diff --no-index` is fine). If local contains project-specific edits, keep them and cherry-pick upstream improvements into the local file.
@@ -48,8 +48,10 @@ A forked downstream should still scan upstream's `UPSTREAM-CHANGES.md` on a cade
    bash "skills/$NAME/scripts/sync-routing.sh" "$NAME" --check
    bash "skills/$NAME/scripts/smoke-test.sh" "$NAME"
    (cd "skills/$NAME" && bash scripts/audit-orphans.sh)
+   (cd "skills/$NAME" && bash scripts/route-reachability.sh)
    bash "skills/$NAME/scripts/route-health.sh" "$NAME"
    ```
+   For a two-root skill, repeat the orphan and route-reachability checks from each root with `--namespace skill|code --routing <skill-root>/routing.yaml`; do not let identical `skill:` and `code:` paths satisfy each other.
 10. **Conformance check — use upstream's manifest, not local** — the local `skills/$NAME/conformance.yaml` is a snapshot from the initial scaffold. If upstream added new mandatory sections (e.g. a new Gate, Task Closure phrase, or workflow), the local manifest doesn't know about them and would falsely report green. Always validate against the freshly cloned upstream contract:
     ```bash
     bash "skills/$NAME/scripts/check-version-conformance.sh" "skills/$NAME" \

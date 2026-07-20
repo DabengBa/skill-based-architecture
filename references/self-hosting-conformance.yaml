@@ -79,15 +79,13 @@ required_sections:
 # Files required to exist (presence-only check). Drift here means a
 # self-hosting structural piece was deleted without updating routing.
 required_files:
-  - path: SKILL.md
-  - path: WORKFLOW.md
-  - path: TEMPLATES-GUIDE.md
   - path: README.md
   - path: REFERENCE.md
   - path: EXAMPLES.md
-  - path: workflows/full-migration.md
   - path: workflows/upgrade-downstream.md
   - path: references/self-hosting-routing.yaml
   - path: references/business-global-model.md
+  - path: references/permission-model.md
+  - path: references/tests-as-spec.md
   - path: templates/skill/conformance.yaml
   - path: templates/skill/scripts/check-version-conformance.sh

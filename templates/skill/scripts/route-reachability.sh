@@ -1,64 +1,97 @@
 #!/usr/bin/env bash
-# route-reachability.sh — every active-tier file must be ROUTE-reachable.
+# Verify that active-tier and workflow files are reachable from a task route.
 #
-# Complements audit-orphans.sh. audit-orphans checks LINK-reachability: the
-# file's path is mentioned *somewhere* (incl. the SKILL.md manifest), so the
-# file is not dead. That is necessary but NOT sufficient. This script checks
-# ROUTE-reachability: starting from routing.yaml (always_read + every task's
-# required_reads + route text) and following hub-navigation edges (a reachable
-# file that lists another file's skill-root-relative path), can the agent
-# actually arrive at the file while doing a task?
-#
-# A file that is link-reachable (e.g. listed only in the SKILL.md manifest) but
-# on no route is "stored, not activated" — you split it out for cohesion, but
-# the task that needs it never reads it. That is pure waste, and the failure
-# this check exists to catch.
-#
-# Active tiers (MUST be route-reachable): architecture/ conventions/ gotchas/
-# rules/. Lookup tiers (references/, docs/) are read on demand and exempt;
-# workflows/ are routed by each task's `workflow:` field + covered by
-# check-cross-references.sh.
-#
-# Route a leaf directly when the task signal already identifies it. Add a routed
-# index.md only when multiple independent leaves exist and task signals need the
-# index to choose the next read. A passive list, or an index whose callers always
-# read every leaf, is not useful activation.
-#
-# Usage (run from the skill root, the dir holding the tier directories):
-#   bash route-reachability.sh
-#
-# Exit code: 0 = all active-tier files route-reachable, 1 = one or more not.
+# Single-root compatibility:
+#   bash scripts/route-reachability.sh
+# Two-root usage (run once from each local root):
+#   bash scripts/route-reachability.sh --namespace skill --routing /path/to/routing.yaml
+#   bash /path/to/scripts/route-reachability.sh --namespace code --routing /path/to/routing.yaml
 
 set -uo pipefail
 
 ROOT="$PWD"
 ROUTING="$ROOT/routing.yaml"
+NAMESPACE=""
 
-# Tiers that MUST be route-reachable.
-ACTIVE_DIRS=(architecture conventions gotchas rules)
-# Path shape used both for seeding and for hub-navigation edges (all tiers, so
-# the graph can traverse through references/ and workflows/ to reach an active file).
-PATH_RE='(architecture|conventions|gotchas|rules|references|workflows)/[A-Za-z0-9._/-]+\.md'
+usage() {
+  echo "Usage: bash route-reachability.sh [--namespace skill|code] [--routing <path>]" >&2
+}
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --namespace)
+      [[ $# -ge 2 ]] || { usage; exit 2; }
+      NAMESPACE="$2"; shift 2 ;;
+    --routing)
+      [[ $# -ge 2 ]] || { usage; exit 2; }
+      ROUTING="$2"; shift 2 ;;
+    -h|--help) usage; exit 0 ;;
+    *) usage; exit 2 ;;
+  esac
+done
+
+if [[ -z "$NAMESPACE" ]]; then
+  if [[ -f "$ROUTING" ]] && grep -q '^path_resolution:' "$ROUTING"; then
+    NAMESPACE="skill"
+  else
+    NAMESPACE="single"
+  fi
+fi
+case "$NAMESPACE" in single|skill|code) ;; *) usage; exit 2 ;; esac
 
 if [[ ! -f "$ROUTING" ]]; then
-  echo "route-reachability: no routing.yaml at $ROOT — nothing to check"
-  exit 0
+  if [[ "$NAMESPACE" == "single" ]]; then
+    echo "route-reachability: no routing.yaml at $ROOT — nothing to check"
+    exit 0
+  fi
+  echo "route-reachability: two-root audit requires --routing <path>" >&2
+  exit 2
 fi
 
+# Workflows are active procedures, not lookup material: a workflow referenced
+# only by another dead workflow is not route-reachable and must fail here.
+ACTIVE_DIRS=(architecture conventions gotchas rules workflows)
+TOKEN_RE='(skill:|code:)?(architecture|conventions|gotchas|rules|references|workflows)/[A-Za-z0-9._/-]+\.md'
+
 strip_fences() { awk 'BEGIN{f=0} /^```/ {f=1-f; next} !f' "$1"; }
-extract_paths() { grep -oE "$PATH_RE" | sort -u; }
 
-# Seed: content paths the routing.yaml actually routes to (comments excluded so a
-# path mentioned only in a comment does not falsely count as routed).
-reachable="$(grep -vE '^[[:space:]]*#' "$ROUTING" | extract_paths)"
+normalize_tokens() {
+  local mode="$1" token prefix rel
+  grep -oE "$TOKEN_RE" 2>/dev/null | sort -u | while IFS= read -r token; do
+    [[ -n "$token" ]] || continue
+    prefix=""
+    rel="$token"
+    case "$token" in
+      skill:*) prefix="skill"; rel="${token#skill:}" ;;
+      code:*) prefix="code"; rel="${token#code:}" ;;
+    esac
+    if [[ "$NAMESPACE" == "single" ]]; then
+      [[ -z "$prefix" ]] && printf '%s\n' "$rel"
+    elif [[ "$mode" == "routing" ]]; then
+      [[ "$prefix" == "$NAMESPACE" ]] && printf '%s\n' "$rel"
+    elif [[ -z "$prefix" || "$prefix" == "$NAMESPACE" ]]; then
+      printf '%s\n' "$rel"
+    fi
+  done
+}
 
-# Fixpoint: expand through reachable files — hub lists its spokes, a routed file
-# points at another. strip_fences so example paths inside code blocks don't leak in.
+# A two-root route must use an explicit prefix; local hub edges may remain
+# unprefixed because they resolve inside the root currently being checked.
+reachable="$(grep -vE '^[[:space:]]*#' "$ROUTING" | normalize_tokens routing)"
+
 while :; do
   add=""
   while IFS= read -r rel; do
     [[ -n "$rel" && -f "$ROOT/$rel" ]] || continue
-    add+="$(strip_fences "$ROOT/$rel" | extract_paths)"$'\n'
+    add+="$(strip_fences "$ROOT/$rel" | normalize_tokens local)"$'\n'
+    # Same-directory workflow links are commonly written as `(task-closure.md)`.
+    # Resolve those only while traversing an already-reachable workflow.
+    if [[ "$rel" == workflows/* ]]; then
+      while IFS= read -r base; do
+        [[ -n "$base" && -f "$ROOT/workflows/$base" ]] || continue
+        add+="workflows/$base"$'\n'
+      done < <(strip_fences "$ROOT/$rel" | grep -oE '[A-Za-z0-9._-]+\.md' | sort -u || true)
+    fi
   done <<< "$reachable"
   next="$(printf '%s\n%s\n' "$reachable" "$add" | grep -vE '^[[:space:]]*$' | sort -u)"
   [[ "$next" == "$reachable" ]] && break
@@ -67,15 +100,14 @@ done
 
 UNREACHED=0
 TOTAL=0
-echo "Route-reachability — active-tier files reachable from routing.yaml + hubs"
-echo "==================================================================="
-for d in "${ACTIVE_DIRS[@]}"; do
-  [[ -d "$ROOT/$d" ]] || continue
-  for f in "$ROOT/$d"/*.md; do
-    [[ -f "$f" ]] || continue
-    case "$(basename "$f")" in README.md) continue ;; esac
+echo "Route-reachability — namespace=$NAMESPACE, root=$ROOT"
+echo "============================================================"
+for dir in "${ACTIVE_DIRS[@]}"; do
+  for file in "$ROOT/$dir"/*.md; do
+    [[ -f "$file" ]] || continue
+    case "$(basename "$file")" in README.md) continue ;; esac
     TOTAL=$((TOTAL+1))
-    rel="${f#$ROOT/}"
+    rel="${file#$ROOT/}"
     if ! grep -qxF "$rel" <<< "$reachable"; then
       echo "UNREACHED  $rel"
       UNREACHED=$((UNREACHED+1))
@@ -84,9 +116,5 @@ for d in "${ACTIVE_DIRS[@]}"; do
 done
 
 echo ""
-echo "Summary: $UNREACHED unreachable / $TOTAL active-tier file(s)"
-if [[ "$UNREACHED" -gt 0 ]]; then
-  echo "For each: route the known leaf directly, OR list it as a skill-root-relative inline-code path in a routed selecting index/reference. Do not create a passive or single-file index. See references/skeleton-flesh-split.md § 4."
-  exit 1
-fi
-exit 0
+echo "Summary: $UNREACHED unreachable / $TOTAL active file(s)"
+[[ "$UNREACHED" -eq 0 ]] || exit 1

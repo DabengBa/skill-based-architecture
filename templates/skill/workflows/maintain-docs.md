@@ -174,6 +174,16 @@ This is a judgment gate, not a request for a semantic-lint script. Save the comp
 
 Run after any split, merge, rename, or deletion of files under `skills/{{NAME}}/`:
 
+```bash
+bash skills/{{NAME}}/scripts/sync-routing.sh {{NAME}} --check
+bash skills/{{NAME}}/scripts/smoke-test.sh {{NAME}} --phase 8
+(cd skills/{{NAME}} && bash scripts/audit-orphans.sh)
+(cd skills/{{NAME}} && bash scripts/route-reachability.sh)
+bash skills/{{NAME}}/scripts/route-health.sh {{NAME}}
+```
+
+For a two-root skill, run the last two structural checks once from each root with `--namespace skill|code --routing <skill-root>/routing.yaml`; namespace identity is part of reachability.
+
 - [ ] All links in SKILL.md's Always Read and generated Common Tasks are valid
 - [ ] All `workflows/*.md` "Read First" sections reference existing files
 - [ ] Cross-references between rules/references files point to valid targets

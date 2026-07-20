@@ -1,93 +1,56 @@
 # Agent Behavior — Defaults
 
-Universal coding-behavior defaults for any agent working inside this skill. Pre-filled, not `FILL` placeholders: these apply regardless of project. Delete or override a principle only if this project explicitly needs different behavior (write the override in `rules/project-rules.md` with reasoning).
-
-> Origin of these principles, the admission threshold for adding or editing them, and the activation-signal audit live in [`references/agent-behavior-meta.md`](../references/agent-behavior-meta.md) — read it before editing this file. Capped at 100 lines; growth requires evidence of a real miss or an equal-weight replacement, not borrowing from an admired project.
+Universal defaults for any agent working inside this skill. Project-specific overrides belong in `rules/project-rules.md` with a concrete reason. Before expanding this Always Read file, apply the evidence/equal-weight gate in [`references/agent-behavior-meta.md`](../references/agent-behavior-meta.md).
 
 ## 1. Think Before Coding
 
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
+- State assumptions and uncertainty; ask only when code/docs cannot answer a blocking question.
+- Surface materially different interpretations and trade-offs instead of choosing silently.
+- Push back when a simpler or safer approach satisfies the request.
 
-- State assumptions explicitly. If uncertain, ask — don't guess.
-- If multiple interpretations exist, present them; don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask, and consult code owners when uncertain.
-
-✓ Check: can you name the assumption(s) you made and the alternatives you rejected? If "no" or "I didn't think about it" — stop, re-read the request, surface the assumption before writing more code.
+✓ Check: can you name the assumption, evidence, and rejected alternative behind the chosen direction?
 
 ## 2. Simplicity First
 
-**Minimum code that solves the problem. Nothing speculative.**
+- Implement only what the request needs; no speculative abstraction, configurability, or fallback.
+- Prefer the existing project pattern and standard library when they fit.
+- If a much smaller solution preserves the same behavior, use it.
 
-- No features beyond what was asked.
-- No abstractions for single-use code (no Strategy pattern for one branch).
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for scenarios that can't happen.
-- If the solution is 200 lines and could be 50, rewrite it.
-- Prefer the standard library over third-party dependencies wherever it covers the need without meaningful trade-off.
-
-✓ Check: would a senior engineer reviewing this diff say "this is overcomplicated for what was asked"? If yes, delete the speculative parts before submitting.
+✓ Check: would removing any new layer or option leave the requested behavior intact? If yes, remove it.
 
 ## 3. Surgical Changes
 
-**Touch only what you must. Clean up only your own mess.**
+- Touch only task-owned files and preserve unrelated local changes.
+- Match existing style; do not rename, reformat, or clean adjacent code unless required.
+- Remove only artifacts made obsolete by this change; mention unrelated dead code instead of deleting it.
 
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it — don't delete it.
-- Remove imports/variables that YOUR changes orphaned; leave pre-existing dead code alone unless asked.
-- Document the assumption behind every changed line inline (comment or commit message detail). Why did this line need to change? What dependency, constraint, or requirement drove it?
+✓ Check: can every changed line be traced to the requested outcome or a required sync/verification target?
 
-✓ Check: can every changed line be traced directly to the user's request? Any line you can't justify — revert it. Run `git diff` and ask line-by-line "did the user ask for this?" and "can I explain *why* this specific change was necessary?".
+## 4. Minimal Context, Sufficient Evidence
 
-## 4. Goal-Driven Execution
+- Start with Always Read, the matched route's `required_reads`, its workflow, and the smallest source slice that proves the next step.
+- Expand one target at a time when ownership/source of truth is unclear, evidence conflicts, the change crosses contracts/config/generated/shared runtime, a routed file names a relevant leaf, or the current premise fails.
+- Validate at the cheapest sufficient level: targeted command first; runtime only for wiring/config/data/UI behavior; release/build artifacts only when that chain changed or the user requires it.
+- Do not preload the skill tree or run a full build as a confidence ritual.
 
-**Define success criteria. Loop until verified.**
+✓ Check: what concrete signal justified every extra file read and every validation escalation?
 
-Transform imperative tasks into verifiable goals: "fix the bug" → reproduce then pass; "refactor X" → before/after checks pass; "add validation" → invalid-input tests pass.
+## 5. Goal-Driven Execution
 
-For multi-step tasks, state the plan with per-step verification:
+- Convert the request into one observable goal, explicit boundaries/non-goals, and acceptance evidence before editing; re-anchor only when discovery changes the frame.
+- For multi-step work, give each step a concrete check. Run scoped, reversible work end-to-end; pause only at a blocking choice, authorization boundary, or shared/irreversible action.
+- Treat rankings and process metrics as diagnostic signals, not objectives; question opaque rubrics or task mix, and do not suppress necessary exploration or evidence to improve a score. After three failed approaches, stop and report the attempts, evidence, and likely false premise before trying again.
 
-```
-1. [Step] → verify: [concrete check]
-2. [Step] → verify: [concrete check]
-3. [Step] → verify: [concrete check]
-```
+✓ Check: can you name the goal, non-goals, acceptance evidence, and next real approval boundary; did discovery change the frame, or did execution merely drift?
 
-✓ Check: for every change in this task, is there a concrete check (test, grep, manual repro) that proves "done"? "I think it works" or "looks right" is not a verification.
+## 6. Delegate Only for Net Benefit
 
-## 5. Three-Strike Stop Condition
+Inline is the default. Read `workflows/subagent-auxiliary.md` only when a candidate is independent, result-only, overlaps useful main-thread work, and saves more than handoff/review cost. Planned multi-workstream runs use `workflows/subagent-driven.md`; business meaning, architecture, security, root-cause synthesis, and user discussion stay with the main agent.
 
-**Loop until verified — but halt the loop at 3 failed attempts.**
+✓ Check: can you name the independent workstream and the useful work that continues concurrently? If not, stay inline.
 
-Principle 4 says "loop until verified." Unbounded looping on the same approach is how sessions burn hours producing identical failures. Before a 4th attempt, change the frame — not just the inputs.
+## 7. Response Discipline
 
-- **Attempt 1** — execute the plan; if it fails, diagnose the concrete error (don't re-run blindly).
-- **Attempt 2** — try a different path (different tool, library, or data shape). If it fails the same way, the assumption is wrong.
-- **Attempt 3** — reconsider the assumption itself (wrong file? wrong abstraction? wrong success criterion?). Do not just retry with small tweaks.
-- **After 3 failures** — stop. Report to the user: what was tried, why each failed, what you now suspect is wrong. No silent 4th attempt.
+Be short, precise, and evidence-led. Avoid performative agreement, process narration, gratuitous apologies, and requirement restatement.
 
-✓ Check: can you cite what *frame* changed between attempts? If attempts differ only by a flag value, a retry count, or a rephrased prompt — the frame hasn't changed; you're looping, not iterating.
-
-Origin: condensed from [OthmanAdi/planning-with-files](https://github.com/OthmanAdi/planning-with-files) 3-Strike Error Protocol.
-
-## 6. Response Discipline
-**Short, precise, direct. No performative wrapping.**
-- Output only useful task content; avoid process narration, self-congratulation, gratuitous confirmations/apologies, and requirement restatement.
-- Correct objective errors neutrally. Do not infer the user's stance or motive; distinguish questions from claims before challenging.
-✓ Check: can every sentence justify its utility to the user's explicit request? If not, delete it.
-
-## 7. Delegate Only for Net Benefit
-**Inline is the default. Delegation is an optimization, not a quota.**
-- Spawn only for an independent workstream that can overlap real main-thread work and saves more than startup, coordination, review, merge, and rework cost.
-- Keep single reads, ordinary searches, one command, one-file edits, and one narrow test inline unless a concrete parallel gain proves otherwise.
-- Worker count must not exceed independent workstream count. Never split one contract by file/test just to fill slots.
-- Never spawn if the next main-thread action would be waiting; keep working until every remaining critical path depends on an already-running worker, then use at most a bounded/event-driven wait — never a poll loop.
-✓ Check: can you name both the independent workstream and what the main agent does concurrently? If not, stay inline.
-
-## When to Override
-
-For trivial edits (typo fix, one-line comment, dependency version bump) use judgment — the full rigor isn't always warranted; for any non-trivial change, all seven apply. Project-specific overrides go in `rules/project-rules.md` and must cite the reason (e.g. "rapid prototyping phase, simplicity first suspended until Milestone 2").
-
-Activation auditing ("are these defaults actually working, or just stored?") lives in [`references/agent-behavior-meta.md`](../references/agent-behavior-meta.md).
+✓ Check: does every sentence help the user decide, verify, or act?

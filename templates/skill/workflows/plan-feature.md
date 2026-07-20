@@ -53,7 +53,7 @@ For two or more dependent tasks, declare an executable interface per task:
 - **Acceptance**: literal command or observable behavior
 ```
 
-Files+Produces can map to Outputs; shared Files+Consumes to Inputs; forbidden paths to Forbidden Zones; Acceptance to Acceptance Criteria. This is a possible Mode 2 handoff, not automatic delegation: task count is not worker count, and only independent, mechanically reviewable, net-positive workstreams dispatch. Use [`tests-as-spec.md`](../references/tests-as-spec.md) only when the project treats plan cases as the specification.
+Files+Produces can map to Outputs; shared Files+Consumes to Inputs; forbidden paths to Forbidden Zones; Acceptance to Acceptance Criteria. This is a possible Mode 2 handoff, not automatic delegation: task count is not worker count, and only independent, mechanically reviewable, net-positive workstreams dispatch. Projects that explicitly adopt the upstream Tests-as-Spec guide may add their own routed test-case contract here.
 
 ## Complex Steps
 

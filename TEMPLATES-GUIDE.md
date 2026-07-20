@@ -74,7 +74,7 @@ For the protocol-level concepts (recording threshold, where to record, generaliz
 
 Reusable reinforcement blocks live in [`templates/skill/protocol-blocks/`](templates/skill/protocol-blocks/) and are copied inside each downstream skill — workflows link them without user-visible setup (`reboot-check.md`, `ambiguous-request-gate.md`, `subagent-contract.md`). Task Closure Rationalizations and Red Flags live only in `workflows/task-closure.md`.
 
-Route intake uses [`templates/skill/references/minimal-sufficient-context.md`](templates/skill/references/minimal-sufficient-context.md) to keep per-task context and validation proportional: workflows keep their invariant core, while extra references/runtime/release evidence are added only when concrete risk signals appear.
+Route intake uses the Always Read [`agent-behavior.md`](templates/skill/rules/agent-behavior.md) context/evidence rule: start from the matched route and expand only on concrete ambiguity or risk signals. Workflows keep only their task-specific decision steps.
 
 ## Workflow Templates
 
@@ -82,7 +82,7 @@ Real workflow templates live under [`templates/skill/workflows/`](templates/skil
 
 | Template | Purpose |
 |---|---|
-| [`task-closure.md`](templates/skill/workflows/task-closure.md) | The cross-cutting closure gate every behavior-changing task runs — Task Closure Protocol (Trigger Policy + steps), AAR scan, Rationalizations Table, Red Flags. Every other workflow's closure step references this file. |
+| [`task-closure.md`](templates/skill/workflows/task-closure.md) | Completion-time Trigger Policy, fresh fitted evidence, AAR, and conditional integrity/recording handoffs. |
 | [`update-rules.md`](templates/skill/workflows/update-rules.md) | Recording mechanics: threshold, fidelity, five-way reconciliation, activation, destination durability, sync, and retirement. |
 | [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with design-or-defect classification, root-cause/reproduction gates, impact analysis, and Task Closure. |
 | [`maintain-docs.md`](templates/skill/workflows/maintain-docs.md) | Independent-load-reason and semantic before/after audits, then split/merge/index and link integrity. |
