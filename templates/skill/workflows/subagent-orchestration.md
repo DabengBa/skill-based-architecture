@@ -13,7 +13,7 @@ Write the full task list before dispatch. Every worker gets:
 5. **Acceptance Criteria** — literal checks the main agent can rerun.
 6. **Return Status** — exactly `DONE`, `DONE_WITH_CONCERNS`, `NEEDS_CONTEXT`, or `BLOCKED`.
 
-Reject contracts whose acceptance cannot be checked. Reuse an existing Plan breakdown instead of re-deriving it.
+Reject contracts whose acceptance cannot be checked. Reuse an existing design Plan breakdown or Native Plan step instead of re-deriving it; worker status remains local to that contract.
 
 ## 2. Dispatch
 
@@ -41,13 +41,13 @@ A failed stage triggers a fresh Net Benefit decision: correct inline when the re
 
 ## 4. Route the Return
 
-- `DONE` → Stage A + B, then merge if both pass.
+- `DONE` → Stage A + B, then merge if both pass; only the main agent may complete the owning Native Plan step.
 - `DONE_WITH_CONCERNS` → inspect concern, then Stage A + B.
 - `NEEDS_CONTEXT` → widen Inputs only if the work remains admitted.
 - `BLOCKED` → resolve or surface the real obstruction.
 - Missing status → treat as `NEEDS_CONTEXT`.
 
-After all accepted results are integrated, the **main agent** runs Task Closure once for the complete task and decides whether any reported candidate lesson passes recording gates.
+After all accepted results are integrated and their owning Native Plan steps pass the main agent's checks, the **main agent** runs Task Closure once for the complete task and decides whether any reported candidate lesson passes recording gates.
 
 ## Degraded Mode
 

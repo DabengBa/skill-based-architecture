@@ -48,6 +48,17 @@ Downstream refresh agents almost always only read the most recent 3–5 entries.
 
 The archive file has the same format and is read on demand if a downstream agent is investigating a specific historical change. `scripts/check-upstream-changes.sh` only enforces a same-diff entry in `UPSTREAM-CHANGES.md`; archived entries are out of its scope.
 
+## 2026-07-21 - Task Anchor and harness-native execution plans
+
+- Upstream commit: pending in this working tree
+- Changed areas:
+  - NEW `templates/skill/workflows/task-execution.md` — classifies Simple / Managed / Design tasks; Managed tasks establish Goal, Done When, optional material Boundaries, and a task-specific Plan using the harness's native Plan/Task surface. Anchor state is separate from presentation: natural-language alignment is the default, visible Native Plan steps are not duplicated in chat, and a complete structured brief is reserved for long, complex, scope-sensitive, confirmation-dependent, or no-native-Plan work. Before every main step, a compact Anchor Checkpoint re-centers Goal, remaining evidence, the step check, and relevant Boundaries; it repeats after correction, failed/surprising evidence, Subagent return, or interruption. The loop owns runtime progress, evidence-backed advancement, replanning, and new-message handling entirely inside the current Session, with no planning-file persistence.
+  - `agent-behavior.md`, generated Session Discipline/Auto-Triggers, and self-hosting shells activate the protocol after routing while preserving zero ceremony for one clear action/check.
+  - Fix Bug, Change Managed, Plan Feature, Subagent, and Task Closure workflows now share an explicit boundary: Workflow owns reusable domain procedure; Task Anchor owns the current outcome; Native Plan owns current step state; Closure decides completion only after Goal-level evidence.
+  - `conformance.yaml`, scenario checks, guides, README files, and `docs/task-anchor-native-plan.md` protect and explain the user-visible behavior and non-goals (no task database, fixed three-file schema, or cross-tool state sync).
+- Why it matters: routing can select the right Workflow while a long Session still drifts away from the user's current goal. A fixed labeled Anchor block can also interrupt ordinary conversation and duplicate the native Plan. Proportional presentation keeps user-visible ceremony matched to task risk, while the internal Recitation Loop keeps the full Anchor in working attention without turning the Skill into a persistent task engine.
+- Downstream refresh guidance: add `workflows/task-execution.md` as a non-vendor reusable workflow, port the Goal-Driven Execution, Recitation Loop, and shell activation lines, reconcile local Domain Workflow gates rather than replacing them, and add the Closure Entry Gate. Preserve local validation/permission boundaries and use the local harness's native Plan capability; do not introduce durable planning files, recovery scripts, or cross-Session state for this mechanism.
+
 ## 2026-07-20 - Goal contracts and risk-sized checkpoints
 
 - Upstream commit: pending in this working tree

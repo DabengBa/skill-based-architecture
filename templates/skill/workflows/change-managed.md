@@ -1,6 +1,6 @@
 # Change-Managed Workflow
 
-Use this for non-bug changes whose partial edits can drift: features, refactors, generated/copied files, shared configuration, or changes with derived targets. Inline is the default; use [`subagent-auxiliary.md`](subagent-auxiliary.md) only for one admitted auxiliary workstream and [`refactor-fanout.md`](refactor-fanout.md) only for several independent usage batches.
+Use this for non-bug changes whose partial edits can drift: features, refactors, generated/copied files, shared configuration, or changes with derived targets. For a non-Simple task, [`task-execution.md`](task-execution.md) turns these domain steps into the current Task Anchor and Native Plan; this workflow remains authoritative for their meaning and order. Use [`subagent-auxiliary.md`](subagent-auxiliary.md) only for one admitted auxiliary workstream and [`refactor-fanout.md`](refactor-fanout.md) only for several independent usage batches.
 
 ## Steps
 

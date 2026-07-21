@@ -64,6 +64,14 @@ Threshold: if this change would cause someone to guess wrong on a similar task w
 
 > The trigger table itself is a living document — when you discover a new change-to-update mapping during a real task, add it.
 
+## Task Execution Protocol
+
+Canonical source: [`templates/skill/workflows/task-execution.md`](templates/skill/workflows/task-execution.md).
+
+After routing, one clear action/check executes directly. Other tasks establish a Task Anchor (`Goal`, `Done When`, and material `Boundaries` only when present), then use the current harness's native Plan/Task surface to instantiate the matched Domain Workflow. The Anchor is runtime state, not a mandatory chat block: use short natural-language alignment by default, do not duplicate a visible Native Plan, and reserve a complete structured brief for long, complex, scope-sensitive, confirmation-dependent, or no-native-Plan work. Before each main step, an Anchor Checkpoint re-centers Goal, remaining Done When evidence, current-step output/check, and relevant Boundaries; repeat it after correction, failed/surprising evidence, Subagent return, or interruption. The runtime Plan may make Workflow steps task-specific, but cannot replace or weaken mandatory gates. No native Plan support means a session-only checklist; this protocol creates no planning files or cross-Session state.
+
+The full user-facing model and examples live in [`docs/task-anchor-native-plan.md`](docs/task-anchor-native-plan.md).
+
 ## Task Closure Protocol
 
 Canonical source: [`templates/skill/workflows/task-closure.md`](templates/skill/workflows/task-closure.md#task-closure-protocol).
@@ -82,6 +90,7 @@ Real workflow templates live under [`templates/skill/workflows/`](templates/skil
 
 | Template | Purpose |
 |---|---|
+| [`task-execution.md`](templates/skill/workflows/task-execution.md) | Task classifier, Task Anchor state + proportional presentation, per-step Recitation Loop, harness-native Plan, evidence-backed advancement, Workflow boundary, and new-message/replan gates. |
 | [`task-closure.md`](templates/skill/workflows/task-closure.md) | Completion-time Trigger Policy, fresh fitted evidence, AAR, and conditional integrity/recording handoffs. |
 | [`update-rules.md`](templates/skill/workflows/update-rules.md) | Recording mechanics: threshold, fidelity, five-way reconciliation, activation, destination durability, sync, and retirement. |
 | [`fix-bug.md`](templates/skill/workflows/fix-bug.md) | Bug-fix workflow with design-or-defect classification, root-cause/reproduction gates, impact analysis, and Task Closure. |

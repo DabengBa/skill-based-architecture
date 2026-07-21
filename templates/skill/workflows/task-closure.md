@@ -4,6 +4,12 @@ This is the completion-time gate for behavior, rule, routing, script, and struct
 
 ## Task Closure Protocol
 
+### Entry Gate
+
+Closure starts only after execution is complete. For a Simple task, the direct check and goal evidence must exist. For a Managed or Design-derived task, first run the final Anchor Checkpoint; the Task Anchor's Goal and Done When must be satisfied, every admitted Native Plan step must have passed its check, material Boundaries must remain intact, and no stale Plan branch may remain.
+
+If any condition is missing, return to [`task-execution.md`](task-execution.md); do not use Closure to finish execution work. A Plan status or worker claim is not evidence by itself.
+
 ### Trigger Policy
 
 | Task | Required closure |
@@ -19,7 +25,7 @@ This is the completion-time gate for behavior, rule, routing, script, and struct
 
 ### Closure Steps
 
-1. **Read back the contract** — restate the user outcome, matched route, acceptance evidence, and forbidden shortcuts. After a long/interrupted task, use `protocol-blocks/reboot-check.md`.
+1. **Read back the contract** — restate the Task Anchor (or Simple-task outcome), matched route, Goal-level acceptance evidence, material Boundaries, and forbidden shortcuts. After a long/interrupted task, use `protocol-blocks/reboot-check.md`.
 2. **Verify with fresh, fitted evidence**:
    - targeted command/test/typecheck first;
    - runtime/service/browser evidence only for wiring, config, permissions, serialization, data state, or UI behavior;

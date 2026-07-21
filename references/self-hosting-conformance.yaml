@@ -31,6 +31,9 @@ required_sections:
       - "every loaded file needs an independent task-time reason"
       - "Self-maintenance"
       - "Token efficiency"
+      - "Task Execution + Closure"
+      - "present it proportionally"
+      - "Anchor Checkpoint"
 
   # TEMPLATES-GUIDE.md after the 2026-05-09 slim only carries Minimal Starter,
   # Classification Guide, Sync Targets, and pointers to canonical workflow
@@ -43,7 +46,10 @@ required_sections:
       - "## Minimal Starter Template"
       - "## Classification Guide"
       - "## Sync Targets"
+      - "## Task Execution Protocol"
       - "## Task Closure Protocol"
+      - "task-execution.md"
+      - "Anchor Checkpoint"
       - "plan-large.md"
       - "subagent-auxiliary.md"
       - "subagent-driven.md"
@@ -62,13 +68,19 @@ required_sections:
   - file: workflows/full-migration.md
     must_contain:
       - "Phase 9"
+      - "Task Execution Protocol"
       - "Task Closure Protocol"
       - "After-Action Review"
 
-  # protocols.md is the cross-skill reference for the closure gate. It must
+  # protocols.md is the cross-skill reference for execution + closure. It must
   # carry the same canonical headings the templates require downstream.
   - file: references/protocols.md
     must_contain:
+      - "## Task Execution Protocol"
+      - "Workflow owns the reusable domain procedure"
+      - "not a fixed chat template"
+      - "visible native Plan owns step display"
+      - "Anchor Checkpoint"
       - "## Task Closure Protocol"
       - "## Recording Threshold"
       - "## Generalization Rule"
@@ -89,3 +101,5 @@ required_files:
   - path: references/tests-as-spec.md
   - path: templates/skill/conformance.yaml
   - path: templates/skill/scripts/check-version-conformance.sh
+  - path: templates/skill/workflows/task-execution.md
+  - path: docs/task-anchor-native-plan.md

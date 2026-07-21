@@ -13,7 +13,7 @@ templates/
 │   ├── routing.yaml            (single source for Always Read + Common Tasks + shell bootstraps)
 │   ├── sync-manifest.yaml      (vendor-class file list consumed by scripts/sync-vendor.sh)
 │   ├── rules/{project-rules,coding-standards,agent-behavior}.md
-│   ├── workflows/{plan,fix,change,review,refactor,rule/template maintenance,subagent modes,task-closure}.md
+│   ├── workflows/{task-execution,plan,fix,change,review,refactor,rule/template maintenance,subagent modes,task-closure}.md
 │   ├── workflows/invoke-skill.md.example  (copy-paste template for Pattern A composition; rename and adapt)
 │   ├── workflows/profile-business-model.md.example  (opt-in product/business model workflow; rename only after real pressure)
 │   ├── references/{agent-behavior-meta,behavior-failures,gotchas,subagent-verification}.md
@@ -65,7 +65,7 @@ Line counts trigger review, not automatic splitting. The SKILL dual budget and s
 | `skill/rules/agent-behavior.md` | ≤ 100 lines, fully pre-filled | Universal defaults; additions require evidence or equal-weight replacement per `ANTI-TEMPLATES.md` |
 | `hooks/session-start`, `hooks/workflow-state`, `hooks/agent-behavior-gate.sh` | ≤ 150 lines each | Optional hook scripts. Keep per-harness branching in-script; see `hooks/README.md` |
 | `hooks/README.md` | ≤ 150 lines | Per-hook rollout guidance; allowed larger because it documents optional installs + tuning |
-| `skill/workflows/profile-project.md`, `plan-feature.md`, `plan-large.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md`, `subagent-auxiliary.md`, `subagent-driven.md`, `subagent-orchestration.md` | ≤ 100 lines | Task-specific or conditionally selected workflows stay lean |
+| `skill/workflows/task-execution.md`, `profile-project.md`, `plan-feature.md`, `plan-large.md`, `update-upstream.md`, `fix-bug.md`, `change-managed.md`, `edit-templates.md`, `subagent-auxiliary.md`, `subagent-driven.md`, `subagent-orchestration.md` | ≤ 100 lines | Cross-cutting execution plus task-specific/conditionally selected workflows stay lean |
 | `skill/workflows/profile-business-model.md.example` | ≤ 100 lines | Optional business-model workflow; stays inactive until a downstream renames it and adds a real route |
 | `skill/workflows/update-rules.md`, `maintain-docs.md` | ≤ 250 lines | Protocol-heavy workflows allowed more room |
 | `skill/protocol-blocks/*` | ≤ 40 lines each | One idea per block |

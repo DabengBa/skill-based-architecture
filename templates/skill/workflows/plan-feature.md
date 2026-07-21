@@ -2,7 +2,7 @@
 
 > **Inline by default.** Planning evidence and decisions belong in the main context. Read [`subagent-auxiliary.md`](subagent-auxiliary.md) only for an independent, result-only research workstream with real overlap and positive Net Benefit; planned multi-workstream execution uses [`subagent-driven.md`](subagent-driven.md).
 
-Use this for planning requests. Simple plans stay inline unless the user asks for a file.
+Use this for planning requests. It resolves what should be done; it is not the runtime Native Plan. Simple plans stay inline unless the user asks for a file.
 
 ## Complexity Gate
 
@@ -41,6 +41,8 @@ Create only `prd.md` initially; add a sibling only when content has an independe
 
 Plans are active while `draft` or `executing`; on `done` or `abandoned`, freeze them as audit history. If the workflow-state hook is installed, point `.skill-workflow-state` at this workflow while planning and remove it at closure.
 
+When the user approves the design and requests implementation, pass its chosen outcome, acceptance criteria, boundaries, and task breakdown to [`task-execution.md`](task-execution.md). That protocol creates the Task Anchor and harness-native execution Plan; do not use this design dossier as live step state.
+
 ## Task Breakdown
 
 For two or more dependent tasks, declare an executable interface per task:
@@ -66,6 +68,7 @@ Files+Produces can map to Outputs; shared Files+Consumes to Inputs; forbidden pa
 7. Give implementers/reviewers the exact reading list and task interfaces. Invoke Mode 2 only for the independent subset with real overlap and positive Net Benefit; keep serial/core work with the main agent.
 8. Before `done`, distill every load-bearing conclusion through `update-rules.md`: future constraints → rules; rejected alternatives/footguns → gotchas or Common Pitfalls; current implemented macro business facts → the routed business model; pure provenance stays only in the archive. Apply fidelity, reconciliation, and activation gates; set `distilled_to:` to actual live targets.
 9. Read back requirements, acceptance, chosen approach, out-of-scope, unresolved decisions, and the plan path.
+10. If implementation starts now, instantiate the approved result through `task-execution.md`; otherwise stop at the approved design.
 
 ## Decision Completeness
 
@@ -79,6 +82,7 @@ Before declaring ready, check decisions rather than section count: external depe
 - [ ] Large tasks loaded `plan-large.md`; non-Large tasks did not
 - [ ] Required reading, trade-offs, out-of-scope, and unresolved decisions are explicit
 - [ ] Multi-file claims/cross-links were checked for drift before freeze
+- [ ] Approved implementation work was handed to Task Execution rather than tracked as mutable state in the design dossier
 - [ ] On `done`, load-bearing conclusions were faithfully reconciled into activated live targets and `distilled_to:` matches
 - [ ] `.skill-workflow-state` was removed or reflects the active state
 

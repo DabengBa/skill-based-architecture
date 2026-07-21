@@ -160,6 +160,58 @@ assert_not_contains \
   "update-rules initial behavior-failure read"
 
 echo ""
+echo "==> task execution contracts"
+
+task_execution="$(<templates/skill/workflows/task-execution.md)"
+assert_contains "$task_execution" "Simple tasks skip this protocol" "task execution Simple no-ceremony boundary"
+assert_contains "$task_execution" "After any needed alignment, proceed without waiting unless" "task execution auto-start default"
+assert_contains "$task_execution" "harness's native Plan/Task surface" "task execution native plan preference"
+assert_contains "$task_execution" "runtime state, not a fixed chat template" "task execution state-presentation boundary"
+assert_contains "$task_execution" "natural-language alignment" "task execution default natural presentation"
+assert_contains "$task_execution" "do not repeat its steps in chat" "task execution no native-plan duplication"
+assert_contains "$task_execution" "## Presentation Gate" "task execution presentation selection gate"
+assert_contains "$task_execution" "Evaluate **Structured Brief first**" "task execution structured-first precedence"
+assert_contains "$task_execution" "Compact Alignment is allowed only when all Structured conditions are false" "task execution compact fallback boundary"
+assert_contains "$task_execution" "first user-facing task-start message MUST begin with separate Goal" "task execution full brief escalation"
+assert_contains "$task_execution" "Steps must be numbered" "task execution full brief numbered plan"
+assert_contains "$task_execution" "do not collapse the brief into prose" "task execution full brief remains scannable"
+assert_contains "$task_execution" "## Recitation Loop" "task execution recitation section"
+assert_contains "$task_execution" "Before each main Plan step" "task execution per-step Anchor checkpoint"
+assert_contains "$task_execution" "do not narrate it before every tool call" "task execution no per-tool narration"
+assert_contains "$task_execution" "does not create durable planning files or recover task state across Sessions" "task execution session-only boundary"
+assert_contains "$task_execution" "new independent outcome -> re-match the route and replace the old Anchor/Plan" "task execution new-task reset"
+assert_contains "$task_execution" "cannot omit or reorder a mandatory gate" "task execution Workflow authority"
+assert_not_contains "$task_execution" "task_plan.md" "task execution no fixed task-plan file"
+assert_not_contains "$task_execution" "cross-tool state sync" "task execution no cross-tool state system"
+assert_not_contains "$task_execution" "Plan: <concise task-specific steps" "task execution no fixed chat block"
+
+agent_behavior="$(<templates/skill/rules/agent-behavior.md)"
+assert_contains "$agent_behavior" "One clear action with one direct check proceeds without planning ceremony" "always-read Simple direct path"
+assert_contains "$agent_behavior" "task-execution.md" "always-read Task Execution activation"
+assert_contains "$agent_behavior" "present only useful alignment" "always-read proportional Anchor presentation"
+assert_contains "$agent_behavior" "without duplicating visible steps in chat" "always-read native Plan deduplication"
+assert_contains "$agent_behavior" "Before every main Plan step" "always-read Anchor checkpoint activation"
+
+task_closure="$(<templates/skill/workflows/task-closure.md)"
+assert_contains "$task_closure" "### Entry Gate" "closure execution entry gate"
+assert_contains "$task_closure" 'return to [`task-execution.md`](task-execution.md)' "closure cannot finish execution"
+assert_contains "$task_closure" "final Anchor Checkpoint" "closure final Anchor checkpoint"
+
+plan_feature="$(<templates/skill/workflows/plan-feature.md)"
+assert_contains "$plan_feature" "it is not the runtime Native Plan" "design plan runtime boundary"
+assert_contains "$plan_feature" "pass its chosen outcome, acceptance criteria, boundaries, and task breakdown" "design to execution transition"
+
+subagent_driven="$(<templates/skill/workflows/subagent-driven.md)"
+assert_contains "$subagent_driven" "Worker-local status never advances the Native Plan" "worker status main-plan boundary"
+
+assert_contains "$(<AGENTS.md)" "Task Anchor" "self-hosting shell Task Anchor activation"
+assert_contains "$(<templates/shells/AGENTS.md)" "Task Anchor" "downstream shell Task Anchor activation"
+assert_contains "$(<AGENTS.md)" "Anchor Checkpoint" "self-hosting shell Recitation activation"
+assert_contains "$(<templates/shells/AGENTS.md)" "Anchor Checkpoint" "downstream shell Recitation activation"
+assert_contains "$(<AGENTS.md)" "without repeating visible steps in chat" "self-hosting shell Plan deduplication"
+assert_contains "$(<templates/shells/AGENTS.md)" "without repeating visible steps in chat" "downstream shell Plan deduplication"
+
+echo ""
 echo "==> business-model and persistence contracts"
 
 business_profile="$(<templates/skill/workflows/profile-business-model.md.example)"
@@ -174,7 +226,6 @@ assert_contains "$fix_bug" "DESIGN_CHANGE" "fix-bug design-change classification
 assert_contains "$fix_bug" "INSUFFICIENT_BUSINESS_CONTEXT" "fix-bug insufficient-context classification"
 assert_contains "$fix_bug" "changes a business type, flow direction, state machine, or core invariant" "fix-bug plan escalation red line"
 
-plan_feature="$(<templates/skill/workflows/plan-feature.md)"
 assert_contains "$plan_feature" "business-model impact: unchanged / proposed change / unknown" "plan business-model impact"
 assert_contains "$plan_feature" "update the formal model only when code, tests, and behavior land" "plan current-baseline contract"
 

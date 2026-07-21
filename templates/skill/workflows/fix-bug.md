@@ -1,6 +1,6 @@
 # Fix Bug Workflow
 
-Use this route to determine whether observed behavior is an implementation defect and, if so, prove the smallest correct repair. Inline is the default; read [`subagent-auxiliary.md`](subagent-auxiliary.md) only for an admitted independent investigation or long result-only check.
+Use this route to determine whether observed behavior is an implementation defect and, if so, prove the smallest correct repair. For a non-Simple task, [`task-execution.md`](task-execution.md) turns these domain steps into the current Task Anchor and Native Plan without weakening the gates below. Read [`subagent-auxiliary.md`](subagent-auxiliary.md) only for an admitted independent investigation or long result-only check.
 
 ## Mandatory Pre-Step
 
